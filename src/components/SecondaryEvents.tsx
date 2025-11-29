@@ -1,16 +1,15 @@
+import { useTranslation } from "react-i18next";
+
 const SecondaryEvents = () => {
-  const secondaryEvents = [
-    "Workshop de Capacitação Turística - 05 Dez",
-    "Reunião Mensal de Associados - 12 Dez",
-    "Visita Técnica ao Centro de Convenções - 18 Dez",
-    "Palestra sobre Eventos Sustentáveis - 20 Dez",
-  ];
+  const { t } = useTranslation("secondaryEvents");
+
+  const secondaryEvents = t("list", { returnObjects: true }) as string[];
 
   return (
     <section className="bg-neutral-800 py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-8 text-3xl font-bold text-yellow-400">
-          Eventos secundários
+          {t("title")}
         </h2>
 
         <div className="space-y-4">

@@ -1,0 +1,16 @@
+{
+  "title": "Events",
+
+  "eventsList": {
+    "location": {
+      "conventionCenter": "Convention Center",
+      "park": "Parque do Povo",
+      "ufcg": "UFCG"
+    },
+    "status": {
+      "confirmed": "Confirmed",
+      "soon": "Coming soon",
+      "open": "Registrations open"
+    }
+  }
+}

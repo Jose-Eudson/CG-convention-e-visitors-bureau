@@ -1,0 +1,13 @@
+{
+  "title": "Diretoria",
+  "subtitle": "Gestão 2024–2026",
+
+  "roles": {
+    "president": "Presidente",
+    "vicePresident": "Vice-Presidente",
+    "captureDirector": "Diretor de Captação",
+    "financeDirector": "Diretor Financeiro",
+    "marketingDirector": "Diretor de Marketing",
+    "eventsDirector": "Diretor de Eventos"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "menu": {
+    "home": "Home",
+    "about": "About Us",
+    "events": "Events",
+    "partners": "Associates",
+    "contact": "Contact"
+  },
+  "rights": "All rights reserved."
+}

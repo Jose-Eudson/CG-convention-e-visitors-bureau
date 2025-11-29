@@ -1,0 +1,22 @@
+{
+  "title": "Parceiros & Associados",
+  "callTitle": "Faça parte você também!",
+  "callText": "Seja um associado do CVB e potencialize seus negócios.",
+  "button": "Preencher formulário de associado",
+
+  "associates": [
+    "Hotel A",
+    "Restaurante B",
+    "Empresa C",
+    "Hotel D",
+    "Espaço E",
+    "Empresa F"
+  ],
+
+  "benefits": [
+    "Visibilidade em campanhas e eventos",
+    "Participação em decisões estratégicas",
+    "Acesso a dados e estatísticas do observatório",
+    "Networking com outros associados"
+  ]
+}

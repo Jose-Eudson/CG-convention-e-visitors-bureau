@@ -1,0 +1,13 @@
+{
+  "title": "CVB Campina Grande",
+  "logoAlt": "CVB Campina Grande logo",
+  "menu": {
+    "inicio": "Home",
+    "quemSomos": "About Us",
+    "oQueFazemos": "What We Do",
+    "diretoria": "Board",
+    "eventos": "Events",
+    "associados": "Members",
+    "contato": "Contact"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Partners & Members",
+  "callTitle": "Join us as well!",
+  "callText": "Become a CVB member and boost your business.",
+  "button": "Fill out membership form",
+
+  "associates": [
+    "Hotel A",
+    "Restaurant B",
+    "Company C",
+    "Hotel D",
+    "Venue E",
+    "Company F"
+  ],
+
+  "benefits": [
+    "Visibility in campaigns and events",
+    "Participation in strategic decisions",
+    "Access to observatory data and statistics",
+    "Networking with other members"
+  ]
+}

@@ -1,48 +1,43 @@
+import { useTranslation } from "react-i18next";
+
 const WhatWeDo = () => {
+  const { t } = useTranslation("whatwedo");
+
   const services = [
     {
-      title: "Captação de eventos",
-      description: "Atraímos grandes eventos para Campina Grande.",
+      key: "captacao",
       color: "text-emerald-400",
     },
     {
-      title: "Monitoramento",
-      description: "Acompanhamos eventos e oportunidades.",
+      key: "monitoramento",
       color: "text-blue-400",
     },
     {
-      title: "Intermediação",
-      description: "Conectamos organizadores e fornecedores locais.",
+      key: "intermediacao",
       color: "text-orange-400",
     },
     {
-      title: "Promoção",
-      description: "Divulgamos a cidade como destino de eventos.",
+      key: "promocao",
       color: "text-pink-400",
     },
     {
-      title: "Apoio institucional",
-      description: "Facilitamos relações com poder público.",
+      key: "apoio",
       color: "text-yellow-400",
     },
     {
-      title: "Consultoria",
-      description: "Orientamos sobre infraestrutura e serviços.",
+      key: "consultoria",
       color: "text-indigo-400",
     },
     {
-      title: "Qualificação",
-      description: "Capacitamos o trade turístico local.",
+      key: "qualificacao",
       color: "text-emerald-400",
     },
     {
-      title: "Observatório",
-      description: "Coletamos e analisamos dados do setor.",
+      key: "observatorio",
       color: "text-orange-400",
     },
     {
-      title: "Articulação",
-      description: "Criamos parcerias estratégicas.",
+      key: "articulacao",
       color: "text-pink-400",
     },
   ];
@@ -51,7 +46,7 @@ const WhatWeDo = () => {
     <section className="bg-neutral-900 py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-12 text-3xl font-bold text-white">
-          O que fazemos
+          {t("title")}
         </h2>
 
         <div className="grid gap-6 md:grid-cols-3">
@@ -61,10 +56,14 @@ const WhatWeDo = () => {
               className="rounded-xl border border-neutral-700 bg-neutral-800 p-6 transition-colors hover:border-neutral-600"
             >
               <div className={`mb-3 text-3xl ${service.color}`}>●</div>
+
               <h3 className="mb-2 text-lg font-semibold text-white">
-                {service.title}
+                {t(`${service.key}.title`)}
               </h3>
-              <p className="text-sm text-neutral-400">{service.description}</p>
+
+              <p className="text-sm text-neutral-400">
+                {t(`${service.key}.description`)}
+              </p>
             </div>
           ))}
         </div>

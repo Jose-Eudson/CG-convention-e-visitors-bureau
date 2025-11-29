@@ -1,0 +1,13 @@
+{
+  "title": "Board of Directors",
+  "subtitle": "Management 2024–2026",
+
+  "roles": {
+    "president": "President",
+    "vicePresident": "Vice President",
+    "captureDirector": "Director of Event Acquisition",
+    "financeDirector": "Financial Director",
+    "marketingDirector": "Marketing Director",
+    "eventsDirector": "Events Director"
+  }
+}

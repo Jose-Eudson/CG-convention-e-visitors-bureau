@@ -9,6 +9,8 @@ import SecondaryEvents from './components/SecondaryEvents'
 import Associates from './components/Associates'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import './i18n'
+
 
 function App() {
   return (

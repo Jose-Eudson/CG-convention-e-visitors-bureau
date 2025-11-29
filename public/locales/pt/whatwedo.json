@@ -1,0 +1,48 @@
+{
+  "title": "O que fazemos",
+
+  "captacao": {
+    "title": "Captação de eventos",
+    "description": "Atraímos grandes eventos para Campina Grande."
+  },
+
+  "monitoramento": {
+    "title": "Monitoramento",
+    "description": "Acompanhamos eventos e oportunidades."
+  },
+
+  "intermediacao": {
+    "title": "Intermediação",
+    "description": "Conectamos organizadores e fornecedores locais."
+  },
+
+  "promocao": {
+    "title": "Promoção",
+    "description": "Divulgamos a cidade como destino de eventos."
+  },
+
+  "apoio": {
+    "title": "Apoio institucional",
+    "description": "Facilitamos relações com poder público."
+  },
+
+  "consultoria": {
+    "title": "Consultoria",
+    "description": "Orientamos sobre infraestrutura e serviços."
+  },
+
+  "qualificacao": {
+    "title": "Qualificação",
+    "description": "Capacitamos o trade turístico local."
+  },
+
+  "observatorio": {
+    "title": "Observatório",
+    "description": "Coletamos e analisamos dados do setor."
+  },
+
+  "articulacao": {
+    "title": "Articulação",
+    "description": "Criamos parcerias estratégicas."
+  }
+}

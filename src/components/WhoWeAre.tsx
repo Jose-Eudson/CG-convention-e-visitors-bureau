@@ -1,30 +1,23 @@
+import { useTranslation } from "react-i18next";
+
 const WhoWeAre = () => {
+  const { t } = useTranslation("whoweare");
+
   const cards = [
-    {
-      title: "Missão",
-      description: "Promover Campina Grande como destino de eventos e negócios.",
-    },
-    {
-      title: "Visão",
-      description: "Ser referência nacional em turismo de eventos e negócios.",
-    },
-    {
-      title: "Valores",
-      description: "Transparência, colaboração e compromisso com o desenvolvimento local.",
-    },
+    { key: "mission" },
+    { key: "vision" },
+    { key: "values" },
   ];
 
   return (
     <section className="bg-neutral-800 py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-4 text-3xl font-bold text-indigo-400">
-          Quem somos
+          {t("title")}
         </h2>
 
         <p className="mb-12 max-w-3xl text-lg text-neutral-300">
-          O Convention Bureau de Campina Grande é uma organização que atua
-          como elo entre o trade turístico, poder público e iniciativa privada,
-          com o objetivo de captar e promover eventos na cidade.
+          {t("description")}
         </p>
 
         <div className="grid gap-6 md:grid-cols-3">
@@ -34,9 +27,12 @@ const WhoWeAre = () => {
               className="rounded-xl border border-indigo-500/40 bg-neutral-900/60 p-6"
             >
               <h3 className="mb-3 text-xl font-semibold text-indigo-300">
-                {card.title}
+                {t(`${card.key}.title`)}
               </h3>
-              <p className="text-sm text-neutral-400">{card.description}</p>
+
+              <p className="text-sm text-neutral-400">
+                {t(`${card.key}.description`)}
+              </p>
             </div>
           ))}
         </div>

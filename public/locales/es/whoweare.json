@@ -1,0 +1,19 @@
+{
+  "title": "Quiénes somos",
+  "description": "El Convention Bureau de Campina Grande es una organización que actúa como vínculo entre el trade turístico, el sector público y la iniciativa privada, con el objetivo de captar y promover eventos en la ciudad.",
+
+  "mission": {
+    "title": "Misión",
+    "description": "Promover Campina Grande como destino de eventos y negocios."
+  },
+
+  "vision": {
+    "title": "Visión",
+    "description": "Ser referencia nacional en turismo de eventos y negocios."
+  },
+
+  "values": {
+    "title": "Valores",
+    "description": "Transparencia, colaboración y compromiso con el desarrollo local."
+  }
+}

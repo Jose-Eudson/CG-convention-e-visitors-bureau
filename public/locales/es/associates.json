@@ -1,0 +1,22 @@
+{
+  "title": "Socios y Asociados",
+  "callTitle": "¡Únete también!",
+  "callText": "Hazte miembro del CVB y potencia tu negocio.",
+  "button": "Rellenar formulario de miembro",
+
+  "associates": [
+    "Hotel A",
+    "Restaurante B",
+    "Empresa C",
+    "Hotel D",
+    "Espacio E",
+    "Empresa F"
+  ],
+
+  "benefits": [
+    "Visibilidad en campañas y eventos",
+    "Participación en decisiones estratégicas",
+    "Acceso a datos y estadísticas del observatorio",
+    "Networking con otros asociados"
+  ]
+}

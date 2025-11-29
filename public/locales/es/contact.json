@@ -1,0 +1,14 @@
+{
+  "title": "Contacto",
+  "addressTitle": "Dirección",
+  "socialTitle": "Redes Sociales",
+  "whatsappTitle": "WhatsApp",
+
+  "form": {
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "button": "Enviar mensaje"
+  }
+}

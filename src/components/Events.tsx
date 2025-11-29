@@ -1,30 +1,34 @@
+import { useTranslation } from "react-i18next";
+
 const Events = () => {
+  const { t } = useTranslation("events");
+
   const events = [
     {
       date: "15 Dez",
       name: "Congresso Nacional de Tecnologia",
-      location: "Centro de Convenções",
-      status: "Confirmado",
+      location: t("eventsList.location.conventionCenter"),
+      status: t("eventsList.status.confirmed")
     },
     {
       date: "22 Dez",
       name: "Feira de Negócios do Nordeste",
-      location: "Parque do Povo",
-      status: "Em breve",
+      location: t("eventsList.location.park"),
+      status: t("eventsList.status.soon")
     },
     {
       date: "10 Jan",
       name: "Simpósio de Educação",
-      location: "UFCG",
-      status: "Inscrições abertas",
-    },
+      location: t("eventsList.location.ufcg"),
+      status: t("eventsList.status.open")
+    }
   ];
 
   return (
     <section className="bg-neutral-900 py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-12 text-3xl font-bold text-pink-400">
-          Eventos
+          {t("title")}
         </h2>
 
         <div className="grid gap-6 md:grid-cols-3">
@@ -40,7 +44,10 @@ const Events = () => {
               <h3 className="mb-2 text-lg font-semibold text-white">
                 {event.name}
               </h3>
-              <p className="mb-4 text-sm text-neutral-400">{event.location}</p>
+
+              <p className="mb-4 text-sm text-neutral-400">
+                {event.location}
+              </p>
 
               <span className="inline-block rounded-full bg-neutral-700 px-3 py-1 text-xs text-neutral-300">
                 {event.status}

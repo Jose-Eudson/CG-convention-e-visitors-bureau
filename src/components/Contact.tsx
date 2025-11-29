@@ -1,15 +1,22 @@
+import { useTranslation } from "react-i18next";
+
 const Contact = () => {
+  const { t } = useTranslation("contact");
+
   return (
     <section className="bg-neutral-800 py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-12 text-3xl font-bold text-white">
-          Contato
+          {t("title")}
         </h2>
 
         <div className="grid gap-12 md:grid-cols-2">
+          {/* COLUNA 1 */}
           <div className="space-y-6">
             <div>
-              <h3 className="mb-2 font-semibold text-emerald-400">Endereço</h3>
+              <h3 className="mb-2 font-semibold text-emerald-400">
+                {t("addressTitle")}
+              </h3>
               <p className="text-neutral-300">
                 Rua Exemplo, 123 - Centro<br />
                 Campina Grande - PB, 58400-000
@@ -17,7 +24,9 @@ const Contact = () => {
             </div>
 
             <div>
-              <h3 className="mb-2 font-semibold text-emerald-400">Redes Sociais</h3>
+              <h3 className="mb-2 font-semibold text-emerald-400">
+                {t("socialTitle")}
+              </h3>
               <a
                 href="https://www.instagram.com/campinagrandecvb"
                 target="_blank"
@@ -29,7 +38,9 @@ const Contact = () => {
             </div>
 
             <div>
-              <h3 className="mb-2 font-semibold text-emerald-400">WhatsApp</h3>
+              <h3 className="mb-2 font-semibold text-emerald-400">
+                {t("whatsappTitle")}
+              </h3>
               <a
                 href="https://wa.me/558300000000"
                 className="text-neutral-300 hover:text-emerald-400"
@@ -39,32 +50,37 @@ const Contact = () => {
             </div>
           </div>
 
-          <form className="space-y-4">
+          {/* FORMULÁRIO */}
+          <form className="space-y-4" translate="no">
             <input
               type="text"
-              placeholder="Nome"
+              placeholder={t("form.name")}
               className="w-full rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none"
             />
+
             <input
               type="email"
-              placeholder="E-mail"
+              placeholder={t("form.email")}
               className="w-full rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none"
             />
+
             <input
               type="text"
-              placeholder="Assunto"
+              placeholder={t("form.subject")}
               className="w-full rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none"
             />
+
             <textarea
-              placeholder="Mensagem"
+              placeholder={t("form.message")}
               rows={5}
               className="w-full rounded-lg border border-neutral-600 bg-neutral-900 px-4 py-3 text-white focus:border-emerald-400 focus:outline-none"
             ></textarea>
+
             <button
               type="submit"
               className="w-full rounded-lg bg-emerald-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-emerald-600"
             >
-              Enviar mensagem
+              {t("form.button")}
             </button>
           </form>
         </div>
