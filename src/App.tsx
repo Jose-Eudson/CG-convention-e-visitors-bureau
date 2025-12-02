@@ -10,12 +10,13 @@ import Associates from './components/Associates'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import './i18n'
-
+import WhatsAppButton from "./components/WhatsAppButton";
 
 function App() {
   return (
     <div className="min-h-screen bg-neutral-900 text-white scroll-smooth">
       <Header />
+
       <main className="pt-16">
         <section id="inicio"><Hero /></section>
         <section id="quem-somos"><WhoWeAre /></section>
@@ -26,9 +27,13 @@ function App() {
         <section id="associados"><Associates /></section>
         <section id="contato"><Contact /></section>
       </main>
+
       <Footer />
+
+      {/* BOTÃO FLUTUANTE */}
+      <WhatsAppButton />
     </div>
   )
 }
 
-export default App
+export default App;

@@ -42,10 +42,11 @@ const Contact = () => {
                 {t("whatsappTitle")}
               </h3>
               <a
-                href="https://wa.me/558300000000"
+                href="https://wa.me/5583999219453"
+                target="_blank"
                 className="text-neutral-300 hover:text-emerald-400"
               >
-                (83) 0000-0000
+                (83) 99921-9453
               </a>
             </div>
           </div>
