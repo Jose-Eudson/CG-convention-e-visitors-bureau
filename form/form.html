@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>formulario</title>
+    <link rel="stylesheet" href="form.css">
+
+    </head>
+<body>
+    <div class="formulario-wrapper"> 
+        <div class="header-centralizado">
+            <img src="logo1.jpeg" alt="CVB Campina" style="max-width: 120px; margin-bottom: 10px;">
+            <h1>Formulário de Associação</h1>
+        </div>
+        
+        <form id="meuForm">
+            <div class="container-principal">
+                <div class="camp1">
+                    <div id="ct">
+                        <h4 style="margin: 20px;">Selecione a categoria empresarial:</h4>
+
+                        <select id="categoria" onchange="mostrarOutro()" style="margin: 20px;" name="categoria" required>
+                            <option value="" disabled selected>Selecione a categoria empresarial:</option>
+                            
+                            <option>Agência de Viagens e Turismo</option>
+                            <option>Casa de Eventos</option>
+                            <option>Serviço de Guiamento Turístico (Guia de Turismo)</option>
+                            <option>Hotel (até 70 unidades habitacionais)</option>
+                            <option>Hotel (70 a 100 unidades habitacionais)</option>
+                            <option>Hotel (acima de 100 unidades habitacionais)</option>
+                            <option>Instituição (Shopping, Empresa, Universidade)</option>
+                            <option>Pousada / Hostel</option>
+                            <option>Estabelecimento Gastronômico (Restaurante)</option>
+                            <option value="outro">Outro</option>
+                        </select>
+
+                        <div id="campoOutro" style="margin: 20px; display:none;">
+                            <label>Especifique:</label>
+                            <input type="text" placeholder="Digite aqui" name="outro" required>
+                        </div>
+                    </div>
+
+                    <script>
+                        function mostrarOutro() {
+                            const select = document.getElementById("categoria");
+                            const campo = document.getElementById("campoOutro");
+                            campo.style.display = select.value === "outro" ? "block" : "none";
+                        }
+                    </script>
+                    
+                    <div class="campo" style="margin: 20px;">
+                        <label>Razão Social <span class="obrigatorio"></span></label>
+                        <input type="text" placeholder="Digite aqui" name="razaoSocial" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>Nome Fantasia <span class="obrigatorio"></span></label>
+                        <input type="text" name="nomeFantasia" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>Presidente <span class="obrigatorio"></span></label>
+                        <input type="text" name="presidente" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>Endereço <span class="obrigatorio"></span></label>
+                        <input type="text" name="endereco" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>CEP <span class="obrigatorio"></span></label>
+                        <input type="text" name="cep" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>Fone da Entidade <span class="obrigatorio"></span></label>
+                        <input type="text" name="telefoneEntidade" required>
+                    </div>
+                </div>
+
+                <div class="camp2">
+                    <div class="campo" style="margin: 20px;">
+                        <label>Telefone do Representante Legal <span class="obrigatorio"></span></label>
+                        <input type="text" name="telefoneRepresentante" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>CNPJ <span class="obrigatorio"></span></label>
+                        <input type="text" name="cnpj" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>Insc. Est <span class="obrigatorio"></span></label>
+                        <input type="text" name="inscEst" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>Insc. Munic <span class="obrigatorio"></span></label>
+                        <input type="text" name="inscMunic" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>E-mail do Presidente <span class="obrigatorio"></span></label>
+                        <input type="email" name="emailPresidente" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>E-mail da entidade <span class="obrigatorio"></span></label>
+                        <input type="email" name="emailEntidade" required>
+                    </div>
+
+                    <div class="campo" style="margin: 20px;">
+                        <label>Número de funcionários <span class="obrigatorio"></span></label>
+                        <input type="number" name="funcionarios" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-du">
+                <button type="submit" class="btn-enviar">Enviar Formulário</button>
+            </div>
+            <div class="bnt-f">
+                <span class="limpar-link" onclick="limparFormulario()">Limpar</span>
+            </div>
+            
+        </form>
+    </div>
+    <script>
+
+    function mostrarOutro() {
+        const select = document.getElementById("categoria");
+        const campoDiv = document.getElementById("campoOutro"); 
+        const campoInput = campoDiv.querySelector("input[name='outro']"); 
+
+        const mostrar = select.value === "outro";
+
+        if (mostrar) {
+            campoDiv.style.display = "block";
+            campoInput.setAttribute("required", "required"); 
+        } else {
+            campoDiv.style.display = "none";
+            campoInput.removeAttribute("required"); 
+            
+            campoInput.value = ""; 
+        }
+    }
+    
+    function limparFormulario() {
+        document.getElementById("meuForm").reset();
+    
+        if (typeof mostrarOutro === 'function') {
+            mostrarOutro(); 
+        }
+    }
+
+   
+    document.getElementById("meuForm").addEventListener("submit", function(e) {
+        e.preventDefault(); 
+
+        const form = this;
+      
+        const btn = form.querySelector('.btn-enviar'); 
+        const originalText = btn.textContent; 
+
+        
+        btn.disabled = true; 
+        btn.textContent = "ENVIANDO... AGUARDE..."; 
+        
+        let dados = new FormData(form);
+        
+        const URL_GAS_FINAL = "https://script.google.com/macros/s/AKfycbxth_W8F4buyF3J6B5zZYfHnPFkzfJev5BCV9S3xETe0HLULV5z37r8a-lfiuOsLasCjA/exec";
+        
+        fetch(URL_GAS_FINAL, {
+            method: "POST",
+            body: dados
+        })
+        .then(r => {
+             if (r.ok) {
+                
+                 window.location.href = "form2.html"; 
+             } else {
+                
+                 btn.disabled = false;
+                 btn.textContent = originalText;
+                 throw new Error("Erro no servidor Google.");
+             }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.textContent = originalText;
+
+            console.error("Erro no envio:", err);
+            alert("Erro ao enviar o formulário. Por favor, verifique o console para detalhes.");
+        });
+    });
+</script>
+</body>
+</html>
