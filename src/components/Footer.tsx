@@ -18,11 +18,7 @@ const Footer = () => {
   return (
     <footer className="bg-slate-100 text-slate-600 border-t border-slate-200" translate="no">
       <div className="max-w-7xl mx-auto px-6 py-12">
-
-        {/* TOP SECTION */}
         <div className="flex flex-col lg:flex-row justify-between gap-12">
-
-          {/* LOGO + SOBRE */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-4">
               <img src={logo} alt="Logo CVB" className="h-12 w-auto" />
@@ -37,7 +33,6 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* MENU — COLUNAS RESPONSIVAS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full lg:w-auto">
 
             <div className="group">
@@ -94,7 +89,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* COPYRIGHT */}
         <div className="border-t border-slate-200 mt-12 pt-6 text-center text-slate-400 text-sm">
           © {new Date().getFullYear()} Convention Bureau Campina Grande — {t("footer:rights")}
         </div>

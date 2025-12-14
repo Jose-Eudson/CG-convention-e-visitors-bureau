@@ -12,7 +12,6 @@ const Contact = () => {
         </h2>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {/* Card 1: Endereço */}
           <div className="flex flex-col items-center rounded-xl bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border border-slate-100">
             <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
               <MapPin className="h-6 w-6" />
@@ -25,7 +24,6 @@ const Contact = () => {
             </p>
           </div>
 
-          {/* Card 2: Instagram */}
           <a 
             href="https://www.instagram.com/campinagrandecvb"
             target="_blank"
@@ -41,7 +39,6 @@ const Contact = () => {
             </p>
           </a>
 
-          {/* Card 3: WhatsApp */}
           <a 
             href="https://wa.me/5583999219453"
             target="_blank"

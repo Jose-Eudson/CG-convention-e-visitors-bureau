@@ -9,7 +9,6 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -36,7 +35,6 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
       <div className="flex w-full items-center justify-between px-6 py-4 lg:px-12">
-        {/* Logo & Title */}
         <div className="flex items-center gap-3">
           <img src={logo} alt={t("logoAlt")} className="h-12 w-auto" />
           <div className="hidden flex-col sm:flex">
@@ -45,7 +43,6 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-8">
           {navItems.map((item) => (
             <a
@@ -58,7 +55,6 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Language Selector & Mobile Menu Button */}
         <div className="flex items-center gap-4">
           <div className="relative" ref={dropdownRef}>
             <button
@@ -71,7 +67,6 @@ const Header = () => {
               <span className="hidden sm:inline">Idioma</span>
             </button>
 
-            {/* Dropdown */}
             {isLanguageOpen && (
               <div className="absolute top-full right-0 mt-2 w-40 flex flex-col gap-1 bg-white border border-slate-100 rounded-lg p-2 shadow-xl z-50">
                 <button
@@ -108,7 +103,6 @@ const Header = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <button 
             className="lg:hidden text-slate-600 p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -118,7 +112,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-100 bg-white">
           <nav className="flex flex-col p-4">

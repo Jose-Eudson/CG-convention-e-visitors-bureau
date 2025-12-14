@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useState, useMemo, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 
 type Associate = {
   name: string;
@@ -39,6 +39,21 @@ const Associates = () => {
   const [category, setCategory] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const perPage = 8;
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -76,29 +91,65 @@ const Associates = () => {
             className="flex-1 rounded-xl border border-slate-300 px-4 py-2 shadow-sm text-base text-slate-700 placeholder:text-base placeholder:text-slate-700 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
           />
 
-          <select
-            value={category ?? ""}
-            onChange={(e) => {
-              const value = e.target.value;
-              setCategory(value === "" ? null : value);
-              setPage(1);
-            }}
-            className="w-full md:w-1/3 rounded-xl border border-slate-300 px-4 py-2 shadow-sm text-base text-slate-700 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
-          >
-            <option value="">Todas as categorias</option>
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
+          <div className="relative w-full md:w-1/3" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-full flex items-center justify-between rounded-xl border border-slate-300 px-4 py-2 shadow-sm text-base text-slate-700 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all cursor-pointer"
+            >
+              <span className="truncate">
+                {category || "Todas as categorias"}
+              </span>
+              <ChevronDown
+                size={20}
+                className={`transition-transform duration-200 ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {isDropdownOpen && (
+              <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-slate-200 bg-white py-1 shadow-lg focus:outline-none">
+                <li
+                  onClick={() => {
+                    setCategory(null);
+                    setPage(1);
+                    setIsDropdownOpen(false);
+                  }}
+                  className={`cursor-pointer px-4 py-2 hover:bg-orange-50 hover:text-orange-600 ${
+                    !category
+                      ? "bg-orange-50 text-orange-600"
+                      : "text-slate-700"
+                  }`}
+                >
+                  Todas as categorias
+                </li>
+                {CATEGORIES.map((cat) => (
+                  <li
+                    key={cat}
+                    onClick={() => {
+                      setCategory(cat);
+                      setPage(1);
+                      setIsDropdownOpen(false);
+                    }}
+                    className={`cursor-pointer px-4 py-2 hover:bg-orange-50 hover:text-orange-600 ${
+                      category === cat
+                        ? "bg-orange-50 text-orange-600"
+                        : "text-slate-700"
+                    }`}
+                  >
+                    {cat}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         <div className="mb-6 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {paginated.map((associate) => (
             <div
               key={associate.name}
-              className="group relative flex flex-col justify-between h-200 rounded-xl border border-slate-200 bg-white text-slate-700 p-5 shadow-lg transition-all duration-300 "
+              className="group relative flex flex-col justify-between h-full rounded-xl border border-slate-200 bg-white text-slate-700 p-5 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
             >
               <div className="flex justify-center">
                 {associate.logo ? (

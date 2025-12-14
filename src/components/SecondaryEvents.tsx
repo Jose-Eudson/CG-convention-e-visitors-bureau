@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-// Opcional: Ícones para visual (remova se não quiser)
 import { Calendar } from "lucide-react";
 
 const SecondaryEvents = () => {
@@ -17,7 +16,7 @@ const SecondaryEvents = () => {
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {secondaryEvents.map((event, index) => (
             <div
-              key={event} // Melhor key: use o evento como string única
+              key={event} 
               className="group rounded-xl border border-slate-200 bg-slate-50 p-6 text-slate-600 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-yellow-500/50 hover:bg-white"
             >
               <div className="mb-3 flex items-center gap-3">

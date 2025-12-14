@@ -12,7 +12,6 @@ import luizImg from "../assets/luizcarloslira.jpg";
 import izabelliImg from "../assets/izabelliaraujo.jpg";
 import tupacImg from "../assets/tupacrodrigues.jpg";
 
-// Custom Arrows
 const NextArrow = ({ onClick }: { onClick?: () => void }) => {
   return (
     <button

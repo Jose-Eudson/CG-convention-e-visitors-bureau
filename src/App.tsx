@@ -29,8 +29,6 @@ function App() {
       </main>
 
       <Footer />
-
-      {/* BOTÃO FLUTUANTE */}
       <WhatsAppButton />
     </div>
   )
