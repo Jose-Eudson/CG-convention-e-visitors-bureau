@@ -1,8 +1,10 @@
 import eventoImg from '../assets/campina_cvb.jpg';
 import { useTranslation } from "react-i18next";
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
   const { t } = useTranslation("hero");
+  const navigate = useNavigate();
 
   return (
     <section className="relative flex min-h-screen items-center bg-slate-50">
@@ -22,7 +24,7 @@ const Hero = () => {
               {t("buttons.event")}
             </button>
 
-            <button className="rounded-lg border-2 border-orange-500 px-6 py-3 font-semibold text-orange-500 transition-colors hover:bg-orange-500 hover:text-white">
+            <button onClick={() => navigate('/proposta')} className="rounded-lg border-2 border-orange-500 px-6 py-3 font-semibold text-orange-500 transition-colors hover:bg-orange-500 hover:text-white">
               {t("buttons.associate")}
             </button>
           </div>
