@@ -7,9 +7,9 @@ const SecondaryEvents = () => {
   const secondaryEvents = t("list", { returnObjects: true }) as string[];
 
   return (
-    <section className="bg-white py-20">
-      <div className="mx-auto max-w-6xl px-6">
-        <h2 className="mb-12 text-3xl font-bold text-yellow-500">
+    <section className="bg-white py-12 md:py-20">
+      <div className="mx-auto max-w-6xl px-4 md:px-6">
+        <h2 className="mb-8 md:mb-12 text-2xl md:text-3xl font-bold text-yellow-500">
           {t("title")}
         </h2>
 
