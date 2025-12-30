@@ -10,7 +10,7 @@ const WhoWeAre = () => {
   ];
 
   return (
-    <section className="bg-white py-12 md:py-20">
+    <section id="quem-somos" className="bg-white py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <h2 className="mb-4 text-2xl md:text-3xl font-bold text-indigo-500">
           {t("title")}

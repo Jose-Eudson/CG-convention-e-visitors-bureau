@@ -5,7 +5,7 @@ const Hero = () => {
   const { t } = useTranslation("hero");
 
   return (
-    <section className="relative flex min-h-screen items-center bg-slate-50 py-12 md:py-0">
+    <section id="inicio" className="relative flex min-h-screen items-center bg-slate-50 py-12 md:py-0">
       <div className="mx-auto grid max-w-6xl gap-8 md:gap-12 px-4 md:px-6 md:grid-cols-2 md:items-center">
         <div className="space-y-6">
 

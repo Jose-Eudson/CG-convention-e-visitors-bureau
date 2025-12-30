@@ -78,7 +78,7 @@ const Board = () => {
   };
 
   return (
-    <section className="bg-white py-12 md:py-20">
+    <section id="diretoria" className="bg-white py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <h2 className="mb-4 text-2xl md:text-3xl font-bold text-emerald-500">
           {t("title")}
