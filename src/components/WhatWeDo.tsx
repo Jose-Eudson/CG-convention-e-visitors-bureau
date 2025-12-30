@@ -53,7 +53,7 @@ const WhatWeDo = () => {
   ];
 
   return (
-    <section className="bg-slate-50 py-12 md:py-20">
+    <section id="o-que-fazemos" className="bg-slate-50 py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <h2 className="mb-8 md:mb-12 text-2xl md:text-3xl font-bold text-slate-900">
           {t("title")}

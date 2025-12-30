@@ -29,6 +29,7 @@ const Header = () => {
     { id: "diretoria", label: t("menu.diretoria") },
     { id: "eventos", label: t("menu.eventos") },
     { id: "associados", label: t("menu.associados") },
+    { id: "parcerias", label: t("menu.parcerias") },
     { id: "contato", label: t("menu.contato") },
   ];
 
