@@ -16,7 +16,7 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => {
   return (
     <button
       onClick={onClick}
-      className="absolute right-0 md:right-[-60px] top-1/2 -translate-y-1/2 -mt-6 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
+      className="absolute right-2 md:right-[-60px] top-1/2 -translate-y-1/2 -mt-6 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
       aria-label="Próximo"
     >
       <ChevronRight size={24} />
@@ -28,7 +28,7 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => {
   return (
     <button
       onClick={onClick}
-      className="absolute left-0 md:left-[-60px] top-1/2 -translate-y-1/2 -mt-6 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
+      className="absolute left-2 md:left-[-60px] top-1/2 -translate-y-1/2 -mt-6 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
       aria-label="Anterior"
     >
       <ChevronLeft size={24} />
@@ -78,9 +78,9 @@ const Board = () => {
   };
 
   return (
-    <section className="bg-white py-20">
-      <div className="mx-auto max-w-6xl px-6">
-        <h2 className="mb-4 text-3xl font-bold text-emerald-500">
+    <section id="diretoria" className="bg-white py-12 md:py-20">
+      <div className="mx-auto max-w-6xl px-4 md:px-6">
+        <h2 className="mb-4 text-2xl md:text-3xl font-bold text-emerald-500">
           {t("title")}
         </h2>
 
@@ -89,7 +89,7 @@ const Board = () => {
         <Slider {...settings}>
           {boardMembers.map((member, index) => (
             <div key={index} className="px-4 h-full pb-12">
-              <div className="flex flex-col items-center justify-between h-[270px] rounded-xl border border-slate-100 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-slate-200">
+              <div className="flex flex-col items-center justify-between min-h-[270px] h-auto rounded-xl border border-slate-100 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-slate-200">
                 <div className="w-full flex flex-col items-center">
                   <div className="mx-auto mb-4 h-32 w-32 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 overflow-hidden">
                     {member.photo ? (

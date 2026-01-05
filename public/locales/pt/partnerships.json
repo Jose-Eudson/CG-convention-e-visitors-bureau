@@ -1,0 +1,40 @@
+{
+  "partnerships": {
+    "title": "Parcerias Institucionais",
+    "description": "Campina Grande é resultado da colaboração entre o poder público e a iniciativa privada. Conheça nossos principais parceiros governamentais que tornam possível posicionar a cidade como destino privilegiado para eventos.",
+    "visitLink": "Acessar",
+    
+    "governoEstado": {
+      "name": "Governo do Estado da Paraíba",
+      "category": "Poder Estadual",
+      "description": "Parceiro estratégico na promoção do turismo de eventos e desenvolvimento da infraestrutura da cidade."
+    },
+    
+    "prefeituraCG": {
+      "name": "Prefeitura de Campina Grande",
+      "category": "Poder Municipal",
+      "description": "Responsável pelo apoio institucional, infraestrutura pública e facilitação de eventos na cidade."
+    },
+    
+    "secretariaTurismo": {
+      "name": "Secretaria de Turismo do Estado",
+      "category": "Órgão Estadual",
+      "description": "Coordena políticas de turismo e contribui para o desenvolvimento do turismo de negócios."
+    },
+
+    "collab": {
+      "support": {
+        "title": "Apoio Institucional",
+        "description": "Facilitamos a coordenação entre poder público, iniciativa privada e eventos de grande porte."
+      },
+      "infrastructure": {
+        "title": "Infraestrutura Pública",
+        "description": "Contamos com espaços públicos modernos e bem-equipados para receber eventos."
+      },
+      "promotion": {
+        "title": "Promoção Conjunta",
+        "description": "Juntos, promovemos Campina Grande como destino privilegiado para eventos."
+      }
+    }
+  }
+}

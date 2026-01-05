@@ -29,14 +29,15 @@ const Header = () => {
     { id: "diretoria", label: t("menu.diretoria") },
     { id: "eventos", label: t("menu.eventos") },
     { id: "associados", label: t("menu.associados") },
+    { id: "parcerias", label: t("menu.parcerias") },
     { id: "contato", label: t("menu.contato") },
   ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
-      <div className="flex w-full items-center justify-between px-6 py-4 lg:px-12">
+      <div className="flex w-full items-center justify-between px-4 md:px-6 lg:px-12 py-4">
         <div className="flex items-center gap-3">
-          <img src={logo} alt={t("logoAlt")} className="h-12 w-auto" />
+          <img src={logo} alt={t("logoAlt")} className="h-10 md:h-12 w-auto" />
           <div className="hidden flex-col sm:flex">
             <span className="text-sm font-bold leading-tight text-slate-900">CAMPINA GRANDE</span>
             <span className="text-xs font-medium leading-tight text-slate-600">CONVENTION & VISITORS BUREAU</span>
@@ -113,7 +114,7 @@ const Header = () => {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-100 bg-white">
+        <div className="lg:hidden border-t border-slate-100 bg-white max-h-[calc(100vh-4rem)] overflow-y-auto">
           <nav className="flex flex-col p-4">
             {navItems.map((item) => (
               <a

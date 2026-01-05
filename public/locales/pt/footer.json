@@ -1,10 +1,11 @@
 {
-  "menu": {
-    "home": "Início",
-    "about": "Quem Somos",
-    "events": "Eventos",
-    "partners": "Associados",
-    "contact": "Contato"
-  },
-  "rights": "Todos os direitos reservados."
+  "footer": {
+    "navigation": "Navegação",
+    "about": "Sobre",
+    "partnerships": "Parcerias",
+    "institutionalPartnerships": "Parcerias Institucionais",
+    "contact": "Contato",
+    "description": "Convention & Visitors Bureau de Campina Grande - Promovendo a cidade como destino de eventos.",
+    "copyright": "© 2024 CVB Campina Grande. Todos os direitos reservados."
+  }
 }

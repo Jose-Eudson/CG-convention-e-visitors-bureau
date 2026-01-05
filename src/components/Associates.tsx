@@ -73,9 +73,9 @@ const Associates = () => {
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   return (
-    <section className="bg-slate-50 py-20">
-      <div className="mx-auto max-w-6xl px-6">
-        <h2 className="mb-12 text-3xl font-bold text-orange-500">
+    <section id="associados" className="bg-slate-50 py-12 md:py-20">
+      <div className="mx-auto max-w-6xl px-4 md:px-6">
+        <h2 className="mb-8 md:mb-12 text-2xl md:text-3xl font-bold text-orange-500">
           {t("title")}
         </h2>
 

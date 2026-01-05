@@ -1,20 +1,22 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import './index.css';
-import './i18n';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import WhoWeAre from './components/WhoWeAre';
-import WhatWeDo from './components/WhatWeDo';
-import Board from './components/Board';
-import Events from './components/Events';
-import SecondaryEvents from './components/SecondaryEvents';
-import Associates from './components/Associates';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
-import WhatsAppButton from "./components/WhatsAppButton";
-import Ol from './components/ol'; 
-import HeaderProposta from './components/HeaderProposta'; 
-import FooterSimples from './components/FooterSimples'; 
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import './index.css'
+import './i18n'
+
+import Header from './components/Header'
+import Hero from './components/Hero'
+import WhoWeAre from './components/WhoWeAre'
+import WhatWeDo from './components/WhatWeDo'
+import Board from './components/Board'
+import Events from './components/Events'
+import SecondaryEvents from './components/SecondaryEvents'
+import Associates from './components/Associates'
+import Contact from './components/Contact'
+import Footer from './components/Footer'
+import WhatsAppButton from './components/WhatsAppButton'
+
+import Ol from './components/Ol'
+import HeaderProposta from './components/HeaderProposta'
+import FooterSimples from './components/FooterSimples'
 
 function HomePage() {
   return (
@@ -33,18 +35,18 @@ function HomePage() {
       <Footer />
       <WhatsAppButton />
     </>
-  );
+  )
 }
 
 function PropostaPage() {
   return (
     <>
-      <HeaderProposta /> {}
-        <Ol />
-      <FooterSimples /> {}
+      <HeaderProposta />
+      <Ol />
+      <FooterSimples />
       <WhatsAppButton />
     </>
-  );
+  )
 }
 
 export default function App() {
@@ -57,5 +59,5 @@ export default function App() {
         </Routes>
       </div>
     </BrowserRouter>
-  );
+  )
 }
