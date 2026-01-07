@@ -1,13 +1,18 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo_cvbcg.svg";
 import { useTranslation } from "react-i18next";
-import { Globe, Menu, X } from "lucide-react";
+import { Globe, Menu, X, LogOut } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
   const { t, i18n } = useTranslation("header");
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -33,6 +38,34 @@ const Header = () => {
     { id: "contato", label: t("menu.contato") },
   ];
 
+  const handleNavClick = (id: string) => {
+    setIsMobileMenuOpen(false);
+    
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
       <div className="flex w-full items-center justify-between px-4 md:px-6 lg:px-12 py-4">
@@ -46,17 +79,28 @@ const Header = () => {
 
         <nav className="hidden lg:flex items-center gap-8">
           {navItems.map((item) => (
-            <a
+            <button
               key={item.id}
-              href={`#${item.id}`}
+              onClick={() => handleNavClick(item.id)}
               className="text-sm font-medium text-slate-600 transition-colors hover:text-emerald-500"
             >
               {item.label}
-            </a>
+            </button>
           ))}
         </nav>
 
         <div className="flex items-center gap-4">
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md hover:bg-slate-50"
+              title="Sair da conta de administrador"
+            >
+              <LogOut className="h-5 w-5" />
+              <span>Sair</span>
+            </button>
+          )}
+
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsLanguageOpen(!isLanguageOpen)}
@@ -117,15 +161,23 @@ const Header = () => {
         <div className="lg:hidden border-t border-slate-100 bg-white max-h-[calc(100vh-4rem)] overflow-y-auto">
           <nav className="flex flex-col p-4">
             {navItems.map((item) => (
-              <a
+              <button
                 key={item.id}
-                href={`#${item.id}`}
-                className="py-3 text-base font-medium text-slate-600 hover:text-emerald-500 border-b border-slate-50 last:border-0"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => handleNavClick(item.id)}
+                className="py-3 text-base font-medium text-slate-600 hover:text-emerald-500 border-b border-slate-50 last:border-0 text-left w-full"
               >
                 {item.label}
-              </a>
+              </button>
             ))}
+            {user && (
+              <button
+                onClick={handleLogout}
+                className="py-3 text-base font-medium text-red-600 hover:text-red-700 border-b border-slate-50 last:border-0 text-left w-full flex items-center gap-2"
+              >
+                <LogOut className="h-5 w-5" />
+                Sair
+              </button>
+            )}
           </nav>
         </div>
       )}
