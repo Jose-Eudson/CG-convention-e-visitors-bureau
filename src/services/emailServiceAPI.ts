@@ -15,10 +15,13 @@ export const sendAdminNotification = async (requestData: {
   submitterOrganization?: string;
 }): Promise<boolean> => {
   try {
-    console.log('📧 Enviando notificação para admin...');
+    console.log('📧 Enviando notificação para admins...');
     
     // Pega a URL atual do front-end para o botão do e-mail
     const frontendUrl = window.location.origin;
+    
+    // Pega lista de emails de admin do .env
+    const adminEmails = import.meta.env.VITE_ADMIN_EMAILS || '';
     
     const response = await fetch(`${API_URL}/api/send-admin-notification`, {
       method: 'POST',
@@ -28,13 +31,14 @@ export const sendAdminNotification = async (requestData: {
       body: JSON.stringify({
         ...requestData,
         frontendUrl, // Adiciona a URL do front-end
+        adminEmails, // Adiciona lista de emails de admin
       }),
     });
 
     const result = await response.json();
     
     if (result.success) {
-      console.log('✅ Email enviado para admin');
+      console.log('✅ Emails enviados para admins');
       return true;
     } else {
       console.error('❌ Erro:', result.error);
