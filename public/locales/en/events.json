@@ -1,16 +1,40 @@
 {
   "title": "Events",
+  
+  "featured": {
+    "title": "Featured Events",
+    "viewAll": "View All Events",
+    "register": "Register Event",
+    "moreInfo": "More information"
+  },
 
-  "eventsList": {
-    "location": {
-      "conventionCenter": "Convention Center",
-      "park": "Parque do Povo",
-      "ufcg": "UFCG"
-    },
-    "status": {
-      "confirmed": "Confirmed",
-      "soon": "Coming soon",
-      "open": "Registrations open"
+  "list": {
+    "title": "All Events",
+    "subtitle": "Discover upcoming events and business opportunities in Campina Grande",
+    "noResults": "No events found with the selected filters",
+    "filters": {
+      "search": "Search events...",
+      "allCategories": "All categories",
+      "allMonths": "All months"
     }
+  },
+
+  "categories": {
+    "conference": "Conference",
+    "workshop": "Workshop",
+    "seminar": "Seminar",
+    "exhibition": "Fair/Exhibition",
+    "networking": "Networking",
+    "cultural": "Cultural",
+    "sports": "Sports",
+    "other": "Others"
+  },
+
+  "status": {
+    "upcoming": "Coming soon",
+    "ongoing": "Ongoing",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "open": "Registrations open"
   }
 }
