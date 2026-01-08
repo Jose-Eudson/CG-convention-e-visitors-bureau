@@ -1,40 +1,18 @@
 {
-  "partnerships": {
-    "title": "Asociaciones Institucionales",
-    "description": "Campina Grande es el resultado de la colaboración entre el gobierno e iniciativa privada. Conoce nuestros principales socios gubernamentales que hacen posible posicionar la ciudad como destino privilegiado para eventos.",
-    "visitLink": "Acceder",
-    
-    "governoEstado": {
-      "name": "Gobierno del Estado de Paraíba",
-      "category": "Autoridad Estatal",
-      "description": "Socio estratégico en la promoción del turismo de eventos y desarrollo de la infraestructura de la ciudad."
+  "title": "Alianzas Institucionales",
+  "subtitle": "Nuestros socios estratégicos que colaboran para asegurar el éxito del evento.",
+  "partners": [
+    {
+      "name": "Brasil CVB",
+      "url": "https://www.brasilcvb.com.br/"
     },
-    
-    "prefeituraCG": {
-      "name": "Alcaldía de Campina Grande",
-      "category": "Autoridad Municipal",
-      "description": "Responsable del apoyo institucional, infraestructura pública y facilitación de eventos en la ciudad."
+    {
+      "name": "ACCG",
+      "url": "https://www.accg.org.br/"
     },
-    
-    "secretariaTurismo": {
-      "name": "Secretaría de Turismo del Estado",
-      "category": "Agencia Estatal",
-      "description": "Coordina políticas de turismo y contribuye al desarrollo del turismo de negocios."
-    },
-
-    "collab": {
-      "support": {
-        "title": "Apoyo Institucional",
-        "description": "Facilitamos la coordinación entre gobierno, iniciativa privada y eventos de gran envergadura."
-      },
-      "infrastructure": {
-        "title": "Infraestructura Pública",
-        "description": "Contamos con espacios públicos modernos y bien equipados para recibir eventos."
-      },
-      "promotion": {
-        "title": "Promoción Conjunta",
-        "description": "Juntos, promovemos Campina Grande como destino privilegiado para eventos."
-      }
+    {
+      "name": "SindCampina",
+      "url": "https://www.sindcampina.com.br/"
     }
-  }
+  ]
 }
