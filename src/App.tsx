@@ -1,23 +1,36 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import './index.css'
-import './i18n'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import './index.css';
+import './i18n';
 
-import Header from './components/Header'
-import Hero from './components/Hero'
-import WhoWeAre from './components/WhoWeAre'
-import WhatWeDo from './components/WhatWeDo'
-import Board from './components/Board'
-import Events from './components/Events'
-import SecondaryEvents from './components/SecondaryEvents'
-import Associates from './components/Associates'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
-import WhatsAppButton from './components/WhatsAppButton'
+// Componentes da Home e Estrutura Geral
+import Header from './components/Header';
+import Hero from './components/Hero';
+import WhoWeAre from './components/WhoWeAre';
+import WhatWeDo from './components/WhatWeDo';
+import Board from './components/Board';
+import Events from './components/Events';
+import SecondaryEvents from './components/SecondaryEvents';
+import Associates from './components/Associates';
+import Contact from './components/Contact';
+import Footer from './components/Footer';
+import WhatsAppButton from './components/WhatsAppButton';
+import ProtectedRoute from './components/ProtectedRoute';
 
-import Ol from './components/Ol'
-import HeaderProposta from './components/HeaderProposta'
-import FooterSimples from './components/FooterSimples'
+// Componentes da Proposta
+import Ol from './components/Ol';
+import HeaderProposta from './components/HeaderProposta';
+import FooterSimples from './components/FooterSimples';
 
+// Páginas do Sistema (Colega)
+import HomePageContent from './pages/HomePage'; // Renomeado para não dar choque com a sua função
+import EventsPage from './pages/EventsPage';
+import EventManagerPage from './pages/EventManagerPage';
+import EventRequestPage from './pages/EventRequestPage';
+import EventRequestsPage from './pages/EventRequestsPage';
+import LoginPage from './pages/LoginPage';
+
+// 1. SUA HOME PAGE (Com todas as seções: Hero, Associados, etc.)
 function HomePage() {
   return (
     <>
@@ -35,9 +48,10 @@ function HomePage() {
       <Footer />
       <WhatsAppButton />
     </>
-  )
+  );
 }
 
+// 2. SUA PÁGINA DE PROPOSTA (Com Ol e HeaderProposta)
 function PropostaPage() {
   return (
     <>
@@ -46,18 +60,46 @@ function PropostaPage() {
       <FooterSimples />
       <WhatsAppButton />
     </>
-  )
+  );
 }
 
+// 3. APP UNIFICADO (Une o seu layout com o sistema dele)
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-slate-50 text-slate-900 scroll-smooth">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/proposta" element={<PropostaPage />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
-  )
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-slate-50 text-slate-900 scroll-smooth">
+          <Routes>
+            {/* Suas Rotas Principais */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/proposta" element={<PropostaPage />} />
+
+            {/* Rotas de Eventos e Admin do Colega */}
+            <Route path="/eventos" element={<><Header /><EventsPage /><Footer /></>} />
+            <Route path="/solicitar-evento" element={<><Header /><EventRequestPage /><Footer /></>} />
+            <Route path="/admin/login" element={<LoginPage />} />
+            
+            <Route 
+              path="/admin/eventos" 
+              element={
+                <ProtectedRoute>
+                  <Header />
+                  <EventManagerPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/solicitacoes" 
+              element={
+                <ProtectedRoute>
+                  <Header />
+                  <EventRequestsPage />
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
+  );
 }
