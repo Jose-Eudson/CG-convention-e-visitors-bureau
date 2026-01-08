@@ -27,8 +27,8 @@ const Ol = () => {
               <p className="text-xs text-slate-500">Participe de eventos exclusivos.</p>
             </div>
             <div className="rounded-lg border border-slate-200 p-4 bg-white shadow-sm">
-              <p className="text-sm font-semibold text-slate-800">Captação:</p>
-              <p className="text-xs text-slate-500">Eventos e congressos.</p>
+              <p className="text-sm font-semibold text-slate-800">Voz Ativa:</p>
+              <p className="text-xs text-slate-500">Participação em decisões estratégicas</p>
             </div>
           </div>
 
