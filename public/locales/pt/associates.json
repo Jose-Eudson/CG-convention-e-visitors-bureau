@@ -1,8 +1,25 @@
 {
-  "title": "Associados",
+  "title": "Conheça nossos parceiros",
+  "searchPlaceholder": "Buscar associado...",
+  "allCategories": "Todas as categorias",
+  "learnMore": "Saiba mais",
+  "noResults": "Nenhum associado encontrado.",
+  "prevPage": "Página anterior",
+  "nextPage": "Próxima página",
   "callTitle": "Faça parte você também!",
   "callText": "Seja um associado do CVB e potencialize seus negócios.",
   "button": "Preencher formulário de associado",
+  "categories": {
+    "hospedagem": "Hospedagem",
+    "alimentacao": "Alimentação",
+    "agencias": "Agências de Viagens, Receptivo e Aluguéis de Automóveis",
+    "casasShows": "Casas de Shows, Espetáculos e Museus",
+    "organizacao": "Organização e Produção de Eventos",
+    "equipamentos": "Equipamentos, Segurança e Cerimonial",
+    "consultoria": "Consultoria em Turismo e Marketing",
+    "guia": "Guia de Turismo",
+    "tecnologia": "Tecnologia"
+  },
 
   "associates": [
     { "name": "Garden", 
