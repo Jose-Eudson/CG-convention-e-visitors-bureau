@@ -1,33 +1,86 @@
-import './index.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import './index.css';
+import './i18n';
+
+
 import Header from './components/Header';
+import Hero from './components/Hero';
+import WhoWeAre from './components/WhoWeAre';
+import WhatWeDo from './components/WhatWeDo';
+import Board from './components/Board';
+import Events from './components/Events';
+import SecondaryEvents from './components/SecondaryEvents';
+import Associates from './components/Associates'; 
+import Contact from './components/Contact';
 import Footer from './components/Footer';
-import WhatsAppButton from "./components/WhatsAppButton";
+import WhatsAppButton from './components/WhatsAppButton';
 import ProtectedRoute from './components/ProtectedRoute';
-import HomePage from './pages/HomePage';
+
+import Ol from './components/Ol';
+import HeaderProposta from './components/HeaderProposta';
+import FooterSimples from './components/FooterSimples';
+
+import HomePageContent from './pages/HomePage'; 
 import EventsPage from './pages/EventsPage';
 import EventManagerPage from './pages/EventManagerPage';
 import EventRequestPage from './pages/EventRequestPage';
 import EventRequestsPage from './pages/EventRequestsPage';
 import LoginPage from './pages/LoginPage';
-import './i18n';
 
-function App() {
+
+function HomePage() {
+  return (
+    <>
+      <Header />
+      <main className="pt-16">
+        <section id="inicio"><Hero /></section>
+        <section id="quem-somos"><WhoWeAre /></section>
+        <section id="o-que-fazemos"><WhatWeDo /></section>
+        <section id="diretoria"><Board /></section>
+        <section id="eventos"><Events /></section>
+        <section id="eventos-secundarios"><SecondaryEvents /></section>
+        <section id="associados"><Associates /></section> 
+        <section id="contato"><Contact /></section>
+      </main>
+      <Footer />
+      <WhatsAppButton />
+    </>
+  );
+}
+
+
+function PropostaPage() {
+  return (
+    <>
+      <HeaderProposta />
+      <div className="pt-16">
+        <Ol />
+      </div>
+      <FooterSimples />
+      <WhatsAppButton />
+    </>
+  );
+}
+
+
+export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <Header />
-        <main>
+        <div className="min-h-screen bg-slate-50 text-slate-900 scroll-smooth">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/eventos" element={<EventsPage />} />
-            <Route path="/solicitar-evento" element={<EventRequestPage />} />
+            <Route path="/proposta" element={<PropostaPage />} />
+            <Route path="/eventos" element={<><Header /><EventsPage /><Footer /></>} />
+            <Route path="/solicitar-evento" element={<><Header /><EventRequestPage /><Footer /></>} />
             <Route path="/admin/login" element={<LoginPage />} />
+            
             <Route 
               path="/admin/eventos" 
               element={
                 <ProtectedRoute>
+                  <Header />
                   <EventManagerPage />
                 </ProtectedRoute>
               } 
@@ -36,17 +89,14 @@ function App() {
               path="/admin/solicitacoes" 
               element={
                 <ProtectedRoute>
+                  <Header />
                   <EventRequestsPage />
                 </ProtectedRoute>
               } 
             />
           </Routes>
-        </main>
-        <Footer />
-        <WhatsAppButton />
+        </div>
       </Router>
     </AuthProvider>
   );
 }
-
-export default App;

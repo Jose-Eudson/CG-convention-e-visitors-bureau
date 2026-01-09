@@ -97,7 +97,6 @@ const Associates = () => {
     });
   }, [associates, debouncedSearch, category]);
 
-
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
@@ -135,7 +134,7 @@ const Associates = () => {
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full flex items-center justify-between rounded-xl border border-slate-300 px-4 py-2 shadow-sm text-base text-slate-700 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all cursor-pointer"
+              className="w-full flex items-center justify-between rounded-xl border border-slate-300 px-4 py-2 bg-white"
             >
               <span className="truncate">
                 {category
