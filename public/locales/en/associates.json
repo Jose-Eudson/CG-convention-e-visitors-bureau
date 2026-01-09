@@ -1,8 +1,25 @@
 {
-  "title": "Associates",
-  "callTitle": "Join us as well!",
-  "callText": "Become a CVB member and boost your business.",
-  "button": "Fill out membership form",
+  "title": "Our Partners",
+  "searchPlaceholder": "Search partner...",
+  "allCategories": "All categories",
+  "learnMore": "Learn more",
+  "noResults": "No partners found.",
+  "prevPage": "Previous page",
+  "nextPage": "Next page",
+  "callTitle": "Join us too!",
+  "callText": "Become a CVB partner and boost your business.",
+  "button": "Fill out partner form",
+  "categories": {
+    "hospedagem": "Accommodation",
+    "alimentacao": "Food & Beverage",
+    "agencias": "Travel Agencies & Car Rentals",
+    "casasShows": "Event Venues & Museums",
+    "organizacao": "Event Organization",
+    "equipamentos": "Equipment & Security",
+    "consultoria": "Consulting",
+    "guia": "Tour Guide",
+    "tecnologia": "Technology"
+  },
 
   "associates": [
     { "name": "Garden", 

@@ -1,8 +1,25 @@
 {
-  "title": "Asociados",
-  "callTitle": "¡Únete también!",
-  "callText": "Hazte miembro del CVB y potencia tu negocio.",
-  "button": "Rellenar formulario de miembro",
+  "title": "Conozca nuestros socios",
+  "searchPlaceholder": "Buscar socio...",
+  "allCategories": "Todas las categorías",
+  "learnMore": "Saber más",
+  "noResults": "No se encontraron socios.",
+  "prevPage": "Anterior",
+  "nextPage": "Siguiente",
+  "callTitle": "¡Únase usted también!",
+  "callText": "Conviértase en socio del CVB y potencie su negocio.",
+  "button": "Rellenar formulario",
+  "categories": {
+    "hospedagem": "Hospedaje",
+    "alimentacao": "Alimentación",
+    "agencias": "Agencias de Viajes y Alquiler de Autos",
+    "casasShows": "Espacios para Eventos y Museos",
+    "organizacao": "Organización de Eventos",
+    "equipamentos": "Equipos y Seguridad",
+    "consultoria": "Consultoría",
+    "guia": "Guía de Turismo",
+    "tecnologia": "Tecnología"
+  },
 
   "associates": [
     { "name": "Garden", 
