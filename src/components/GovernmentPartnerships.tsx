@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-// Importando as imagens dos logos
+
 import brasilCvbLogo from "../assets/logos_partnerships/brasil-cvb-logo.png";
 import accgLogo from "../assets/logos_partnerships/accg-logo.png";
 import sindcampinaLogo from "../assets/logos_partnerships/sindcampina-logo.png";
