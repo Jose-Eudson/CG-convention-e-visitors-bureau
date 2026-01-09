@@ -16,7 +16,7 @@ const Events = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Carregar eventos do Firebase
+  
   useEffect(() => {
     const loadEvents = async () => {
       setLoading(true);
