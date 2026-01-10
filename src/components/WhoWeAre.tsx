@@ -24,7 +24,7 @@ const WhoWeAre = () => {
           {cards.map((card, index) => (
             <div
               key={index}
-              className="rounded-xl border border-indigo-200 bg-slate-50 p-6"
+              className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-indigo-200"
             >
               <h3 className="mb-3 text-xl font-semibold text-indigo-500">
                 {t(`${card.key}.title`)}

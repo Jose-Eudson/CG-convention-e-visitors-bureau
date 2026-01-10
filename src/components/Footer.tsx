@@ -20,7 +20,6 @@ const Footer = () => {
   const sectionLinks = [
     { id: "eventos", label: t("header:menu.eventos"), icon: Calendar },
     { id: "associados", label: t("header:menu.associados"), icon: Handshake },
-    { id: "contato", label: t("header:menu.contato"), icon: Mail },
   ];
 
   return (

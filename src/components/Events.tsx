@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Calendar, MapPin, ExternalLink } from "lucide-react";
+import { Calendar, MapPin, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getFeaturedEvents } from "../services/eventsService";
 import type { Event } from "../types/Event";
@@ -8,6 +8,30 @@ import EventModal from "./EventModal";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+
+const NextArrow = ({ onClick }: { onClick?: () => void }) => {
+  return (
+    <button
+      onClick={onClick}
+      className="absolute right-2 md:right-[-60px] top-1/2 -translate-y-1/2 -mt-6 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
+      aria-label="Próximo"
+    >
+      <ChevronRight size={24} />
+    </button>
+  );
+};
+
+const PrevArrow = ({ onClick }: { onClick?: () => void }) => {
+  return (
+    <button
+      onClick={onClick}
+      className="absolute left-2 md:left-[-60px] top-1/2 -translate-y-1/2 -mt-6 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
+      aria-label="Anterior"
+    >
+      <ChevronLeft size={24} />
+    </button>
+  );
+};
 
 const Events = () => {
   const { t } = useTranslation("events");
@@ -37,6 +61,8 @@ const Events = () => {
     slidesToShow: 3,
     slidesToScroll: 1,
     arrows: featuredEvents.length > 3,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
     autoplay: true,
     autoplaySpeed: 4000,
     responsive: [
@@ -106,10 +132,12 @@ const Events = () => {
   return (
     <section id="eventos" className="bg-slate-50 py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
-        <div className="mb-8 md:mb-12 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
-            {t("featured.title")}
-          </h2>
+        <div className="mb-12 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <h2 className="mb-4 text-2xl md:text-3xl font-bold text-slate-900">
+              {t("featured.title")}
+            </h2>
+          </div>
           
           <div className="flex gap-3">
             <Link
