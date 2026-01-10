@@ -55,15 +55,17 @@ const WhatWeDo = () => {
   return (
     <section id="o-que-fazemos" className="bg-slate-50 py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
-        <h2 className="mb-8 md:mb-12 text-2xl md:text-3xl font-bold text-slate-900">
+        <h2 className="mb-4 text-2xl md:text-3xl font-bold text-slate-900">
           {t("title")}
         </h2>
+
+        <p className="mb-12 text-slate-500">{t("subtitle", { defaultValue: "" })}</p>
 
         <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
             <div
               key={service.key}
-              className={`group rounded-xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-${service.color.split('-')[1]}-500`}
+              className="group rounded-xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-slate-200"
             >
               <div className={`mb-3 text-3xl ${service.color}`}>
                 {service.icon ? <service.icon className="h-8 w-8" /> : "●"} 

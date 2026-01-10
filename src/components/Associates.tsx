@@ -2,8 +2,14 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 
+// Importando as imagens dos logos das parcerias
+import brasilCvbLogo from "../assets/logos_partnerships/logo-brasil-cvb.png";
+import accgLogo from "../assets/logos_partnerships/accg_min.png";
+import sindcampinaLogo from "../assets/logos_partnerships/sind_campina.png";
+
 // Tipo para as opções de categoria (fixas no código para garantir integridade)
 type CategoryKey =
+  | "institucional"
   | "hospedagem"
   | "alimentacao"
   | "agencias"
@@ -21,17 +27,18 @@ type CategoryOption = {
 
 // Mapeamento: Chave de tradução <-> Valor no JSON de dados
 const CATEGORY_MAP: CategoryOption[] = [
-  { key: "hospedagem", valuePt: "Hospedagem" },
-  { key: "alimentacao", valuePt: "Alimentação" },
   {
     key: "agencias",
     valuePt: "Agências de Viagens, Receptivo e Aluguéis de Automóveis",
   },
+  { key: "alimentacao", valuePt: "Alimentação" },
   { key: "casasShows", valuePt: "Casas de Shows, Espetáculos e Museus" },
-  { key: "organizacao", valuePt: "Organização e Produção de Eventos" },
-  { key: "equipamentos", valuePt: "Equipamentos, Segurança e Cerimonial" },
   { key: "consultoria", valuePt: "Consultoria em Turismo e Marketing" },
+  { key: "equipamentos", valuePt: "Equipamentos, Segurança e Cerimonial" },
   { key: "guia", valuePt: "Guia de Turismo" },
+  { key: "hospedagem", valuePt: "Hospedagem" },
+  { key: "institucional", valuePt: "Institucional" },
+  { key: "organizacao", valuePt: "Organização e Produção de Eventos" },
   { key: "tecnologia", valuePt: "Tecnologia" },
 ];
 
@@ -45,12 +52,37 @@ type Associate = {
 const Associates = () => {
   const { t } = useTranslation("associates");
 
+  // Parcerias Institucionais como Associates
+  const institutionalPartners: Associate[] = [
+    {
+      name: "Brasil CVB",
+      category: "Institucional",
+      logo: brasilCvbLogo,
+      instagram: "https://brasilcvb.com.br/"
+    },
+    {
+      name: "ACCG",
+      category: "Institucional",
+      logo: accgLogo,
+      instagram: "https://accg.com.br/"
+    },
+    {
+      name: "SindCampina",
+      category: "Institucional",
+      logo: sindcampinaLogo,
+      instagram: "https://www.sindcampina.com.br/2019/site.php"
+    }
+  ];
+
   // Recupera a lista de associados.
   // Se falhar ou vier vazio, inicia array vazio para não quebrar a tela.
   const rawAssociates = t("associates", { returnObjects: true });
-  const associates: Associate[] = Array.isArray(rawAssociates)
+  const associatesFromJson: Associate[] = Array.isArray(rawAssociates)
     ? (rawAssociates as Associate[])
     : [];
+  
+  // Combinar associados com parcerias institucionais no final
+  const associates: Associate[] = [...associatesFromJson, ...institutionalPartners];
 
   const rawBenefits = t("benefits", { returnObjects: true });
   const benefits: string[] = Array.isArray(rawBenefits)
@@ -113,11 +145,15 @@ const Associates = () => {
   };
 
   return (
-    <section id="associados" className="bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-14">
-        <h2 className="text-3xl font-bold text-orange-600 mb-8">
+    <section id="associados" className="bg-slate-50 py-12 md:py-20">
+      <div className="mx-auto max-w-6xl px-4 md:px-6">
+        <h2 className="mb-4 text-2xl md:text-3xl font-bold text-orange-600">
           {t("title", { defaultValue: "Conheça nossos parceiros" })}
         </h2>
+
+        <p className="mb-12 text-slate-500">
+          {t("subtitle", { defaultValue: "" })}
+        </p>
 
         <div className="flex flex-col md:flex-row gap-4 mb-10">
           <input
@@ -190,12 +226,12 @@ const Associates = () => {
               className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col"
             >
               <div className="p-5 flex-1 flex flex-col">
-                <div className="h-40 w-full rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden mb-4">
+                <div className="h-40 w-full rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden mb-4 p-6">
                   {associate.logo ? (
                     <img
                       src={associate.logo}
                       alt={`Logo ${associate.name}`}
-                      className="max-h-full max-w-full object-contain p-4"
+                      className="max-h-full max-w-full object-contain"
                       loading="lazy"
                     />
                   ) : (
@@ -261,44 +297,41 @@ const Associates = () => {
           </div>
         )}
 
-        <div className="mt-16 rounded-2xl border border-slate-200 bg-white p-8 md:p-10 shadow-sm text-center md:text-left">
-          <div className="flex flex-col md:flex-row gap-8 items-start justify-between">
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">
-                {t("callTitle", { defaultValue: "Faça parte você também!" })}
-              </h3>
-              <p className="text-slate-600 mb-6 text-lg">
-                {t("callText", {
-                  defaultValue:
-                    "Seja um associado do CVB e potencialize seus negócios.",
-                })}
-              </p>
+<div className="mt-16 rounded-2xl bg-orange-50 p-8 md:p-10">
+          <h3 className="text-2xl font-bold text-slate-900 mb-3">
+            {t("callTitle", { defaultValue: "Faça parte você também!" })}
+          </h3>
+          <p className="text-slate-900 text-base mb-6">
+            {t("callText", {
+              defaultValue:
+                "Seja um associado do CVB e potencialize seus negócios.",
+            })}
+          </p>
 
-              {benefits.length > 0 && (
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {benefits.map((benefit, i) => (
-                    <li
-                      key={i}
-                      className="flex items-center gap-2 text-slate-700"
-                    >
-                      <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <div className="mt-4 md:mt-0">
-              <a
-                href="#contato"
-                className="inline-flex items-center justify-center rounded-xl bg-orange-600 text-white px-8 py-4 font-bold text-lg hover:bg-orange-700 transition-transform hover:scale-105 shadow-md hover:shadow-lg"
-              >
-                {t("button", {
-                  defaultValue: "Preencher formulário de associado",
-                })}
-              </a>
-            </div>
-          </div>
+          {benefits.length > 0 && (
+            <ul className="mb-8 space-y-3">
+              {benefits.map((benefit, i) => (
+                <li
+                  key={i}
+                  className="flex items-center gap-3 text-slate-900"
+                >
+                  <svg className="h-5 w-5 text-orange-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <a
+            href="/proposta"
+            className="inline-flex items-center justify-center rounded-xl bg-orange-600 text-white px-8 py-3 font-bold text-base hover:bg-orange-700 transition-colors"
+          >
+            {t("button", {
+              defaultValue: "Preencher formulário de associado",
+            })}
+          </a>
         </div>
       </div>
     </section>
