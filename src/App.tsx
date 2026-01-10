@@ -2,8 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import './index.css';
 import './i18n';
-
-
+import FormularioAssoc from './components/form';
+import React, { useEffect } from 'react'; 
 import Header from './components/Header';
 import Hero from './components/Hero';
 import WhoWeAre from './components/WhoWeAre';
@@ -15,9 +15,6 @@ import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
 import ProtectedRoute from './components/ProtectedRoute';
 
-import Ol from './components/Ol';
-import HeaderProposta from './components/HeaderProposta';
-import FooterSimples from './components/FooterSimples';
 
 import EventsPage from './pages/EventsPage';
 import EventManagerPage from './pages/EventManagerPage';
@@ -44,20 +41,22 @@ function HomePage() {
   );
 }
 
-
 function PropostaPage() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <>
-      <HeaderProposta />
-      <div className="pt-16">
-        <Ol />
-      </div>
-      <FooterSimples />
+      <Header />
+      <main className="pt-20 bg-slate-50 min-h-screen">
+        <FormularioAssoc />
+      </main>
+      <Footer />
       <WhatsAppButton />
     </>
   );
 }
-
 
 export default function App() {
   return (

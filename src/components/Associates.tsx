@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Importando as imagens dos logos das parcerias
 import brasilCvbLogo from "../assets/logos_partnerships/logo-brasil-cvb.png";
@@ -22,10 +23,9 @@ type CategoryKey =
 
 type CategoryOption = {
   key: CategoryKey;
-  valuePt: string; 
+  valuePt: string;
 };
 
-// Mapeamento: Chave de tradução <-> Valor no JSON de dados
 const CATEGORY_MAP: CategoryOption[] = [
   {
     key: "agencias",
@@ -51,6 +51,7 @@ type Associate = {
 
 const Associates = () => {
   const { t } = useTranslation("associates");
+  const navigate = useNavigate();
 
   // Parcerias Institucionais como Associates
   const institutionalPartners: Associate[] = [
@@ -58,29 +59,28 @@ const Associates = () => {
       name: "Brasil CVB",
       category: "Institucional",
       logo: brasilCvbLogo,
-      instagram: "https://brasilcvb.com.br/"
+      instagram: "https://brasilcvb.com.br/",
     },
     {
       name: "ACCG",
       category: "Institucional",
       logo: accgLogo,
-      instagram: "https://accg.com.br/"
+      instagram: "https://accg.com.br/",
     },
     {
       name: "SindCampina",
       category: "Institucional",
       logo: sindcampinaLogo,
-      instagram: "https://www.sindcampina.com.br/2019/site.php"
-    }
+      instagram: "https://www.sindcampina.com.br/2019/site.php",
+    },
   ];
 
-  // Recupera a lista de associados.
-  // Se falhar ou vier vazio, inicia array vazio para não quebrar a tela.
+  // Recupera a lista de associados do JSON
   const rawAssociates = t("associates", { returnObjects: true });
   const associatesFromJson: Associate[] = Array.isArray(rawAssociates)
     ? (rawAssociates as Associate[])
     : [];
-  
+
   // Combinar associados com parcerias institucionais no final
   const associates: Associate[] = [...associatesFromJson, ...institutionalPartners];
 
@@ -93,15 +93,14 @@ const Associates = () => {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const perPage = 8;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const perPage = 8;
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Debounce da busca
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 300);
+    const handler = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(handler);
   }, [search]);
 
@@ -116,8 +115,14 @@ const Associates = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Resetar página quando filtro muda
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, category]);
 
   // Filtragem
   const filtered = useMemo(() => {
@@ -131,10 +136,6 @@ const Associates = () => {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
-
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, category]);
 
   // Função auxiliar para traduzir a categoria visualmente
   const getCategoryLabel = (catValueInJson: string) => {
@@ -175,7 +176,9 @@ const Associates = () => {
               <span className="truncate">
                 {category
                   ? getCategoryLabel(category)
-                  : t("allCategories", { defaultValue: "Todas as categorias" })}
+                  : t("allCategories", {
+                      defaultValue: "Todas as categorias",
+                    })}
               </span>
               <ChevronDown className="h-5 w-5 text-slate-500" />
             </button>
@@ -194,7 +197,9 @@ const Associates = () => {
                       : "text-slate-700"
                   }`}
                 >
-                  {t("allCategories", { defaultValue: "Todas as categorias" })}
+                  {t("allCategories", {
+                    defaultValue: "Todas as categorias",
+                  })}
                 </button>
 
                 {CATEGORY_MAP.map((opt) => (
@@ -202,7 +207,7 @@ const Associates = () => {
                     key={opt.key}
                     type="button"
                     onClick={() => {
-                      setCategory(opt.valuePt); 
+                      setCategory(opt.valuePt);
                       setIsDropdownOpen(false);
                     }}
                     className={`w-full text-left px-4 py-2 hover:bg-orange-50 hover:text-orange-600 ${
@@ -211,7 +216,9 @@ const Associates = () => {
                         : "text-slate-700"
                     }`}
                   >
-                    {t(`categories.${opt.key}`, { defaultValue: opt.valuePt })}
+                    {t(`categories.${opt.key}`, {
+                      defaultValue: opt.valuePt,
+                    })}
                   </button>
                 ))}
               </div>
@@ -269,7 +276,9 @@ const Associates = () => {
 
         {paginated.length === 0 && (
           <div className="text-center py-10 text-slate-500">
-            {t("noResults", { defaultValue: "Nenhum parceiro encontrado." })}
+            {t("noResults", {
+              defaultValue: "Nenhum parceiro encontrado.",
+            })}
           </div>
         )}
 
@@ -279,7 +288,9 @@ const Associates = () => {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
               className="p-2 rounded-lg bg-slate-200 hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label={t("prevPage", { defaultValue: "Página anterior" })}
+              aria-label={t("prevPage", {
+                defaultValue: "Página anterior",
+              })}
             >
               <ChevronLeft className="h-5 w-5 text-slate-700" />
             </button>
@@ -290,48 +301,43 @@ const Associates = () => {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
               className="p-2 rounded-lg bg-slate-200 hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label={t("nextPage", { defaultValue: "Próxima página" })}
+              aria-label={t("nextPage", {
+                defaultValue: "Próxima página",
+              })}
             >
               <ChevronRight className="h-5 w-5 text-slate-700" />
             </button>
           </div>
         )}
 
-<div className="mt-16 rounded-2xl bg-orange-50 p-8 md:p-10">
-          <h3 className="text-2xl font-bold text-slate-900 mb-3">
-            {t("callTitle", { defaultValue: "Faça parte você também!" })}
+        <div className="mt-16 rounded-2xl bg-orange-50 border border-orange-100 p-8 md:p-12">
+          <h3 className="mb-4 text-2xl font-bold text-slate-800">
+            {t("callTitle")}
           </h3>
-          <p className="text-slate-900 text-base mb-6">
-            {t("callText", {
-              defaultValue:
-                "Seja um associado do CVB e potencialize seus negócios.",
-            })}
-          </p>
+          <p className="mb-6 text-slate-600">{t("callText")}</p>
 
           {benefits.length > 0 && (
-            <ul className="mb-8 space-y-3">
-              {benefits.map((benefit, i) => (
+            <ul className="mb-8 space-y-2">
+              {benefits.map((benefit, index) => (
                 <li
-                  key={i}
-                  className="flex items-center gap-3 text-slate-900"
+                  key={index}
+                  className="flex items-center gap-2 text-slate-700"
                 >
-                  <svg className="h-5 w-5 text-orange-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>{benefit}</span>
+                  <span className="text-orange-500 font-bold">✓</span>{" "}
+                  {benefit}
                 </li>
               ))}
             </ul>
           )}
 
-          <a
-            href="/proposta"
-            className="inline-flex items-center justify-center rounded-xl bg-orange-600 text-white px-8 py-3 font-bold text-base hover:bg-orange-700 transition-colors"
+          <button
+            onClick={() => navigate("/proposta")}
+            className="rounded-xl bg-orange-500 px-8 py-3 font-semibold text-white transition-all hover:bg-orange-600 hover:shadow-lg active:scale-95"
           >
             {t("button", {
               defaultValue: "Preencher formulário de associado",
             })}
-          </a>
+          </button>
         </div>
       </div>
     </section>
