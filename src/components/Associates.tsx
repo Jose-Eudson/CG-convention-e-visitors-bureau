@@ -1,6 +1,46 @@
 import { useTranslation } from "react-i18next";
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+// Importando as imagens dos logos das parcerias
+import brasilCvbLogo from "../assets/logos_partnerships/logo-brasil-cvb.png";
+import accgLogo from "../assets/logos_partnerships/accg_min.png";
+import sindcampinaLogo from "../assets/logos_partnerships/sind_campina.png";
+
+// Tipo para as opções de categoria (fixas no código para garantir integridade)
+type CategoryKey =
+  | "institucional"
+  | "hospedagem"
+  | "alimentacao"
+  | "agencias"
+  | "casasShows"
+  | "organizacao"
+  | "equipamentos"
+  | "consultoria"
+  | "guia"
+  | "tecnologia";
+
+type CategoryOption = {
+  key: CategoryKey;
+  valuePt: string;
+};
+
+const CATEGORY_MAP: CategoryOption[] = [
+  {
+    key: "agencias",
+    valuePt: "Agências de Viagens, Receptivo e Aluguéis de Automóveis",
+  },
+  { key: "alimentacao", valuePt: "Alimentação" },
+  { key: "casasShows", valuePt: "Casas de Shows, Espetáculos e Museus" },
+  { key: "consultoria", valuePt: "Consultoria em Turismo e Marketing" },
+  { key: "equipamentos", valuePt: "Equipamentos, Segurança e Cerimonial" },
+  { key: "guia", valuePt: "Guia de Turismo" },
+  { key: "hospedagem", valuePt: "Hospedagem" },
+  { key: "institucional", valuePt: "Institucional" },
+  { key: "organizacao", valuePt: "Organização e Produção de Eventos" },
+  { key: "tecnologia", valuePt: "Tecnologia" },
+];
 
 type Associate = {
   name: string;
@@ -9,25 +49,40 @@ type Associate = {
   instagram: string;
 };
 
-const CATEGORIES = [
-  "Hospedagem",
-  "Alimentação",
-  "Agências de Viagens, Receptivo e Aluguéis de Automóveis",
-  "Casas de Shows, Espetáculos e Museus",
-  "Organização e Produção de Eventos",
-  "Equipamentos, Segurança e Cerimonial",
-  "Consultoria em Turismo e Marketing",
-  "Guia de Turismo",
-  "Tecnologia",
-];
-
 const Associates = () => {
   const { t } = useTranslation("associates");
+  const navigate = useNavigate();
 
+  // Parcerias Institucionais como Associates
+  const institutionalPartners: Associate[] = [
+    {
+      name: "Brasil CVB",
+      category: "Institucional",
+      logo: brasilCvbLogo,
+      instagram: "https://brasilcvb.com.br/",
+    },
+    {
+      name: "ACCG",
+      category: "Institucional",
+      logo: accgLogo,
+      instagram: "https://accg.com.br/",
+    },
+    {
+      name: "SindCampina",
+      category: "Institucional",
+      logo: sindcampinaLogo,
+      instagram: "https://www.sindcampina.com.br/2019/site.php",
+    },
+  ];
+
+  // Recupera a lista de associados do JSON
   const rawAssociates = t("associates", { returnObjects: true });
-  const associates: Associate[] = Array.isArray(rawAssociates)
+  const associatesFromJson: Associate[] = Array.isArray(rawAssociates)
     ? (rawAssociates as Associate[])
     : [];
+
+  // Combinar associados com parcerias institucionais no final
+  const associates: Associate[] = [...associatesFromJson, ...institutionalPartners];
 
   const rawBenefits = t("benefits", { returnObjects: true });
   const benefits: string[] = Array.isArray(rawBenefits)
@@ -35,13 +90,21 @@ const Associates = () => {
     : [];
 
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const perPage = 8;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const perPage = 8;
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Debounce da busca
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -52,187 +115,228 @@ const Associates = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Resetar página quando filtro muda
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [search]);
+    setPage(1);
+  }, [debouncedSearch, category]);
 
+  // Filtragem
   const filtered = useMemo(() => {
-    return associates
-      .filter((a) =>
-        a.name.toLowerCase().includes(debouncedSearch.toLowerCase())
-      )
-      .filter((a) => !category || a.category === category);
-  }, [debouncedSearch, category, associates]);
+    const s = debouncedSearch.trim().toLowerCase();
+    return associates.filter((a) => {
+      const matchesName = a.name.toLowerCase().includes(s);
+      const matchesCategory = category ? a.category === category : true;
+      return matchesName && matchesCategory;
+    });
+  }, [associates, debouncedSearch, category]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
+
+  // Função auxiliar para traduzir a categoria visualmente
+  const getCategoryLabel = (catValueInJson: string) => {
+    const found = CATEGORY_MAP.find((c) => c.valuePt === catValueInJson);
+    return found
+      ? t(`categories.${found.key}`, { defaultValue: catValueInJson })
+      : catValueInJson;
+  };
 
   return (
     <section id="associados" className="bg-slate-50 py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
-        <h2 className="mb-8 md:mb-12 text-2xl md:text-3xl font-bold text-orange-500">
-          {t("title")}
+        <h2 className="mb-4 text-2xl md:text-3xl font-bold text-orange-600">
+          {t("title", { defaultValue: "Conheça nossos parceiros" })}
         </h2>
 
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center">
+        <p className="mb-12 text-slate-500">
+          {t("subtitle", { defaultValue: "" })}
+        </p>
+
+        <div className="flex flex-col md:flex-row gap-4 mb-10">
           <input
             type="text"
-            placeholder="Buscar associado..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="flex-1 rounded-xl border border-slate-300 px-4 py-2 shadow-sm text-base text-slate-700 placeholder:text-base placeholder:text-slate-700 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("searchPlaceholder", {
+              defaultValue: "Buscar associado...",
+            })}
+            className="flex-1 rounded-xl border border-slate-300 px-4 py-2 shadow-sm text-base text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
           />
 
-          <div className="relative w-full md:w-1/3" ref={dropdownRef}>
+          <div className="w-full md:w-96 relative" ref={dropdownRef}>
             <button
+              type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full flex items-center justify-between rounded-xl border border-slate-300 px-4 py-2 shadow-sm text-base text-slate-700 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all cursor-pointer"
+              className="w-full flex items-center justify-between rounded-xl border border-slate-300 px-4 py-2 bg-white"
             >
               <span className="truncate">
-                {category || "Todas as categorias"}
+                {category
+                  ? getCategoryLabel(category)
+                  : t("allCategories", {
+                      defaultValue: "Todas as categorias",
+                    })}
               </span>
-              <ChevronDown
-                size={20}
-                className={`transition-transform duration-200 ${
-                  isDropdownOpen ? "rotate-180" : ""
-                }`}
-              />
+              <ChevronDown className="h-5 w-5 text-slate-500" />
             </button>
 
             {isDropdownOpen && (
-              <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-slate-200 bg-white py-1 shadow-lg focus:outline-none">
-                <li
+              <div className="absolute z-20 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-lg overflow-hidden max-h-80 overflow-y-auto">
+                <button
+                  type="button"
                   onClick={() => {
                     setCategory(null);
-                    setPage(1);
                     setIsDropdownOpen(false);
                   }}
-                  className={`cursor-pointer px-4 py-2 hover:bg-orange-50 hover:text-orange-600 ${
+                  className={`w-full text-left px-4 py-2 hover:bg-orange-50 hover:text-orange-600 ${
                     !category
                       ? "bg-orange-50 text-orange-600"
                       : "text-slate-700"
                   }`}
                 >
-                  Todas as categorias
-                </li>
-                {CATEGORIES.map((cat) => (
-                  <li
-                    key={cat}
+                  {t("allCategories", {
+                    defaultValue: "Todas as categorias",
+                  })}
+                </button>
+
+                {CATEGORY_MAP.map((opt) => (
+                  <button
+                    key={opt.key}
+                    type="button"
                     onClick={() => {
-                      setCategory(cat);
-                      setPage(1);
+                      setCategory(opt.valuePt);
                       setIsDropdownOpen(false);
                     }}
-                    className={`cursor-pointer px-4 py-2 hover:bg-orange-50 hover:text-orange-600 ${
-                      category === cat
+                    className={`w-full text-left px-4 py-2 hover:bg-orange-50 hover:text-orange-600 ${
+                      category === opt.valuePt
                         ? "bg-orange-50 text-orange-600"
                         : "text-slate-700"
                     }`}
                   >
-                    {cat}
-                  </li>
+                    {t(`categories.${opt.key}`, {
+                      defaultValue: opt.valuePt,
+                    })}
+                  </button>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
         </div>
 
-        <div className="mb-6 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {paginated.map((associate) => (
-            <div
-              key={associate.name}
-              className="group relative flex flex-col justify-between h-full rounded-xl border border-slate-200 bg-white text-slate-700 p-5 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {paginated.map((associate, idx) => (
+            <article
+              key={`${associate.name}-${idx}`}
+              className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col"
             >
-              <div className="flex justify-center">
-                {associate.logo ? (
-                  <img
-                    src={associate.logo}
-                    alt={associate.name}
-                    className="h-full w-full object-contain bg-white"
-                  />
-                ) : (
-                  <div className="h-16 w-24 rounded bg-slate-100 flex items-center justify-center text-slate-400">
-                    [Logo]
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-2 mt-4">
-                <p className="text-xs text-slate-500 uppercase">
-                  {associate.category}
-                </p>
-                <p className="text-xl font-semibold text-slate-800">
-                  {associate.name}
-                </p>
-              </div>
-
-              {associate.instagram && (
-                <div className="flex mt-4">
-                  <a
-                    href={associate.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-xl bg-orange-100 border border-transparent px-4 py-2 text-sm font-medium text-orange-500 transition-all duration-300 hover:bg-orange-200 hover:text-orange-600 hover:border-orange-600"
-                  >
-                    Saiba mais
-                  </a>
+              <div className="p-5 flex-1 flex flex-col">
+                <div className="h-40 w-full rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden mb-4 p-6">
+                  {associate.logo ? (
+                    <img
+                      src={associate.logo}
+                      alt={`Logo ${associate.name}`}
+                      className="max-h-full max-w-full object-contain"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span className="text-slate-400 text-sm italic">
+                      Sem logo
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
+
+                <div className="mb-4">
+                  <span className="block text-xs font-bold tracking-wide text-slate-400 uppercase mb-1">
+                    {getCategoryLabel(associate.category)}
+                  </span>
+                  <h3 className="text-lg font-bold text-slate-800 leading-tight">
+                    {associate.name}
+                  </h3>
+                </div>
+
+                <div className="mt-auto">
+                  {associate.instagram && (
+                    <a
+                      href={associate.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block rounded-lg bg-orange-100 text-orange-700 px-4 py-2 text-sm font-semibold hover:bg-orange-200 transition-colors"
+                    >
+                      {t("learnMore", { defaultValue: "Saiba mais" })}
+                    </a>
+                  )}
+                </div>
+              </div>
+            </article>
           ))}
-
-          {paginated.length === 0 && (
-            <div className="col-span-full text-center text-slate-500">
-              Nenhum associado encontrado.
-            </div>
-          )}
         </div>
 
-        <div className="flex justify-center gap-4 mb-16">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-            className="p-2 rounded bg-slate-200 disabled:opacity-50"
-            aria-label="Página anterior"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            disabled={page * perPage >= filtered.length}
-            onClick={() => setPage(page + 1)}
-            className="p-2 rounded bg-slate-200 disabled:opacity-50"
-            aria-label="Próxima página"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
+        {paginated.length === 0 && (
+          <div className="text-center py-10 text-slate-500">
+            {t("noResults", {
+              defaultValue: "Nenhum parceiro encontrado.",
+            })}
+          </div>
+        )}
 
-        <div className="rounded-2xl bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/20 p-8 md:p-12">
-          <h3 className="mb-4 text-2xl font-bold text-slate-900">
+        {totalPages > 1 && (
+          <div className="mt-10 flex items-center justify-center gap-3">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="p-2 rounded-lg bg-slate-200 hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              aria-label={t("prevPage", {
+                defaultValue: "Página anterior",
+              })}
+            >
+              <ChevronLeft className="h-5 w-5 text-slate-700" />
+            </button>
+            <span className="text-sm font-medium text-slate-600">
+              {page} / {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="p-2 rounded-lg bg-slate-200 hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              aria-label={t("nextPage", {
+                defaultValue: "Próxima página",
+              })}
+            >
+              <ChevronRight className="h-5 w-5 text-slate-700" />
+            </button>
+          </div>
+        )}
+
+        <div className="mt-16 rounded-2xl bg-orange-50 border border-orange-100 p-8 md:p-12">
+          <h3 className="mb-4 text-2xl font-bold text-slate-800">
             {t("callTitle")}
           </h3>
-
           <p className="mb-6 text-slate-600">{t("callText")}</p>
 
-          <ul className="mb-8 space-y-2">
-            {benefits.map((benefit, index) => (
-              <li key={index} className="flex items-start gap-2 text-slate-600">
-                <span className="text-orange-500">✓</span>
-                {benefit}
-              </li>
-            ))}
-          </ul>
+          {benefits.length > 0 && (
+            <ul className="mb-8 space-y-2">
+              {benefits.map((benefit, index) => (
+                <li
+                  key={index}
+                  className="flex items-center gap-2 text-slate-700"
+                >
+                  <span className="text-orange-500 font-bold">✓</span>{" "}
+                  {benefit}
+                </li>
+              ))}
+            </ul>
+          )}
 
-          <button className="rounded-xl bg-orange-500 border border-transparent px-8 py-3 font-semibold text-white transition-colors duration-300 hover:bg-orange-600 hover:border-orange-600 hover:text-white active:bg-orange-600 active:border-transparent active:text-white">
-            {t("button")}
+          <button
+            onClick={() => navigate("/proposta")}
+            className="rounded-xl bg-orange-500 px-8 py-3 font-semibold text-white transition-all hover:bg-orange-600 hover:shadow-lg active:scale-95"
+          >
+            {t("button", {
+              defaultValue: "Preencher formulário de associado",
+            })}
           </button>
         </div>
       </div>

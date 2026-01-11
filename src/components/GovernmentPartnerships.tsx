@@ -1,140 +1,65 @@
 import { useTranslation } from "react-i18next";
-import { ExternalLink, Building2, Landmark, Briefcase } from "lucide-react";
 
-interface Partner {
-  name: string;
-  category: string;
-  description: string;
-  url?: string;
-}
+
+import brasilCvbLogo from "../assets/logos_partnerships/brasil-cvb-logo.png";
+import accgLogo from "../assets/logos_partnerships/accg-logo.png";
+import sindcampinaLogo from "../assets/logos_partnerships/sindcampina-logo.png";
 
 const GovernmentPartnerships = () => {
   const { t } = useTranslation("partnerships");
 
-  // URLs oficiais dos parceiros
-  const partnerUrls = {
-    governoEstado: "https://paraiba.pb.gov.br",
-    prefeituraCG: "https://campinagrande.pb.gov.br",
-    secretariaTurismo: "https://paraiba.pb.gov.br/diretas/secretaria-de-turismo"
-  };
-
-  const partners: Partner[] = [
+  const partners = [
     {
-      name: t("partnerships.governoEstado.name"),
-      category: t("partnerships.governoEstado.category"),
-      description: t("partnerships.governoEstado.description"),
-      url: partnerUrls.governoEstado
+      name: "Brasil CVB",
+      logo: brasilCvbLogo,
+      url: "https://brasilcvb.com.br/",
+      alt: "Brasil Convention & Visitors Bureau"
     },
     {
-      name: t("partnerships.prefeituraCG.name"),
-      category: t("partnerships.prefeituraCG.category"),
-      description: t("partnerships.prefeituraCG.description"),
-      url: partnerUrls.prefeituraCG
+      name: "ACCG",
+      logo: accgLogo,
+      url: "https://accg.com.br/",
+      alt: "Associação Comercial de Campina Grande"
     },
     {
-      name: t("partnerships.secretariaTurismo.name"),
-      category: t("partnerships.secretariaTurismo.category"),
-      description: t("partnerships.secretariaTurismo.description"),
-      url: partnerUrls.secretariaTurismo
-    }
-  ];
-
-  const collabItems = [
-    {
-      key: "support",
-      icon: Building2,
-      color: "text-blue-500"
-    },
-    {
-      key: "infrastructure",
-      icon: Landmark,
-      color: "text-orange-500"
-    },
-    {
-      key: "promotion",
-      icon: Briefcase,
-      color: "text-green-500"
+      name: "SindCampina",
+      logo: sindcampinaLogo,
+      url: "https://www.sindcampina.com.br/2019/site.php",
+      alt: "SindCampina"
     }
   ];
 
   return (
-    <section id="parcerias" className="py-16 px-6 bg-slate-50">
-      <div className="mx-auto max-w-7xl">
-        {/* Cabeçalho */}
-        <h2 className="text-4xl font-bold text-center mb-4">
-          {t("partnerships.title")}
-        </h2>
-        <p className="text-center text-slate-600 mb-12 max-w-3xl mx-auto">
-          {t("partnerships.description")}
-        </p>
+    <section id="parcerias" className="bg-white py-12 md:py-20">
+      <div className="mx-auto max-w-6xl px-4 md:px-6">
+        {/* Título - padrão igual à Diretoria */}
+        <div className="mb-4">
+          <h2 className="mb-4 text-2xl md:text-3xl font-bold text-emerald-500">
+            {t("title")}
+          </h2>
 
-        {/* Grid de Parceiros com Links */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {partners.map((partner, index) => (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow border-t-4 border-orange-500"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-xs font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
-                  {partner.category}
-                </span>
-              </div>
-              
-              <h3 className="text-xl font-bold mb-3 text-slate-800">
-                {partner.name}
-              </h3>
-              
-              <p className="text-slate-600 mb-4 text-sm leading-relaxed">
-                {partner.description}
-              </p>
-
-              {/* Link Direto */}
-              {partner.url && (
-                <a
-                  href={partner.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-orange-600 font-semibold hover:text-orange-700 transition-colors group"
-                >
-                  <span>{t("partnerships.visitLink")}</span>
-                  <ExternalLink 
-                    size={16} 
-                    className="group-hover:translate-x-1 transition-transform" 
-                  />
-                </a>
-              )}
-            </div>
-          ))}
+          <p className="mb-12 text-slate-500">
+            {t("subtitle")}
+          </p>
         </div>
 
-        {/* Seção de Colaboração */}
-        <div className="bg-gradient-to-r from-orange-50 to-blue-50 rounded-xl p-8">
-          <h3 className="text-2xl font-bold text-center mb-8 text-slate-800">
-            Como Colaboramos
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {collabItems.map((item) => {
-              const IconComponent = item.icon;
-              return (
-                <div
-                  key={item.key}
-                  className="bg-white p-6 rounded-lg shadow-sm text-center"
-                >
-                  <IconComponent 
-                    className={`w-12 h-12 mx-auto mb-4 ${item.color}`}
-                  />
-                  <h4 className="font-bold text-lg mb-2">
-                    {t(`partnerships.collab.${item.key}.title`)}
-                  </h4>
-                  <p className="text-slate-600 text-sm">
-                    {t(`partnerships.collab.${item.key}.description`)}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+        {/* Grid de Logos */}
+        <div className="flex flex-col md:flex-row items-center justify-start gap-16 md:gap-20">
+          {partners.map((partner, index) => (
+            <a
+              key={index}
+              href={partner.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group transition-transform duration-300 hover:scale-110"
+            >
+              <img
+                src={partner.logo}
+                alt={partner.alt}
+                className="h-40 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-80 hover:opacity-100"
+              />
+            </a>
+          ))}
         </div>
       </div>
     </section>

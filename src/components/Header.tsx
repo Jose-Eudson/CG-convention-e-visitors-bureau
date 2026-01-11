@@ -1,18 +1,24 @@
 import { useState, useEffect, useRef } from "react";
-import logo from "../assets/logo_cvbcg.svg";
+import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Globe, Menu, X } from "lucide-react";
-import { useLocation, Link } from "react-router-dom";
+import { Globe, Menu, X, LogOut } from "lucide-react";
+
+import logo from "../assets/logo_cvbcg.svg";
+// import { useAuth } from "../contexts/AuthContext"; // descomente se usar auth
 
 const Header = () => {
   const { t, i18n } = useTranslation("header");
   const location = useLocation();
 
-  const isConheca = location.pathname === "/conheca";
+  // const { user, logout } = useAuth(); // se existir auth
+  const user = null; // remova esta linha se usar auth real
+  const handleLogout = () => {}; // remova se usar auth real
 
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const isConheca = location.pathname === "/conheca-campina-grande";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -44,8 +50,8 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
       <div className="flex w-full items-center justify-between px-4 md:px-6 lg:px-12 py-4">
-
-        <Link to="/" className="flex items-center gap-3">
+        {/* LOGO */}
+        <div className="flex items-center gap-3">
           <img
             src={logo}
             alt={t("logoAlt")}
@@ -59,8 +65,9 @@ const Header = () => {
               CONVENTION & VISITORS BUREAU
             </span>
           </div>
-        </Link>
+        </div>
 
+        {/* MENU DESKTOP (somente fora do Conheça CG) */}
         {!isConheca && (
           <nav className="hidden lg:flex items-center gap-8">
             {navItems.map((item) => (
@@ -75,7 +82,18 @@ const Header = () => {
           </nav>
         )}
 
+        {/* AÇÕES */}
         <div className="flex items-center gap-4">
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md hover:bg-slate-50"
+              title="Sair da conta de administrador"
+            >
+              <LogOut className="h-5 w-5" />
+              <span>Sair</span>
+            </button>
+          )}
 
           {/* IDIOMA */}
           <div className="relative" ref={dropdownRef}>
@@ -83,7 +101,6 @@ const Header = () => {
               onClick={() => setIsLanguageOpen(!isLanguageOpen)}
               className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-500 transition-colors px-3 py-2 rounded-md hover:bg-slate-50"
               aria-label="Selecionar idioma"
-              aria-expanded={isLanguageOpen}
             >
               <Globe className="h-5 w-5" />
               <span className="hidden sm:inline">Idioma</span>
@@ -96,9 +113,13 @@ const Header = () => {
                     i18n.changeLanguage("pt");
                     setIsLanguageOpen(false);
                   }}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md transition-colors w-full text-left"
+                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md"
                 >
-                  <img src="/bandeiras/brasil.svg" alt="Português" className="h-5 w-5 rounded-full" />
+                  <img
+                    src="/bandeiras/brasil.svg"
+                    alt="Português"
+                    className="h-5 w-5 rounded-full"
+                  />
                   Português
                 </button>
 
@@ -107,9 +128,13 @@ const Header = () => {
                     i18n.changeLanguage("en");
                     setIsLanguageOpen(false);
                   }}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md transition-colors w-full text-left"
+                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md"
                 >
-                  <img src="/bandeiras/eua.svg" alt="English" className="h-5 w-5 rounded-full" />
+                  <img
+                    src="/bandeiras/eua.svg"
+                    alt="English"
+                    className="h-5 w-5 rounded-full"
+                  />
                   English
                 </button>
 
@@ -118,33 +143,36 @@ const Header = () => {
                     i18n.changeLanguage("es");
                     setIsLanguageOpen(false);
                   }}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md transition-colors w-full text-left"
+                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md"
                 >
-                  <img src="/bandeiras/espanha.svg" alt="Español" className="h-5 w-5 rounded-full" />
+                  <img
+                    src="/bandeiras/espanha.svg"
+                    alt="Español"
+                    className="h-5 w-5 rounded-full"
+                  />
                   Español
                 </button>
               </div>
             )}
           </div>
 
-          {!isConheca && (
-            <button
-              className="lg:hidden text-slate-600 p-2"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
-          )}
+          {/* MENU MOBILE */}
+          <button
+            className="lg:hidden text-slate-600 p-2"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
         </div>
       </div>
 
-      {/* MENU MOBILE DROPDOWN (SOMENTE NA HOME) */}
+      {/* MENU MOBILE (somente fora do Conheça CG) */}
       {!isConheca && isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-100 bg-white max-h-[calc(100vh-4rem)] overflow-y-auto">
+        <div className="lg:hidden border-t border-slate-100 bg-white">
           <nav className="flex flex-col p-4">
             {navItems.map((item) => (
               <a

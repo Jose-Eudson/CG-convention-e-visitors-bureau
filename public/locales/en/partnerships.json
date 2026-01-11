@@ -1,40 +1,18 @@
 {
-  "partnerships": {
-    "title": "Institutional Partnerships",
-    "description": "Campina Grande is the result of collaboration between government and private initiative. Meet our main government partners who make it possible to position the city as a privileged event destination.",
-    "visitLink": "Visit",
-    
-    "governoEstado": {
-      "name": "Government of Paraíba State",
-      "category": "State Authority",
-      "description": "Strategic partner in promoting event tourism and developing the city's infrastructure."
+  "title": "Institutional Partnerships",
+  "subtitle": "Our strategic partners who collaborate to ensure the success of the event.",
+  "partners": [
+    {
+      "name": "Brasil CVB",
+      "url": "https://www.brasilcvb.com.br/"
     },
-    
-    "prefeituraCG": {
-      "name": "Campina Grande City Hall",
-      "category": "Municipal Authority",
-      "description": "Responsible for institutional support, public infrastructure and facilitation of events in the city."
+    {
+      "name": "ACCG",
+      "url": "https://www.accg.org.br/"
     },
-    
-    "secretariaTurismo": {
-      "name": "State Tourism Secretary",
-      "category": "State Agency",
-      "description": "Coordinates tourism policies and contributes to the development of business tourism."
-    },
-
-    "collab": {
-      "support": {
-        "title": "Institutional Support",
-        "description": "We facilitate coordination between government, private initiative and major events."
-      },
-      "infrastructure": {
-        "title": "Public Infrastructure",
-        "description": "We count on modern and well-equipped public spaces to host events."
-      },
-      "promotion": {
-        "title": "Joint Promotion",
-        "description": "Together, we promote Campina Grande as a privileged event destination."
-      }
+    {
+      "name": "SindCampina",
+      "url": "https://www.sindcampina.com.br/"
     }
-  }
+  ]
 }

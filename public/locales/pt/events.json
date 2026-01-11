@@ -1,16 +1,40 @@
 {
   "title": "Eventos",
+  
+  "featured": {
+    "title": "Eventos em destaque",
+    "viewAll": "Ver Todos os Eventos",
+    "register": "Cadastrar Evento",
+    "moreInfo": "Mais informações"
+  },
 
-  "eventsList": {
-    "location": {
-      "conventionCenter": "Centro de Convenções",
-      "park": "Parque do Povo",
-      "ufcg": "UFCG"
-    },
-    "status": {
-      "confirmed": "Confirmado",
-      "soon": "Em breve",
-      "open": "Inscrições abertas"
+  "list": {
+    "title": "Todos os Eventos",
+    "subtitle": "Descubra os próximos eventos e oportunidades de negócios em Campina Grande",
+    "noResults": "Nenhum evento encontrado com os filtros selecionados",
+    "filters": {
+      "search": "Buscar eventos...",
+      "allCategories": "Todas as categorias",
+      "allMonths": "Todos os meses"
     }
+  },
+
+  "categories": {
+    "conference": "Conferência",
+    "workshop": "Workshop",
+    "seminar": "Seminário",
+    "exhibition": "Feira/Exposição",
+    "networking": "Networking",
+    "cultural": "Cultural",
+    "sports": "Esportivo",
+    "other": "Outros"
+  },
+
+  "status": {
+    "upcoming": "Em breve",
+    "ongoing": "Em andamento",
+    "completed": "Concluído",
+    "cancelled": "Cancelado",
+    "open": "Inscrições abertas"
   }
 }
