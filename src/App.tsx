@@ -1,60 +1,37 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import './index.css';
-import './i18n';
-import FormularioAssoc from './components/form';
-import React, { useEffect } from 'react'; 
-import Header from './components/Header';
-import Hero from './components/Hero';
-import WhoWeAre from './components/WhoWeAre';
-import WhatWeDo from './components/WhatWeDo';
-import Board from './components/Board';
-import Events from './components/Events';
-import Associates from './components/Associates';
-import Footer from './components/Footer';
-import WhatsAppButton from './components/WhatsAppButton';
-import ProtectedRoute from './components/ProtectedRoute';
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+import "./index.css";
+import "./i18n";
 
-import EventsPage from './pages/EventsPage';
-import EventManagerPage from './pages/EventManagerPage';
-import EventRequestPage from './pages/EventRequestPage';
-import EventRequestsPage from './pages/EventRequestsPage';
-import LoginPage from './pages/LoginPage';
+import { AuthProvider } from "./contexts/AuthContext";
 
+import ScrollToTop from "./components/ScrollToTop";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import WhatsAppButton from "./components/WhatsAppButton";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-function HomePage() {
-  return (
-    <>
-      <Header />
-      <main className="pt-16">
-        <section id="inicio"><Hero /></section>
-        <section id="quem-somos"><WhoWeAre /></section>
-        <section id="o-que-fazemos"><WhatWeDo /></section>
-        <section id="diretoria"><Board /></section>
-        <section id="eventos"><Events /></section>
-        <section id="associados"><Associates /></section>
-      </main>
-      <Footer />
-      <WhatsAppButton />
-    </>
-  );
-}
+import Home from "./pages/Home";
+import ConhecaCampinaGrande from "./pages/ConhecaCampinaGrande";
+import EventsPage from "./pages/EventsPage";
+import EventManagerPage from "./pages/EventManagerPage";
+import EventRequestPage from "./pages/EventRequestPage";
+import EventRequestsPage from "./pages/EventRequestsPage";
+import LoginPage from "./pages/LoginPage";
 
+import FormularioAssoc from "./components/form";
+
+/* Página de proposta / formulário */
 function PropostaPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <>
-      <Header />
-      <main className="pt-20 bg-slate-50 min-h-screen">
-        <FormularioAssoc />
-      </main>
-      <Footer />
-      <WhatsAppButton />
-    </>
+    <main className="pt-20 bg-slate-50 min-h-screen">
+      <FormularioAssoc />
+    </main>
   );
 }
 
@@ -62,33 +39,42 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
+
         <div className="min-h-screen bg-slate-50 scroll-smooth">
+          <Header />
+
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            {/* Públicas */}
+            <Route path="/" element={<Home />} />
+            <Route path="/conheca" element={<ConhecaCampinaGrande />} />
             <Route path="/proposta" element={<PropostaPage />} />
-            <Route path="/eventos" element={<><Header /><EventsPage /><Footer /></>} />
-            <Route path="/solicitar-evento" element={<><Header /><EventRequestPage /><Footer /></>} />
+            <Route path="/eventos" element={<EventsPage />} />
+            <Route path="/solicitar-evento" element={<EventRequestPage />} />
             <Route path="/admin/login" element={<LoginPage />} />
-            
-            <Route 
-              path="/admin/eventos" 
+
+            {/* Protegidas */}
+            <Route
+              path="/admin/eventos"
               element={
                 <ProtectedRoute>
-                  <Header />
                   <EventManagerPage />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/solicitacoes" 
+
+            <Route
+              path="/admin/solicitacoes"
               element={
                 <ProtectedRoute>
-                  <Header />
                   <EventRequestsPage />
                 </ProtectedRoute>
-              } 
+              }
             />
           </Routes>
+
+          <Footer />
+          <WhatsAppButton />
         </div>
       </Router>
     </AuthProvider>
