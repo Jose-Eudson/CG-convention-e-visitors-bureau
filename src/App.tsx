@@ -38,7 +38,6 @@ function PropostaPage() {
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
         <ScrollToTop />
 
         <div className="min-h-screen bg-slate-50 scroll-smooth">
@@ -76,7 +75,6 @@ export default function App() {
           <Footer />
           <WhatsAppButton />
         </div>
-      </Router>
     </AuthProvider>
   );
 }
