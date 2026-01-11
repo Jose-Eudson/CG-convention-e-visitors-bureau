@@ -1,5 +1,4 @@
 import Hero from "../components/Hero";
-import ConhecaCG from "../components/ConhecaCG";
 import WhoWeAre from "../components/WhoWeAre";
 import WhatWeDo from "../components/WhatWeDo";
 import Events from "../components/Events";
@@ -14,7 +13,6 @@ const Home = () => {
   return (
     <main>
       <Hero />
-      <ConhecaCG />
       <WhoWeAre />
       <WhatWeDo />
       <Events />

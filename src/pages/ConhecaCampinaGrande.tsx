@@ -24,13 +24,11 @@ const ConhecaCampinaGrande = () => {
     const [localSelecionado, setLocalSelecionado] =
         useState<LocalTuristico | null>(null);
 
-    // categorias dinâmicas vindas do JSON
     const categorias = useMemo(() => {
         const cats = locais.map((local: LocalTuristico) => local.categoria);
         return ["Todas", ...Array.from(new Set(cats))];
     }, []);
 
-    // locais filtrados
     const locaisFiltrados = useMemo(() => {
         return locais.filter((local: LocalTuristico) => {
             const matchCategoria =
@@ -45,14 +43,16 @@ const ConhecaCampinaGrande = () => {
     }, [search, categoriaAtiva]);
 
     return (
-        <main className="bg-white py-12 md:py-24">
-            <div className="mx-auto max-w-6xl px-4 md:px-6">
+        <main className="relative bg-gray-100 py-12 md:py-24">
+            {/* Overlay leve para profundidade */}
+            <div className="absolute inset-0 pointer-events-none bg-gray-900/5"></div>
 
+            <div className="mx-auto max-w-6xl px-4 md:px-6 z-10">
                 {/* BOTÃO VOLTAR */}
                 <div className="fixed left-4 top-24 z-40">
                     <Link
                         to="/"
-                        className="flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow text-pink-500 hover:bg-pink-50"
+                        className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 shadow-md text-gray-700 hover:bg-white transition"
                     >
                         <FiArrowLeft size={18} />
                         Voltar
@@ -60,13 +60,12 @@ const ConhecaCampinaGrande = () => {
                 </div>
 
                 {/* TÍTULO */}
-                <h1 className="mb-8 text-3xl font-bold text-pink-500">
+                <h1 className="mb-8 text-3xl font-bold text-gray-800 drop-shadow-sm">
                     Conheça Campina Grande
                 </h1>
 
                 {/* BUSCA + FILTROS */}
                 <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-
                     {/* BUSCA */}
                     <div className="relative w-full md:max-w-sm">
                         <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -75,7 +74,7 @@ const ConhecaCampinaGrande = () => {
                             placeholder="Buscar locais..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-pink-500 focus:outline-none"
+                            className="w-full rounded-lg border border-gray-300 bg-white/80 py-2 pl-10 pr-4 text-gray-800 shadow-sm focus:border-gray-500 focus:outline-none transition"
                         />
                     </div>
 
@@ -87,9 +86,8 @@ const ConhecaCampinaGrande = () => {
                                 onClick={() => setCategoriaAtiva(categoria)}
                                 className={`rounded-full px-4 py-2 text-sm font-medium transition
                   ${categoriaAtiva === categoria
-                                        ? "bg-pink-500 text-white"
-                                        : "bg-pink-100 text-pink-600 hover:bg-pink-200"
-                                    }
+                                        ? "bg-gray-800 text-white shadow"
+                                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"}
                 `}
                             >
                                 {capitalize(categoria)}
@@ -109,7 +107,7 @@ const ConhecaCampinaGrande = () => {
                             <button
                                 key={local.id}
                                 onClick={() => setLocalSelecionado(local)}
-                                className="overflow-hidden rounded-xl border text-left shadow-sm transition hover:shadow-md"
+                                className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
                             >
                                 <img
                                     src={local.imagem}
@@ -118,13 +116,13 @@ const ConhecaCampinaGrande = () => {
                                 />
 
                                 <div className="p-4">
-                                    <h3 className="mb-1 font-semibold text-gray-900">
+                                    <h3 className="mb-1 font-semibold text-gray-900 drop-shadow-sm">
                                         {local.nome}
                                     </h3>
-                                    <span className="mb-2 inline-block text-xs font-medium text-pink-500">
+                                    <span className="mb-2 inline-block text-xs font-medium text-gray-600">
                                         {local.categoria}
                                     </span>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-gray-700">
                                         {local.resumo}
                                     </p>
                                 </div>

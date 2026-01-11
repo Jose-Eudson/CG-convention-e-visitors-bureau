@@ -32,54 +32,47 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-      <div className="bg-white max-w-3xl w-full max-h-[90vh] rounded-xl overflow-hidden relative">
-
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/20 p-4"
+      onClick={onClose} // fecha ao clicar fora
+    >
+      <div
+        className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-lg flex flex-col"
+        onClick={(e) => e.stopPropagation()} // impede fechar ao clicar dentro
+      >
+        {/* Conteúdo com scroll interno */}
         <div className="overflow-y-auto max-h-[90vh]">
-
+          {/* Imagem */}
           <img
             src={local.imagem}
             alt={local.nome}
-            className="w-full h-64 object-cover"
+            className="w-full h-64 object-cover rounded-t-2xl shadow-md"
           />
 
           <div className="p-6">
-            <h2 className="text-2xl font-bold text-pink-500">
+            <h2 className="text-2xl font-bold text-gray-800 drop-shadow-sm">
               {local.nome}
             </h2>
-
-            <p className="mt-1 text-sm text-slate-500">
-              {local.resumo}
-            </p>
-
-            <span className="inline-block mt-2 text-xs font-semibold uppercase text-emerald-600">
+            <p className="mt-1 text-gray-600">{local.resumo}</p>
+            <span className="inline-block mt-2 text-xs font-semibold uppercase text-gray-500">
               {local.categoria}
             </span>
+            <p className="mt-4 text-gray-700">{local.descricao}</p>
 
-            <p className="mt-4 text-slate-700">
-              {local.descricao}
-            </p>
-
-            {/* Endereço + Contatos */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-
-              {/* Endereço */}
+            {/* Endereço e Contatos */}
+            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
                 <h4 className="text-sm font-semibold text-gray-700 mb-1">
                   Endereço
                 </h4>
-                <p className="text-gray-600 text-sm">
-                  {local.endereco}
-                </p>
+                <p className="text-gray-600 text-sm">{local.endereco}</p>
               </div>
 
-              {/* Contatos */}
               {(local.instagram || local.facebook || local.telefone) && (
                 <div>
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">
                     Contato
                   </h4>
-
                   <div className="flex flex-wrap gap-4">
                     {local.instagram && (
                       <a
@@ -92,7 +85,6 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
                         <span>Instagram</span>
                       </a>
                     )}
-
                     {local.facebook && (
                       <a
                         href={local.facebook}
@@ -104,7 +96,6 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
                         <span>Facebook</span>
                       </a>
                     )}
-
                     {local.telefone && (
                       <a
                         href={`tel:${local.telefone.replace(/\D/g, "")}`}
@@ -124,7 +115,7 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
               <iframe
                 src={getEmbedUrl(local.googleMapsUrl)}
                 width="100%"
-                height="300"
+                height="200"
                 loading="lazy"
                 className="rounded-lg border"
               />
@@ -132,10 +123,10 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
           </div>
         </div>
 
-        {/* Fechar */}
+        {/* Botão fechar */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 bg-white rounded-full w-8 h-8 flex items-center justify-center text-slate-600 hover:text-red-500 shadow"
+          className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-700 shadow hover:text-red-500 transition"
         >
           ✕
         </button>
