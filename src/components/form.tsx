@@ -7,7 +7,7 @@ const FormularioAssoc: React.FC = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate(); 
 
-  const URL_GAS_FINAL = "https://script.google.com/macros/s/AKfycbxDDilD7fvKepuPn408WlyvIWEfeMEVBcT17JZ6BG61L_0e2U6mp7V08VOxrmEHJSLNEw/exec";
+  const URL_GAS_FINAL = "https://script.google.com/macros/s/AKfycbxp6CZifbRBgJbU0Bj9jf2ZZvHCyYZ5ZsNIbyDCF2lWGsaP0gKjou2opgxD5d5_mtPtAg/exec";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

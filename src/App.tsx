@@ -15,6 +15,8 @@ import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
 import ProtectedRoute from './components/ProtectedRoute';
 
+// Importando sua nova página de adicionar empresa
+import AdicionarEmpresa from './components/add'; 
 
 import EventsPage from './pages/EventsPage';
 import EventManagerPage from './pages/EventManagerPage';
@@ -69,6 +71,9 @@ export default function App() {
             <Route path="/eventos" element={<><Header /><EventsPage /><Footer /></>} />
             <Route path="/solicitar-evento" element={<><Header /><EventRequestPage /><Footer /></>} />
             <Route path="/admin/login" element={<LoginPage />} />
+            
+            {/* --- NOVA ROTA ADICIONADA AQUI --- */}
+            <Route path="/admin/adicionar" element={<><Header /><AdicionarEmpresa /><Footer /></>} />
             
             <Route 
               path="/admin/eventos" 
