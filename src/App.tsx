@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import AdicionarEmpresa from './components/add'; 
 import "./index.css";
 import "./i18n";
 
@@ -51,10 +51,17 @@ export default function App() {
             <Route path="/eventos" element={<EventsPage />} />
             <Route path="/solicitar-evento" element={<EventRequestPage />} />
             <Route path="/admin/login" element={<LoginPage />} />
+            
+            {/* --- NOVA ROTA ADICIONADA AQUI --- */}
+            <Route path="/admin/adicionar" element={<><Header /><AdicionarEmpresa /><Footer /></>} />
+            
+            <Route 
+              path="/admin/eventos" 
 
             {/* Protegidas */}
             <Route
               path="/admin/eventos"
+
               element={
                 <ProtectedRoute>
                   <EventManagerPage />
