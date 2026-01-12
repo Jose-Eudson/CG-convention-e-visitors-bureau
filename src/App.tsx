@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdicionarEmpresa from './components/add'; 
+import { Routes, Route } from "react-router-dom";
+import AdicionarEmpresa from "./components/add";
 import "./index.css";
 import "./i18n";
 
@@ -38,50 +38,55 @@ function PropostaPage() {
 export default function App() {
   return (
     <AuthProvider>
-        <ScrollToTop />
+      <ScrollToTop />
 
-        <div className="min-h-screen bg-slate-50 scroll-smooth">
-          <Header />
+      <div className="min-h-screen bg-slate-50 scroll-smooth">
+        <Header />
 
-          <Routes>
-            {/* Públicas */}
-            <Route path="/" element={<Home />} />
-            <Route path="/conheca" element={<ConhecaCampinaGrande />} />
-            <Route path="/proposta" element={<PropostaPage />} />
-            <Route path="/eventos" element={<EventsPage />} />
-            <Route path="/solicitar-evento" element={<EventRequestPage />} />
-            <Route path="/admin/login" element={<LoginPage />} />
-            
-            {/* --- NOVA ROTA ADICIONADA AQUI --- */}
-            <Route path="/admin/adicionar" element={<><Header /><AdicionarEmpresa /><Footer /></>} />
-            
-            <Route 
-              path="/admin/eventos" 
+        <Routes>
+          {/* Públicas */}
+          <Route path="/" element={<Home />} />
+          <Route path="/conheca" element={<ConhecaCampinaGrande />} />
+          <Route path="/proposta" element={<PropostaPage />} />
+          <Route path="/eventos" element={<EventsPage />} />
+          <Route path="/solicitar-evento" element={<EventRequestPage />} />
+          <Route path="/admin/login" element={<LoginPage />} />
 
-            {/* Protegidas */}
-            <Route
-              path="/admin/eventos"
+          {/* --- NOVA ROTA ADICIONADA AQUI --- */}
+          <Route
+            path="/admin/adicionar"
+            element={
+              <>
+                <Header />
+                <AdicionarEmpresa />
+                <Footer />
+              </>
+            }
+          />
 
-              element={
-                <ProtectedRoute>
-                  <EventManagerPage />
-                </ProtectedRoute>
-              }
-            />
+          {/* Protegidas */}
+          <Route
+            path="/admin/eventos"
+            element={
+              <ProtectedRoute>
+                <EventManagerPage />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/admin/solicitacoes"
-              element={
-                <ProtectedRoute>
-                  <EventRequestsPage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
+          <Route
+            path="/admin/solicitacoes"
+            element={
+              <ProtectedRoute>
+                <EventRequestsPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
 
-          <Footer />
-          <WhatsAppButton />
-        </div>
+        <Footer />
+        <WhatsAppButton />
+      </div>
     </AuthProvider>
   );
 }
