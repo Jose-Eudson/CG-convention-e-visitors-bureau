@@ -16,5 +16,12 @@ service cloud.firestore {
       allow create: if true; // Qualquer um pode criar solicitações
       allow update, delete: if true; // TEMPORÁRIO: Permite editar/deletar sem autenticação
     }
+    
+    // Associados - qualquer um pode criar (formulário), apenas admin pode aprovar/deletar
+    match /associates/{associateId} {
+      allow read: if resource.data.status == 'approved' || request.auth != null; // Todos veem aprovados, admin vê tudo
+      allow create: if true; // Qualquer um pode solicitar ser associado
+      allow update, delete: if request.auth != null; // Apenas admin pode aprovar/rejeitar/deletar
+    }
   }
 }

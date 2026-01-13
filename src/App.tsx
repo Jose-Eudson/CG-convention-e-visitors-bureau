@@ -1,25 +1,22 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import AdicionarEmpresa from "./components/add";
 import "./index.css";
 import "./i18n";
-
 import { AuthProvider } from "./contexts/AuthContext";
-
 import ScrollToTop from "./components/ScrollToTop";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ProtectedRoute from "./components/ProtectedRoute";
-
 import Home from "./pages/Home";
 import ConhecaCampinaGrande from "./pages/ConhecaCampinaGrande";
 import EventsPage from "./pages/EventsPage";
 import EventManagerPage from "./pages/EventManagerPage";
 import EventRequestPage from "./pages/EventRequestPage";
 import EventRequestsPage from "./pages/EventRequestsPage";
+import AssociatesManagerPage from "./pages/AssociatesManagerPage";
 import LoginPage from "./pages/LoginPage";
-
 import FormularioAssoc from "./components/form";
 
 /* Página de proposta / formulário */
@@ -79,6 +76,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <EventRequestsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/associados"
+            element={
+              <ProtectedRoute>
+                <AssociatesManagerPage />
               </ProtectedRoute>
             }
           />

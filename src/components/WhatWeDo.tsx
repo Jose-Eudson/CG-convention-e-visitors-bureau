@@ -1,89 +1,128 @@
 import { useTranslation } from "react-i18next";
-import { Star, Eye, Handshake, Megaphone, HelpCircle, BookOpen, Award, BarChart, Users } from "lucide-react";
+import Slider from "react-slick";
+import {
+  Star,
+  Eye,
+  Handshake,
+  Megaphone,
+  HelpCircle,
+  BookOpen,
+  Award,
+  BarChart,
+  Users,
+} from "lucide-react";
 
-const WhatWeDo = () => {
-  const { t } = useTranslation("whatwedo");
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+const InstitutionalSection = () => {
+  const { t } = useTranslation("whoweare");
+  const { t: tWhat } = useTranslation("whatwedo");
+
+  const identityCards = ["mission", "vision", "values"];
 
   const services = [
-    {
-      key: "captacao",
-      color: "text-emerald-400",
-      icon: Star, 
-    },
-    {
-      key: "monitoramento",
-      color: "text-blue-400",
-      icon: Eye,
-    },
-    {
-      key: "intermediacao",
-      color: "text-orange-400",
-      icon: Handshake,
-    },
-    {
-      key: "promocao",
-      color: "text-pink-400",
-      icon: Megaphone,
-    },
-    {
-      key: "apoio",
-      color: "text-yellow-400",
-      icon: HelpCircle,
-    },
-    {
-      key: "consultoria",
-      color: "text-indigo-400",
-      icon: BookOpen,
-    },
-    {
-      key: "qualificacao",
-      color: "text-emerald-400",
-      icon: Award,
-    },
-    {
-      key: "observatorio",
-      color: "text-orange-400",
-      icon: BarChart,
-    },
-    {
-      key: "articulacao",
-      color: "text-pink-400",
-      icon: Users,
-    },
+    { key: "captacao", icon: Star, color: "text-emerald-500" },
+    { key: "monitoramento", icon: Eye, color: "text-blue-500" },
+    { key: "intermediacao", icon: Handshake, color: "text-orange-500" },
+    { key: "promocao", icon: Megaphone, color: "text-pink-500" },
+    { key: "apoio", icon: HelpCircle, color: "text-yellow-500" },
+    { key: "consultoria", icon: BookOpen, color: "text-indigo-500" },
+    { key: "qualificacao", icon: Award, color: "text-emerald-500" },
+    { key: "observatorio", icon: BarChart, color: "text-orange-500" },
+    { key: "articulacao", icon: Users, color: "text-pink-500" },
   ];
 
+  const sliderBase = {
+    dots: true,
+    arrows: false,
+    infinite: true,
+    speed: 500,
+  };
+
   return (
-    <section id="o-que-fazemos" className="bg-slate-50 py-12 md:py-20">
-      <div className="mx-auto max-w-6xl px-4 md:px-6">
-        <h2 className="mb-4 text-2xl md:text-3xl font-bold text-slate-900">
-          {t("title")}
-        </h2>
+    <section
+      id="institucional"
+      className="bg-gradient-to-b from-white via-slate-50 to-slate-50 py-14"
+    >
+      <div className="mx-auto max-w-6xl px-4 md:px-6 space-y-16">
 
-        <p className="mb-12 text-slate-500">{t("subtitle", { defaultValue: "" })}</p>
+        {/* ===== QUEM SOMOS ===== */}
+        <div>
+          <h2 className="mb-3 text-xl md:text-2xl font-bold text-indigo-600">
+            {t("title")}
+          </h2>
 
-        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((service) => (
-            <div
-              key={service.key}
-              className="group rounded-xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-slate-200"
-            >
-              <div className={`mb-3 text-3xl ${service.color}`}>
-                {service.icon ? <service.icon className="h-8 w-8" /> : "●"} 
+          <p className="mb-6 max-w-2xl text-sm text-slate-600">
+            {t("description")}
+          </p>
+
+          <Slider
+            {...sliderBase}
+            slidesToShow={3}
+            responsive={[
+              { breakpoint: 1024, settings: { slidesToShow: 2 } },
+              { breakpoint: 640, settings: { slidesToShow: 1 } },
+            ]}
+          >
+            {identityCards.map((key) => (
+              <div key={key} className="px-3 pb-6">
+                <div className="h-full rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
+                  <h3 className="mb-2 text-base font-semibold text-indigo-600">
+                    {t(`${key}.title`)}
+                  </h3>
+
+                  <p className="text-sm text-slate-600">
+                    {t(`${key}.description`)}
+                  </p>
+                </div>
               </div>
+            ))}
+          </Slider>
+        </div>
 
-              <h3 className="mb-2 text-lg font-semibold text-slate-900 group-hover:text-slate-900 transition-colors">
-                {t(`${service.key}.title`)}
-              </h3>
+        {/* ===== O QUE FAZEMOS ===== */}
+        <div>
+          <h2 className="mb-3 text-xl md:text-2xl font-bold text-slate-900">
+            {tWhat("title")}
+          </h2>
 
-              <p className="text-sm text-slate-500 group-hover:text-slate-600 transition-colors">
-                {t(`${service.key}.description`)}
-              </p>
-            </div>
-          ))}
+          <p className="mb-6 max-w-2xl text-sm text-slate-500">
+            {tWhat("subtitle", { defaultValue: "" })}
+          </p>
+
+          <Slider
+            {...sliderBase}
+            slidesToShow={3}
+            responsive={[
+              { breakpoint: 1024, settings: { slidesToShow: 2 } },
+              { breakpoint: 640, settings: { slidesToShow: 1 } },
+            ]}
+          >
+            {services.map((service) => (
+              <div key={service.key} className="px-3 pb-6">
+                <div className="h-full rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                  <div
+                    className={`mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 ${service.color}`}
+                  >
+                    <service.icon className="h-5 w-5" />
+                  </div>
+
+                  <h3 className="mb-1 text-sm font-semibold text-slate-900">
+                    {tWhat(`${service.key}.title`)}
+                  </h3>
+
+                  <p className="text-sm text-slate-600">
+                    {tWhat(`${service.key}.description`)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </Slider>
         </div>
       </div>
     </section>
   );
 };
 
-export default WhatWeDo;
+export default InstitutionalSection;
