@@ -20,6 +20,7 @@ const Header = () => {
   const lastScrollY = useRef(0);
 
   const isHomePage = location.pathname === "/";
+  const isAdminRoute = location.pathname.startsWith("/admin");
 
   /* Detecta HERO e SEÇÕES */
   useEffect(() => {
@@ -157,7 +158,7 @@ const Header = () => {
 
         {/* AÇÕES */}
         <div className="flex items-center gap-4">
-          {user && (
+          {user && isAdminRoute && (
             <button
               onClick={handleLogout}
               className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md hover:bg-slate-50"

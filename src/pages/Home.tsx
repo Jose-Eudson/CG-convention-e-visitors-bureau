@@ -1,6 +1,5 @@
 import Hero from "../components/Hero";
 import WhoWeAre from "../components/WhoWeAre";
-import WhatWeDo from "../components/WhatWeDo";
 import Events from "../components/Events";
 import Associates from "../components/Associates";
 import Board from "../components/Board";
@@ -18,14 +17,9 @@ const Home = () => {
         <Hero />
       </section>
 
-      {/* QUEM SOMOS */}
+      {/* QUEM SOMOS E O QUE FAZEMOS */}
       <section data-header="default">
         <WhoWeAre />
-      </section>
-
-      {/* O QUE FAZEMOS */}
-      <section data-header="default">
-        <WhatWeDo />
       </section>
 
       {/* DIRETORIA */}

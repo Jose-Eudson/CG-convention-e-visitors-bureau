@@ -42,13 +42,12 @@ const InstitutionalSection = () => {
 
   return (
     <section
-       id="next-section"
       className="bg-gradient-to-b from-white via-slate-50 to-slate-50 py-14"
     >
       <div className="mx-auto max-w-6xl px-4 md:px-6 space-y-16">
 
         {/* ===== QUEM SOMOS ===== */}
-        <div>
+        <div id="quem-somos">
           <h2 className="mb-3 text-xl md:text-2xl font-bold text-indigo-600">
             {t("title")}
           </h2>
@@ -82,7 +81,7 @@ const InstitutionalSection = () => {
         </div>
 
         {/* ===== O QUE FAZEMOS ===== */}
-        <div>
+        <div id="o-que-fazemos">
           <h2 className="mb-3 text-xl md:text-2xl font-bold text-slate-900">
             {tWhat("title")}
           </h2>

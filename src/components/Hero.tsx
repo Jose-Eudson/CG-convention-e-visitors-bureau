@@ -64,7 +64,7 @@ const Hero = () => {
   return (
     <section
       ref={sectionRef}
-      id="hero"
+      id="inicio"
       data-header="hero"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
