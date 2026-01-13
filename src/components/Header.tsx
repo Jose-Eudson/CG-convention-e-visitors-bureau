@@ -1,39 +1,68 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import logo from "../assets/logo_cvbcg.svg";
 import { useTranslation } from "react-i18next";
 import { Globe, Menu, X, LogOut } from "lucide-react";
-
-import logo from "../assets/logo_cvbcg.svg";
-// import { useAuth } from "../contexts/AuthContext"; // descomente se usar auth
+import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
   const { t, i18n } = useTranslation("header");
-  const location = useLocation();
-
-  // const { user, logout } = useAuth(); // se existir auth
-  const user = null; // remova esta linha se usar auth real
-  const handleLogout = () => {}; // remova se usar auth real
-
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isHero, setIsHero] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef(0);
 
-  const isConheca = location.pathname === "/conheca-campina-grande";
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
+  /* Detecta HERO e SEÇÕES */
+  useEffect(() => {
+    const sections = document.querySelectorAll<HTMLElement>("section[data-header]");
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsHero(
+              (entry.target as HTMLElement).getAttribute("data-header") === "hero"
+            );
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  /* Esconde ao descer */
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      setIsVisible(currentY < lastScrollY.current || currentY < 80);
+      lastScrollY.current = currentY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  /* Clique fora idioma */
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsLanguageOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const navItems = [
@@ -43,55 +72,74 @@ const Header = () => {
     { id: "diretoria", label: t("menu.diretoria") },
     { id: "eventos", label: t("menu.eventos") },
     { id: "associados", label: t("menu.associados") },
-    { id: "parcerias", label: t("menu.parcerias") },
-    { id: "contato", label: t("menu.contato") },
   ];
 
+  const textColor = isHero ? "text-white" : "text-black";
+  const hoverColor = isHero ? "hover:text-emerald-300" : "hover:text-emerald-600";
+
+  const handleNavClick = (id: string) => {
+    setIsMobileMenuOpen(false);
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      }, 120);
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
-      <div className="flex w-full items-center justify-between px-4 md:px-6 lg:px-12 py-4">
+    <header
+      className={`
+        fixed top-0 left-0 right-0 z-50
+        transition-[transform,opacity,background-color,backdrop-filter]
+        duration-700 ease-in-out
+        ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"}
+        ${isHero ? "bg-transparent backdrop-blur-0 shadow-none" : "bg-white/60 backdrop-blur-xl shadow-sm"}
+      `}
+    >
+      <div className="flex items-center justify-between px-4 md:px-6 lg:px-12 py-4">
         {/* LOGO */}
         <div className="flex items-center gap-3">
-          <img
-            src={logo}
-            alt={t("logoAlt")}
-            className="h-10 md:h-12 w-auto"
-          />
-          <div className="hidden flex-col sm:flex">
-            <span className="text-sm font-bold leading-tight text-slate-900">
+          <img src={logo} alt={t("logoAlt")} className="h-10 md:h-12" />
+          <div className={`hidden sm:flex flex-col ${textColor}`}>
+            <span className="text-sm font-bold tracking-wider">
               CAMPINA GRANDE
             </span>
-            <span className="text-xs font-medium leading-tight text-slate-600">
+            <span className="text-xs tracking-wide">
               CONVENTION & VISITORS BUREAU
             </span>
           </div>
         </div>
 
-        {/* MENU DESKTOP (somente fora do Conheça CG) */}
-        {!isConheca && (
-          <nav className="hidden lg:flex items-center gap-8">
-            {navItems.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className="text-sm font-medium text-slate-600 transition-colors hover:text-emerald-500"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        )}
+        {/* MENU DESKTOP */}
+        <nav className="hidden lg:flex gap-8">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleNavClick(item.id)}
+              className={`text-sm font-medium font-header tracking-wide ${textColor} ${hoverColor} transition-colors`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
 
         {/* AÇÕES */}
         <div className="flex items-center gap-4">
           {user && (
             <button
               onClick={handleLogout}
-              className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md hover:bg-slate-50"
-              title="Sair da conta de administrador"
+              className={`hidden sm:flex items-center gap-2 text-sm font-medium font-header tracking-wide ${textColor} hover:text-red-500`}
             >
               <LogOut className="h-5 w-5" />
-              <span>Sair</span>
+              Sair
             </button>
           )}
 
@@ -99,94 +147,44 @@ const Header = () => {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-              className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-500 transition-colors px-3 py-2 rounded-md hover:bg-slate-50"
-              aria-label="Selecionar idioma"
+              className={`flex items-center gap-2 text-sm font-medium font-header tracking-wide ${textColor} ${hoverColor}`}
             >
               <Globe className="h-5 w-5" />
-              <span className="hidden sm:inline">Idioma</span>
+              Idioma
             </button>
 
             {isLanguageOpen && (
-              <div className="absolute top-full right-0 mt-2 w-40 flex flex-col gap-1 bg-white border border-slate-100 rounded-lg p-2 shadow-xl z-50">
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage("pt");
-                    setIsLanguageOpen(false);
-                  }}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md"
-                >
-                  <img
-                    src="/bandeiras/brasil.svg"
-                    alt="Português"
-                    className="h-5 w-5 rounded-full"
-                  />
-                  Português
-                </button>
-
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage("en");
-                    setIsLanguageOpen(false);
-                  }}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md"
-                >
-                  <img
-                    src="/bandeiras/eua.svg"
-                    alt="English"
-                    className="h-5 w-5 rounded-full"
-                  />
-                  English
-                </button>
-
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage("es");
-                    setIsLanguageOpen(false);
-                  }}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md"
-                >
-                  <img
-                    src="/bandeiras/espanha.svg"
-                    alt="Español"
-                    className="h-5 w-5 rounded-full"
-                  />
-                  Español
-                </button>
+              <div className="absolute right-0 mt-2 w-40 rounded-lg bg-white shadow-xl p-2">
+                {[
+                  { code: "pt", label: "Português", flag: "/bandeiras/brasil.svg" },
+                  { code: "en", label: "English", flag: "/bandeiras/eua.svg" },
+                  { code: "es", label: "Español", flag: "/bandeiras/espanha.svg" },
+                ].map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      i18n.changeLanguage(lang.code);
+                      setIsLanguageOpen(false);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium font-header text-black hover:bg-slate-100 rounded-md w-full"
+                  >
+                    <img src={lang.flag} className="h-5 w-5 rounded-full" />
+                    {lang.label}
+                  </button>
+                ))}
               </div>
             )}
           </div>
 
-          {/* MENU MOBILE */}
+          {/* MOBILE */}
           <button
-            className="lg:hidden text-slate-600 p-2"
+            className={`lg:hidden ${textColor}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {isMobileMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
       </div>
-
-      {/* MENU MOBILE (somente fora do Conheça CG) */}
-      {!isConheca && isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-100 bg-white">
-          <nav className="flex flex-col p-4">
-            {navItems.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className="py-3 text-base font-medium text-slate-600 hover:text-emerald-500 border-b border-slate-50 last:border-0"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      )}
     </header>
   );
 };

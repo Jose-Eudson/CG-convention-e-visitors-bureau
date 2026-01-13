@@ -1,50 +1,161 @@
-import eventoImg from '../assets/campina_cvb.jpg'
-import { Link } from 'react-router-dom'
+// Hero.tsx
+import { useEffect, useRef, useState } from "react";
+import eventoImg from "../assets/campina_cvb3.jpeg";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const currentY = useRef(0);
+  const targetY = useRef(0);
+  const [leaving, setLeaving] = useState(false);
+
+  /* ===== Parallax desacelerando (ease-out progressivo) ===== */
+  useEffect(() => {
+    const handleScroll = () => {
+      targetY.current = window.scrollY;
+    };
+
+    const animate = () => {
+      if (!sectionRef.current) return;
+
+      const heroHeight = sectionRef.current.offsetHeight;
+      const scroll = Math.min(targetY.current, heroHeight);
+
+      // progresso 0 → 1
+      const progress = scroll / heroHeight;
+
+      // ease-out (desacelera no final)
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+
+      currentY.current += (scroll - currentY.current) * 0.08;
+
+      if (bgRef.current) {
+        bgRef.current.style.transform = `translateY(${easeOut * 120}px)`;
+      }
+
+      if (overlayRef.current) {
+        overlayRef.current.style.transform = `translateY(${easeOut * 60}px)`;
+      }
+
+      requestAnimationFrame(animate);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    animate();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  /* ===== Microanimação quando Hero sai ===== */
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setLeaving(!entry.isIntersecting),
+      { threshold: 0.3 }
+    );
+
+    if (contentRef.current) observer.observe(contentRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="relative flex min-h-screen items-center bg-gray-100 py-12 md:py-0">
-      {/* Background Image com overlay discreto */}
-      <div className="absolute inset-0">
+    <section
+      ref={sectionRef}
+      id="hero"
+      data-header="hero"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+    >
+      {/* Imagem */}
+      <div
+        ref={bgRef}
+        className="absolute inset-0 z-0 will-change-transform"
+      >
         <img
           src={eventoImg}
           alt="Campina Grande"
           className="h-full w-full object-cover"
         />
-        {/* Overlay suave para escurecer o fundo e suavizar cores */}
-        <div className="absolute inset-0 bg-gray-900/40"></div>
       </div>
 
-      <div className="relative mx-auto grid max-w-6xl gap-8 px-4 md:grid-cols-2 md:items-center md:gap-12 md:px-6">
-        <div className="space-y-6 text-white drop-shadow-lg">
-          {/* Badge / Categoria */}
-          <span className="inline-block rounded-full bg-white/20 px-4 py-1 text-sm font-semibold">
-            Turismo • Cultura • Experiências
-          </span>
+      {/* Gradiente */}
+      <div
+        ref={overlayRef}
+        className="absolute inset-0 z-10 bg-gradient-to-b from-black/80 via-black/60 to-black/45 will-change-transform"
+      />
 
-          {/* Título */}
-          <h1 className="text-3xl font-bold leading-tight md:text-4xl lg:text-5xl">
-            Descubra Campina Grande <br className="hidden md:block" />
-            além do São João
-          </h1>
+      {/* Conteúdo */}
+      <div
+        ref={contentRef}
+        className={`relative z-20 flex flex-col items-center text-center px-6 transition-all duration-700 ${
+          leaving
+            ? "opacity-0 scale-95 translate-y-12"
+            : "opacity-100 scale-100 translate-y-0"
+        }`}
+      >
+        {/* Badge */}
+        <span className="mb-6 rounded-full bg-orange-500 px-5 py-1.5 text-sm font-semibold tracking-wide text-white shadow-lg animate-hero-up">
+          Turismo • Cultura • Experiências
+        </span>
 
-          {/* Subtítulo / descrição */}
-          <p className="text-lg md:text-xl text-white/80">
-            Explore pontos turísticos, cultura, lazer e experiências únicas da
-            Rainha da Borborema.
-          </p>
+        {/* Título */}
+        <h1 className="mb-6 text-3xl font-bold leading-tight text-white md:text-4xl lg:text-5xl drop-shadow-[0_8px_24px_rgba(0,0,0,0.55)] animate-hero-up delay-200">
+          Descubra Campina Grande <br className="hidden md:block" />
+          além do São João
+        </h1>
 
-          {/* Botão */}
-          <Link
-            to="/conheca"
-            className="inline-block rounded-lg border border-white/30 bg-white/10 px-6 py-3 font-semibold text-white shadow-md transition-all duration-300 hover:bg-white/20 hover:shadow-xl hover:scale-105"
-          >
-            Conheça Campina Grande
-          </Link>
-        </div>
+        {/* Texto */}
+        <p className="mb-10 max-w-2xl text-lg md:text-xl text-white/95 font-medium leading-relaxed drop-shadow-[0_4px_18px_rgba(0,0,0,0.6)] animate-hero-up delay-400">
+          Explore pontos turísticos, cultura, lazer e experiências únicas da
+          Rainha da Borborema.
+        </p>
+
+        {/* Botão */}
+        <Link
+          to="/conheca"
+          className="rounded-lg bg-emerald-600 px-8 py-4 font-semibold text-white transition-all duration-500 hover:bg-emerald-700 hover:scale-110 hover:shadow-2xl animate-hero-up delay-600 animate-pulse-soft"
+        >
+          Conheça Campina Grande
+        </Link>
       </div>
+
+      {/* Animações */}
+      <style>
+        {`
+          @keyframes heroUp {
+            from {
+              opacity: 0;
+              transform: translateY(40px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes pulseSoft {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+          }
+
+          .animate-hero-up {
+            animation: heroUp 1.4s ease-out forwards;
+          }
+
+          .animate-pulse-soft {
+            animation: pulseSoft 3.2s ease-in-out infinite;
+          }
+
+          .delay-200 { animation-delay: 0.2s; }
+          .delay-400 { animation-delay: 0.4s; }
+          .delay-600 { animation-delay: 0.6s; }
+        `}
+      </style>
     </section>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;
