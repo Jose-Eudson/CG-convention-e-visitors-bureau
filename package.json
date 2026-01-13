@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/montserrat": "^5.2.8",
+    "@fontsource/poppins": "^5.2.7",
     "firebase": "^12.7.0",
     "i18next": "^25.7.1",
     "i18next-browser-languagedetector": "^8.2.0",
