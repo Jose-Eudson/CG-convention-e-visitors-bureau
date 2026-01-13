@@ -1,24 +1,46 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Globe, Menu, X, LogOut } from "lucide-react";
 
 import logo from "../assets/logo_cvbcg.svg";
-// import { useAuth } from "../contexts/AuthContext"; // descomente se usar auth
+import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
   const { t, i18n } = useTranslation("header");
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // const { user, logout } = useAuth(); // se existir auth
-  const user = null; // remova esta linha se usar auth real
-  const handleLogout = () => {}; // remova se usar auth real
+  const { user, signOut } = useAuth();
 
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const isConheca = location.pathname === "/conheca-campina-grande";
+  const isHomePage = location.pathname === "/";
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    
+    if (isHomePage) {
+      // Se já estiver na home, apenas rola para a seção
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      // Se estiver em outra página, navega para a home e depois rola
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+    
+    setIsMobileMenuOpen(false);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,8 +65,6 @@ const Header = () => {
     { id: "diretoria", label: t("menu.diretoria") },
     { id: "eventos", label: t("menu.eventos") },
     { id: "associados", label: t("menu.associados") },
-    { id: "parcerias", label: t("menu.parcerias") },
-    { id: "contato", label: t("menu.contato") },
   ];
 
   return (
@@ -67,26 +87,28 @@ const Header = () => {
           </div>
         </div>
 
-        {/* MENU DESKTOP (somente fora do Conheça CG) */}
-        {!isConheca && (
-          <nav className="hidden lg:flex items-center gap-8">
-            {navItems.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className="text-sm font-medium text-slate-600 transition-colors hover:text-emerald-500"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        )}
+        {/* MENU DESKTOP */}
+        <nav className="hidden lg:flex items-center gap-8">
+          {navItems.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              onClick={(e) => handleNavClick(e, item.id)}
+              className="text-sm font-medium text-slate-600 transition-colors hover:text-emerald-500"
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
 
         {/* AÇÕES */}
         <div className="flex items-center gap-4">
           {user && (
             <button
-              onClick={handleLogout}
+              onClick={async () => {
+                await signOut();
+                navigate('/admin/login');
+              }}
               className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md hover:bg-slate-50"
               title="Sair da conta de administrador"
             >
@@ -170,16 +192,16 @@ const Header = () => {
         </div>
       </div>
 
-      {/* MENU MOBILE (somente fora do Conheça CG) */}
-      {!isConheca && isMobileMenuOpen && (
+      {/* MENU MOBILE */}
+      {isMobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-100 bg-white">
           <nav className="flex flex-col p-4">
             {navItems.map((item) => (
               <a
                 key={item.id}
                 href={`#${item.id}`}
+                onClick={(e) => handleNavClick(e, item.id)}
                 className="py-3 text-base font-medium text-slate-600 hover:text-emerald-500 border-b border-slate-50 last:border-0"
-                onClick={() => setIsMobileMenuOpen(false)}
               >
                 {item.label}
               </a>

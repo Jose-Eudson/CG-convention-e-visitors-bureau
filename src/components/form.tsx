@@ -1,31 +1,89 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
+import { addAssociate, uploadAssociateLogo } from '../services/associatesService';
+import { sendNewAssociateEmail } from '../services/associateEmailService';
 
 const FormularioAssoc: React.FC = () => {
   const [categoria, setCategoria] = useState<string>('');
   const [isEnviando, setIsEnviando] = useState<boolean>(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
-  const URL_GAS_FINAL = "https://script.google.com/macros/s/AKfycbxp6CZifbRBgJbU0Bj9jf2ZZvHCyYZ5ZsNIbyDCF2lWGsaP0gKjou2opgxD5d5_mtPtAg/exec";
+  const handleVoltar = () => {
+    navigate("/");
+    setTimeout(() => {
+      const element = document.getElementById("associados");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setLogoFile(e.target.files[0]);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
 
     setIsEnviando(true);
-    const dados = new FormData(formRef.current);
+    const formData = new FormData(formRef.current);
 
     try {
-      await fetch(URL_GAS_FINAL, {
-        method: "POST",
-        body: dados,
-        mode: 'no-cors' 
-      });
-      alert("Boa! Recebemos o teu interesse. Vamos falar em breve!");
-      navigate("/"); 
+      // 1. Upload da logo (se houver)
+      let logoUrl = '';
+      if (logoFile) {
+        const nomeEmpresa = formData.get('nomeFantasia') as string || 'empresa';
+        logoUrl = await uploadAssociateLogo(logoFile, nomeEmpresa);
+      }
+
+      // 2. Preparar dados do associado
+      const associateData = {
+        name: formData.get('nomeFantasia') as string,
+        category: formData.get('categoria') as string,
+        logo: logoUrl,
+        instagram: formData.get('instagram') as string || '',
+        // Dados adicionais para o admin revisar
+        razaoSocial: formData.get('razaoSocial') as string,
+        cnpj: formData.get('cnpj') as string,
+        inscricaoEstadual: formData.get('inscricaoEstadual') as string || '',
+        inscricaoMunicipal: formData.get('inscricaoMunicipal') as string || '',
+        endereco: formData.get('endereco') as string,
+        bairro: formData.get('bairro') as string,
+        cep: formData.get('cep') as string,
+        nomeResponsavel: formData.get('nomeResponsavel') as string,
+        cpfResponsavel: formData.get('cpfResponsavel') as string,
+        telefone: formData.get('telefone') as string,
+        email: formData.get('email') as string,
+        cargo: formData.get('cargo') as string || '',
+        telefoneResponsavel: formData.get('telefoneResponsavel') as string || '',
+        emailResponsavel: formData.get('emailResponsavel') as string || '',
+        numeroFuncionarios: formData.get('numeroFuncionarios') as string || '',
+      };
+
+      // 3. Salvar no Firestore
+      const associateId = await addAssociate(associateData);
+
+      // 4. Enviar email de notificação para admin
+      try {
+        await sendNewAssociateEmail({
+          ...associateData,
+          id: associateId
+        } as any);
+      } catch (emailError) {
+        console.warn('Email não enviado, mas solicitação foi salva:', emailError);
+      }
+
+      alert("Solicitação enviada com sucesso! Em breve entraremos em contato.");
+      navigate("/");
     } catch (err) {
-      alert("Erro ao enviar. Por favor, tente novamente.");
+      console.error('Erro ao enviar:', err);
+      alert("Erro ao enviar solicitação. Por favor, tente novamente.");
     } finally {
       setIsEnviando(false);
     }
@@ -39,6 +97,16 @@ const FormularioAssoc: React.FC = () => {
     <div className="min-h-screen bg-slate-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         
+        {/* BOTÃO VOLTAR */}
+        <div className="fixed left-4 top-24 z-40">
+          <button
+            onClick={handleVoltar}
+            className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 shadow-md text-gray-700 hover:bg-white transition"
+          >
+            <FiArrowLeft size={18} />
+            Voltar
+          </button>
+        </div>
        
         <div className="text-center mb-10">
           <img 
@@ -95,22 +163,40 @@ const FormularioAssoc: React.FC = () => {
 
               <div>
                 <label className={labelClass}>Nome Fantasia</label>
-                <input type="text" name="nomeFantasia" required className={inputClass} />
+                <input type="text" name="nomeFantasia" required className={inputClass} placeholder="Nome que aparecerá no site" />
               </div>
 
               <div>
                 <label className={labelClass}>CNPJ</label>
-                <input type="text" name="cnpj" required placeholder="00.000.000/0000-00" className={inputClass} />
+                <input type="text" name="cnpj" required className={inputClass} placeholder="00.000.000/0000-00" />
               </div>
 
               <div>
                 <label className={labelClass}>Inscrição Estadual</label>
-                <input type="text" name="inscEstadual" className={inputClass} />
+                <input type="text" name="inscricaoEstadual" className={inputClass} />
               </div>
 
               <div>
                 <label className={labelClass}>Inscrição Municipal</label>
-                <input type="text" name="inscMunicipal" className={inputClass} />
+                <input type="text" name="inscricaoMunicipal" className={inputClass} />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className={labelClass}>Link do Instagram ou Site (opcional)</label>
+                <input type="url" name="instagram" className={inputClass} placeholder="https://instagram.com/... ou https://seusite.com.br" />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className={labelClass}>Logo / Foto da Empresa</label>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleLogoChange}
+                  className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 file:cursor-pointer"
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  Envie a logo que aparecerá na página de associados (PNG, JPG ou SVG)
+                </p>
               </div>
             </div>
           </section>
@@ -123,6 +209,10 @@ const FormularioAssoc: React.FC = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className={labelClass}>Bairro</label>
+                <input type="text" name="bairro" required className={inputClass} />
+              </div>
               <div className="md:col-span-2">
                 <label className={labelClass}>Endereço Completo</label>
                 <input type="text" name="endereco" required className={inputClass} />
@@ -133,11 +223,11 @@ const FormularioAssoc: React.FC = () => {
               </div>
               <div>
                 <label className={labelClass}>Telefone Fixo/Empresa</label>
-                <input type="tel" name="foneEntidade" required className={inputClass} />
+                <input type="tel" name="telefone" required className={inputClass} />
               </div>
               <div className="md:col-span-2">
                 <label className={labelClass}>E-mail Corporativo</label>
-                <input type="email" name="emailEntidade" required className={inputClass} />
+                <input type="email" name="email" required className={inputClass} />
               </div>
             </div>
           </section>
@@ -152,19 +242,27 @@ const FormularioAssoc: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <label className={labelClass}>Nome Completo do Responsável</label>
-                <input type="text" name="presidente" required className={inputClass} />
+                <input type="text" name="nomeResponsavel" required className={inputClass} />
               </div>
               <div>
-                <label className={labelClass}>Celular / WhatsApp</label>
-                <input type="tel" name="fonePresidente" required className={inputClass} />
+                <label className={labelClass}>CPF do Responsável</label>
+                <input type="text" name="cpfResponsavel" required className={inputClass} placeholder="000.000.000-00" />
               </div>
               <div>
-                <label className={labelClass}>E-mail Pessoal/Diretoria</label>
-                <input type="email" name="emailPresidente" required className={inputClass} />
+                <label className={labelClass}>Cargo</label>
+                <input type="text" name="cargo" className={inputClass} placeholder="Ex: Diretor, Gerente, etc" />
               </div>
               <div>
-                <label className={labelClass}>Nº total de Funcionários</label>
-                <input type="number" name="funcionarios" required className={inputClass} />
+                <label className={labelClass}>Telefone do Responsável</label>
+                <input type="tel" name="telefoneResponsavel" className={inputClass} placeholder="(83) 99999-9999" />
+              </div>
+              <div>
+                <label className={labelClass}>E-mail do Responsável</label>
+                <input type="email" name="emailResponsavel" className={inputClass} placeholder="responsavel@email.com" />
+              </div>
+              <div className="md:col-span-2">
+                <label className={labelClass}>Número de Funcionários</label>
+                <input type="number" name="numeroFuncionarios" className={inputClass} placeholder="Quantidade de funcionários" min="0" />
               </div>
             </div>
           </section>

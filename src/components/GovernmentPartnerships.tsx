@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 
 
-import brasilCvbLogo from "../assets/logos_partnerships/brasil-cvb-logo.png";
-import accgLogo from "../assets/logos_partnerships/accg-logo.png";
-import sindcampinaLogo from "../assets/logos_partnerships/sindcampina-logo.png";
+import brasilCvbLogo from "../assets/logos_partnerships/logo-brasil-cvb.png";
+import accgLogo from "../assets/logos_partnerships/accg_min.png";
+import sindcampinaLogo from "../assets/logos_partnerships/sind_campina.png";
 
 const GovernmentPartnerships = () => {
   const { t } = useTranslation("partnerships");
