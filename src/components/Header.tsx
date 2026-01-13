@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/logo_cvbcg.svg";
 import { useTranslation } from "react-i18next";
 import { Globe, Menu, X, LogOut } from "lucide-react";
+import logo from "../assets/logo_cvbcg.svg";
 import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
   const { t, i18n } = useTranslation("header");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHero, setIsHero] = useState(true);
@@ -15,13 +19,13 @@ const Header = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const isHomePage = location.pathname === "/";
 
   /* Detecta HERO e SEÇÕES */
   useEffect(() => {
-    const sections = document.querySelectorAll<HTMLElement>("section[data-header]");
+    const sections = document.querySelectorAll<HTMLElement>(
+      "section[data-header]"
+    );
     if (!sections.length) return;
 
     const observer = new IntersectionObserver(
@@ -29,7 +33,8 @@ const Header = () => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsHero(
-              (entry.target as HTMLElement).getAttribute("data-header") === "hero"
+              (entry.target as HTMLElement).getAttribute("data-header") ===
+                "hero"
             );
           }
         });
@@ -56,13 +61,17 @@ const Header = () => {
   /* Clique fora idioma */
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsLanguageOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const navItems = [
@@ -75,23 +84,37 @@ const Header = () => {
   ];
 
   const textColor = isHero ? "text-white" : "text-black";
-  const hoverColor = isHero ? "hover:text-emerald-300" : "hover:text-emerald-600";
+  const hoverColor = isHero
+    ? "hover:text-emerald-300"
+    : "hover:text-emerald-600";
 
-  const handleNavClick = (id: string) => {
-    setIsMobileMenuOpen(false);
-    if (location.pathname !== "/") {
-      navigate("/");
-      setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-      }, 120);
+  // Handler único, compatível com desktop e mobile
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    sectionId: string
+  ) => {
+    e.preventDefault();
+
+    const scrollToSection = () => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+
+    if (isHomePage) {
+      scrollToSection();
     } else {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      navigate("/");
+      setTimeout(scrollToSection, 120);
     }
+
+    setIsMobileMenuOpen(false);
   };
 
   const handleLogout = async () => {
     await signOut();
-    navigate("/");
+    navigate("/admin/login");
   };
 
   return (
@@ -119,15 +142,16 @@ const Header = () => {
         </div>
 
         {/* MENU DESKTOP */}
-        <nav className="hidden lg:flex gap-8">
+        <nav className="hidden lg:flex items-center gap-8">
           {navItems.map((item) => (
-            <button
+            <a
               key={item.id}
-              onClick={() => handleNavClick(item.id)}
+              href={`#${item.id}`}
+              onClick={(e) => handleNavClick(e, item.id)}
               className={`text-sm font-medium font-header tracking-wide ${textColor} ${hoverColor} transition-colors`}
             >
               {item.label}
-            </button>
+            </a>
           ))}
         </nav>
 
@@ -136,7 +160,8 @@ const Header = () => {
           {user && (
             <button
               onClick={handleLogout}
-              className={`hidden sm:flex items-center gap-2 text-sm font-medium font-header tracking-wide ${textColor} hover:text-red-500`}
+              className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md hover:bg-slate-50"
+              title="Sair da conta de administrador"
             >
               <LogOut className="h-5 w-5" />
               Sair
@@ -185,6 +210,24 @@ const Header = () => {
           </button>
         </div>
       </div>
+
+      {/* MENU MOBILE */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden border-t border-slate-100 bg-white">
+          <nav className="flex flex-col p-4">
+            {navItems.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={(e) => handleNavClick(e, item.id)}
+                className="py-3 text-base font-medium text-slate-600 hover:text-emerald-500 border-b border-slate-50 last:border-0"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 };

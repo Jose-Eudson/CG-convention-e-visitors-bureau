@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getApprovedAssociates } from "../services/associatesService";
 
 // Importando as imagens dos logos das parcerias
 import brasilCvbLogo from "../assets/logos_partnerships/logo-brasil-cvb.png";
@@ -75,14 +76,39 @@ const Associates = () => {
     },
   ];
 
-  // Recupera a lista de associados do JSON
+  // Estado para associados do Firestore
+  const [firestoreAssociates, setFirestoreAssociates] = useState<Associate[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Buscar associados do Firestore
+  useEffect(() => {
+    const fetchAssociates = async () => {
+      try {
+        setLoading(true);
+        const data = await getApprovedAssociates();
+        setFirestoreAssociates(data);
+      } catch (error) {
+        console.error('Erro ao buscar associados:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssociates();
+  }, []);
+
+  // Recupera a lista de associados do JSON (fallback)
   const rawAssociates = t("associates", { returnObjects: true });
   const associatesFromJson: Associate[] = Array.isArray(rawAssociates)
     ? (rawAssociates as Associate[])
     : [];
 
-  // Combinar associados com parcerias institucionais no final
-  const associates: Associate[] = [...associatesFromJson, ...institutionalPartners];
+  // Combinar: JSON primeiro, depois institucionais, por último Firestore (novos ficam no fim)
+  const associates: Associate[] = [
+    ...associatesFromJson,
+    ...institutionalPartners,
+    ...firestoreAssociates
+  ];
 
   const rawBenefits = t("benefits", { returnObjects: true });
   const benefits: string[] = Array.isArray(rawBenefits)
@@ -227,54 +253,71 @@ const Associates = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {paginated.map((associate, idx) => (
-            <article
-              key={`${associate.name}-${idx}`}
-              className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col"
-            >
-              <div className="p-5 flex-1 flex flex-col">
-                <div className="h-40 w-full rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden mb-4 p-6">
-                  {associate.logo ? (
-                    <img
-                      src={associate.logo}
-                      alt={`Logo ${associate.name}`}
-                      className="max-h-full max-w-full object-contain"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <span className="text-slate-400 text-sm italic">
-                      Sem logo
-                    </span>
-                  )}
-                </div>
-
-                <div className="mb-4">
-                  <span className="block text-xs font-bold tracking-wide text-slate-400 uppercase mb-1">
-                    {getCategoryLabel(associate.category)}
-                  </span>
-                  <h3 className="text-lg font-bold text-slate-800 leading-tight">
-                    {associate.name}
-                  </h3>
-                </div>
-
-                <div className="mt-auto">
-                  {associate.instagram && (
-                    <a
-                      href={associate.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block rounded-lg bg-orange-100 text-orange-700 px-4 py-2 text-sm font-semibold hover:bg-orange-200 transition-colors"
-                    >
-                      {t("learnMore", { defaultValue: "Saiba mais" })}
-                    </a>
-                  )}
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 8 }).map((_, idx) => (
+              <div
+                key={`skeleton-${idx}`}
+                className="rounded-2xl border border-slate-200 bg-white shadow-sm animate-pulse"
+              >
+                <div className="p-5">
+                  <div className="h-40 w-full rounded-xl bg-slate-200 mb-4"></div>
+                  <div className="h-4 bg-slate-200 rounded mb-2 w-20"></div>
+                  <div className="h-6 bg-slate-200 rounded mb-4 w-full"></div>
+                  <div className="h-8 bg-slate-200 rounded w-24"></div>
                 </div>
               </div>
-            </article>
-          ))}
+            ))
+          ) : (
+            paginated.map((associate, idx) => (
+              <article
+                key={`${associate.name}-${idx}`}
+                className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col"
+              >
+                <div className="p-5 flex-1 flex flex-col">
+                  <div className="h-40 w-full rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden mb-4 p-6">
+                    {associate.logo ? (
+                      <img
+                        src={associate.logo}
+                        alt={`Logo ${associate.name}`}
+                        className="max-h-full max-w-full object-contain"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="text-slate-400 text-sm italic">
+                        Sem logo
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mb-4">
+                    <span className="block text-xs font-bold tracking-wide text-slate-400 uppercase mb-1">
+                      {getCategoryLabel(associate.category)}
+                    </span>
+                    <h3 className="text-lg font-bold text-slate-800 leading-tight">
+                      {associate.name}
+                    </h3>
+                  </div>
+
+                  <div className="mt-auto">
+                    {associate.instagram && (
+                      <a
+                        href={associate.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block rounded-lg bg-orange-100 text-orange-700 px-4 py-2 text-sm font-semibold hover:bg-orange-200 transition-colors"
+                      >
+                        {t("learnMore", { defaultValue: "Saiba mais" })}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))
+          )}
         </div>
 
-        {paginated.length === 0 && (
+        {!loading && paginated.length === 0 && (
           <div className="text-center py-10 text-slate-500">
             {t("noResults", {
               defaultValue: "Nenhum parceiro encontrado.",

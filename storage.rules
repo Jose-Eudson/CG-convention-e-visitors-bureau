@@ -1,0 +1,18 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Logos de associados - qualquer um pode fazer upload, apenas admin pode deletar
+    match /associates/{fileName} {
+      allow read: if true; // Todos podem ver as logos
+      allow write: if true; // Qualquer um pode fazer upload (formulário)
+      allow delete: if request.auth != null; // Apenas admin pode deletar
+    }
+    
+    // Outras pastas (se existirem)
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
