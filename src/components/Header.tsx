@@ -15,6 +15,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHero, setIsHero] = useState(true);
   const [isVisible, setIsVisible] = useState(true);
+  const [isAtTop, setIsAtTop] = useState(true);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
@@ -24,10 +25,19 @@ const Header = () => {
 
   /* Detecta HERO e SEÇÕES */
   useEffect(() => {
+    // Se não estiver na home, sempre usar estilo não-hero (header branco)
+    if (!isHomePage) {
+      setIsHero(false);
+      return;
+    }
+
     const sections = document.querySelectorAll<HTMLElement>(
       "section[data-header]"
     );
-    if (!sections.length) return;
+    if (!sections.length) {
+      setIsHero(false);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -45,13 +55,14 @@ const Header = () => {
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+  }, [isHomePage]);
 
   /* Esconde ao descer */
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
       setIsVisible(currentY < lastScrollY.current || currentY < 80);
+      setIsAtTop(currentY < 50);
       lastScrollY.current = currentY;
     };
 
@@ -84,8 +95,8 @@ const Header = () => {
     { id: "associados", label: t("menu.associados") },
   ];
 
-  const textColor = isHero ? "text-white" : "text-black";
-  const hoverColor = isHero
+  const textColor = (isAtTop && isHero && isHomePage) ? "text-white" : "text-black";
+  const hoverColor = (isAtTop && isHero && isHomePage)
     ? "hover:text-emerald-300"
     : "hover:text-emerald-600";
 
@@ -125,7 +136,7 @@ const Header = () => {
         transition-[transform,opacity,background-color,backdrop-filter]
         duration-700 ease-in-out
         ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"}
-        ${isHero ? "bg-transparent backdrop-blur-0 shadow-none" : "bg-white/60 backdrop-blur-xl shadow-sm"}
+        ${isAtTop && isHero && isHomePage ? "bg-transparent backdrop-blur-0 shadow-none" : "bg-white/70 backdrop-blur-md shadow-sm"}
       `}
     >
       <div className="flex items-center justify-between px-4 md:px-6 lg:px-12 py-4">
