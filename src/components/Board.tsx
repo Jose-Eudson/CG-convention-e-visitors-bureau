@@ -83,7 +83,7 @@ const Board = () => {
               {/* Slide wrapper */}
               <div className="flex h-full">
                 {/* Card */}
-                <div className="group flex h-[420px] w-full flex-col justify-between rounded-t-[28px] rounded-b-2xl bg-white border border-slate-300 p-6 text-center transition-all duration-500 hover:-translate-y-1 hover:shadow-md">
+                <div className="group flex h-[320px] w-full flex-col justify-between rounded-t-[28px] rounded-b-2xl bg-white border border-slate-300 p-6 text-center transition-all duration-500 hover:-translate-y-1 hover:shadow-md">
                   {/* Conteúdo superior */}
                   <div className="flex flex-col items-center">
                     <div className="mb-4 h-32 w-32 overflow-hidden rounded-full border-4 border-slate-200 shadow-sm">
@@ -94,13 +94,13 @@ const Board = () => {
                       />
                     </div>
 
-                    <h3 className="min-h-[64px] text-lg font-semibold tracking-wide text-slate-900">
+                    <h3 className="min-h-[56px] text-lg font-semibold tracking-wide text-slate-900">
                       {member.name}
                     </h3>
                   </div>
 
                   {/* Cargo */}
-                  <div className="pt-4">
+                  <div className="pt-3">
                     <span className="inline-block rounded-full bg-slate-50 px-4 py-1 text-sm font-medium text-emerald-600">
                       {member.role}
                     </span>
