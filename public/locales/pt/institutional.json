@@ -1,0 +1,22 @@
+{
+  "whoweare": {
+    "title": "Quem somos",
+    "description": {
+      "part1": "O Campina Grande Convention & Visitors Bureau surgiu em 2003 com a missão de impulsionar o turismo e os eventos na cidade. Somos uma associação civil sem fins lucrativos que reúne entidades do trade turístico em torno de um objetivo comum: fortalecer Campina Grande como destino de destaque, reconhecido pela cultura, hospitalidade e tecnologia",
+      "lead": "Atuamos como elo entre os setores público e privado, articulando parcerias estratégicas, captando eventos e promovendo experiências que transformam a cidade. Acreditamos no turismo como agente de desenvolvimento social e trabalhamos para valorizar as potencialidades locais.",
+      "part2": "Nosso compromisso é ampliar a visibilidade da região, apoiar iniciativas que gerem impacto positivo e consolidar Campina Grande como referência nacional em turismo e eventos."
+    }
+  },
+  "whatwedo": {
+    "title": "O que fazemos",
+    "captacao": { "title": "Captação de eventos", "description": "Trazemos grandes eventos para Campina Grande." },
+    "monitoramento": { "title": "Monitoramento", "description": "Acompanhamos a agenda e oportunidades do setor." },
+    "intermediacao": { "title": "Intermediação", "description": "Conectamos organizadores e fornecedores locais." },
+    "promocao": { "title": "Promoção", "description": "Divulgamos Campina Grande como destino de eventos." },
+    "apoio": { "title": "Apoio institucional", "description": "Facilitamos o diálogo com o poder público." },
+    "consultoria": { "title": "Consultoria", "description": "Orientamos sobre infraestrutura e serviços da cidade." },
+    "qualificacao": { "title": "Qualificação", "description": "Capacitamos profissionais do turismo local." },
+    "observatorio": { "title": "Observatório", "description": "Analisamos dados e tendências do turismo." },
+    "articulacao": { "title": "Articulação", "description": "Promovemos parcerias estratégicas para o setor." }
+  }
+}

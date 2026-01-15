@@ -1,5 +1,5 @@
 import Hero from "../components/Hero";
-import WhoWeAre from "../components/WhoWeAre";
+import Institutional from "../components/Institutional";
 import Events from "../components/Events";
 import Associates from "../components/Associates";
 import Board from "../components/Board";
@@ -19,7 +19,7 @@ const Home = () => {
 
       {/* QUEM SOMOS E O QUE FAZEMOS */}
       <section data-header="default">
-        <WhoWeAre />
+        <Institutional />
       </section>
 
       {/* DIRETORIA */}
@@ -63,3 +63,4 @@ const Home = () => {
 };
 
 export default Home;
+
