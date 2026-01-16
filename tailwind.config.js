@@ -2,12 +2,12 @@
 module.exports = {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", // todos os arquivos do projeto
+    "./src/**/*.{js,ts,jsx,tsx}", 
   ],
   theme: {
     extend: {
       fontFamily: {
-        convention: ['"ConventionFont"', 'sans-serif'], // mesma fonte da logo
+        convention: ['"ConventionFont"', 'sans-serif'], 
           header: ["Montserrat", "sans-serif"],
       },
     },

@@ -38,7 +38,6 @@ const AssociatesManagerPage = () => {
     try {
       await approveAssociate(id);
       
-      // Tentar enviar email de aprovação
       try {
         await sendApprovalEmail(associate);
       } catch (emailError) {
@@ -63,8 +62,7 @@ const AssociatesManagerPage = () => {
     
     try {
       await rejectAssociate(id);
-      
-      // Tentar enviar email de rejeição com o motivo
+    
       try {
         await sendRejectionEmail({ ...associate, rejectionReason });
       } catch (emailError) {
@@ -179,7 +177,6 @@ const AssociatesManagerPage = () => {
           </button>
         </div>
 
-        {/* Filtros */}
         <div className="mb-6 flex gap-3 flex-wrap">
           <button
             onClick={() => setFilter('all')}
@@ -223,7 +220,6 @@ const AssociatesManagerPage = () => {
           </button>
         </div>
 
-        {/* Lista */}
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-orange-500 border-r-transparent"></div>
@@ -241,7 +237,6 @@ const AssociatesManagerPage = () => {
                 className="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
               >
                 <div className="flex flex-col lg:flex-row gap-6">
-                  {/* Logo */}
                   <div className="w-32 h-32 flex-shrink-0 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-center p-4">
                     {associate.logo ? (
                       <img
@@ -254,7 +249,6 @@ const AssociatesManagerPage = () => {
                     )}
                   </div>
 
-                  {/* Info Completa */}
                   <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="md:col-span-2 flex items-start justify-between mb-2">
                       <div>
@@ -268,7 +262,6 @@ const AssociatesManagerPage = () => {
                       {getStatusBadge(associate.status)}
                     </div>
 
-                    {/* Dados Empresariais */}
                     <div className="space-y-2">
                       <h4 className="font-bold text-slate-700 text-sm uppercase border-b pb-1">
                         Dados Empresariais
@@ -299,7 +292,6 @@ const AssociatesManagerPage = () => {
                       )}
                     </div>
 
-                    {/* Endereço */}
                     <div className="space-y-2">
                       <h4 className="font-bold text-slate-700 text-sm uppercase border-b pb-1">
                         Endereço
@@ -324,7 +316,6 @@ const AssociatesManagerPage = () => {
                       )}
                     </div>
 
-                    {/* Responsável */}
                     <div className="space-y-2">
                       <h4 className="font-bold text-slate-700 text-sm uppercase border-b pb-1">
                         Responsável
@@ -361,7 +352,6 @@ const AssociatesManagerPage = () => {
                       )}
                     </div>
 
-                    {/* Contato da Empresa */}
                     <div className="space-y-2">
                       <h4 className="font-bold text-slate-700 text-sm uppercase border-b pb-1">
                         Contato da Empresa
@@ -407,7 +397,6 @@ const AssociatesManagerPage = () => {
                     </div>
                   </div>
 
-                  {/* Actions */}
                   <div className="flex flex-col gap-2 min-w-[140px]">
                     {associate.status === 'pending' && (
                       <>

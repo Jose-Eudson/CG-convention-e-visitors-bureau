@@ -2,26 +2,21 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Eventos públicos - qualquer um pode ler, apenas autenticados podem escrever
     match /events/{eventId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
     
-    // Solicitações de eventos - DESENVOLVIMENTO (permite tudo temporariamente)
-    // ⚠️ ATENÇÃO: Em produção, implemente autenticação e altere para:
-    // allow read, update, delete: if request.auth != null;
     match /eventRequests/{requestId} {
-      allow read: if true; // TEMPORÁRIO: Permite ler sem autenticação
-      allow create: if true; // Qualquer um pode criar solicitações
-      allow update, delete: if true; // TEMPORÁRIO: Permite editar/deletar sem autenticação
+      allow read: if true; 
+      allow create: if true; 
+      allow update, delete: if true; 
     }
     
-    // Associados - qualquer um pode criar (formulário), apenas admin pode aprovar/deletar
     match /associates/{associateId} {
-      allow read: if resource.data.status == 'approved' || request.auth != null; // Todos veem aprovados, admin vê tudo
-      allow create: if true; // Qualquer um pode solicitar ser associado
-      allow update, delete: if request.auth != null; // Apenas admin pode aprovar/rejeitar/deletar
+      allow read: if resource.data.status == 'approved' || request.auth != null; 
+      allow create: if true; 
+      allow update, delete: if request.auth != null; 
     }
   }
 }

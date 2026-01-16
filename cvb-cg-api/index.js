@@ -121,14 +121,12 @@ app.post('/api/send-rejection', async (req, res) => {
   }
 });
 
-// ================ ENDPOINTS PARA ASSOCIADOS ================
 
 app.post('/api/send-associate-email', async (req, res) => {
   try {
     const { associate, action } = req.body;
     
     if (action === 'new') {
-      // Email para o admin quando novo associado solicita
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
       const adminUrl = `${frontendUrl}/admin/associados`;
 
@@ -195,7 +193,6 @@ app.post('/api/send-associate-email', async (req, res) => {
     }
 
     if (action === 'approved') {
-      // Email para o associado quando aprovado
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: associate.email,
@@ -229,7 +226,6 @@ app.post('/api/send-associate-email', async (req, res) => {
     }
 
     if (action === 'rejected') {
-      // Email para o associado quando rejeitado
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: associate.email,

@@ -1,8 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-/**
- * Envia notificação para o admin quando há nova solicitação
- */
 export const sendAdminNotification = async (requestData: {
   title: string;
   description: string;
@@ -17,12 +14,9 @@ export const sendAdminNotification = async (requestData: {
   try {
     console.log('📧 Enviando notificação para admins...');
     
-    // Pega a URL atual do front-end para o botão do e-mail
+
     const frontendUrl = window.location.origin;
-    
-    // Pega lista de emails de admin do .env
-    const adminEmails = import.meta.env.VITE_ADMIN_EMAILS || '';
-    
+    const adminEmails = import.meta.env.VITE_ADMIN_EMAILS || ''; 
     const response = await fetch(`${API_URL}/api/send-admin-notification`, {
       method: 'POST',
       headers: {
@@ -30,8 +24,8 @@ export const sendAdminNotification = async (requestData: {
       },
       body: JSON.stringify({
         ...requestData,
-        frontendUrl, // Adiciona a URL do front-end
-        adminEmails, // Adiciona lista de emails de admin
+        frontendUrl, 
+        adminEmails, 
       }),
     });
 
@@ -50,9 +44,6 @@ export const sendAdminNotification = async (requestData: {
   }
 };
 
-/**
- * Envia confirmação para o solicitante
- */
 export const sendConfirmationEmail = async (requestData: {
   submitterName: string;
   submitterEmail: string;
@@ -85,9 +76,6 @@ export const sendConfirmationEmail = async (requestData: {
   }
 };
 
-/**
- * Envia email quando solicitação é aprovada
- */
 export const sendApprovalEmail = async (requestData: {
   submitterName: string;
   submitterEmail: string;
@@ -119,9 +107,6 @@ export const sendApprovalEmail = async (requestData: {
   }
 };
 
-/**
- * Envia email quando solicitação é rejeitada
- */
 export const sendRejectionEmail = async (requestData: {
   submitterName: string;
   submitterEmail: string;

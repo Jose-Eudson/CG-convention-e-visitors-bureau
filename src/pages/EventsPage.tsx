@@ -15,7 +15,6 @@ const EventsPage = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Carregar eventos do Firebase
   useEffect(() => {
     const loadEvents = async () => {
       setLoading(true);
@@ -28,10 +27,8 @@ const EventsPage = () => {
     loadEvents();
   }, []);
 
-  // Filtrar eventos
   const filteredEvents = useMemo(() => {
     return events.filter(event => {
-      // Filtro de busca
       if (searchTerm) {
         const search = searchTerm.toLowerCase();
         const matchesSearch = 
@@ -41,14 +38,12 @@ const EventsPage = () => {
         if (!matchesSearch) return false;
       }
 
-      // Filtro de categoria
       if (selectedCategory && event.category !== selectedCategory) {
         return false;
       }
 
-      // Filtro de mês
       if (selectedMonth) {
-        const eventMonth = event.date.substring(0, 7); // YYYY-MM
+        const eventMonth = event.date.substring(0, 7); 
         if (eventMonth !== selectedMonth) return false;
       }
 
@@ -56,12 +51,11 @@ const EventsPage = () => {
     });
   }, [events, searchTerm, selectedCategory, selectedMonth]);
 
-  // Agrupar eventos por mês
   const groupedEvents = useMemo(() => {
     const groups: { [key: string]: Event[] } = {};
     
     filteredEvents.forEach(event => {
-      const monthKey = event.date.substring(0, 7); // YYYY-MM
+      const monthKey = event.date.substring(0, 7); 
       if (!groups[monthKey]) {
         groups[monthKey] = [];
       }
@@ -71,7 +65,6 @@ const EventsPage = () => {
     return groups;
   }, [filteredEvents]);
 
-  // Gerar lista de meses disponíveis
   const availableMonths = useMemo(() => {
     const months = new Set<string>();
     events.forEach(event => {
@@ -110,7 +103,6 @@ const EventsPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Hero Section */}
       <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div className="mx-auto max-w-6xl px-4 md:px-6 py-16 md:py-24">
           <div className="relative">
@@ -135,11 +127,9 @@ const EventsPage = () => {
         </div>
       ) : (
         <>
-          {/* Filters */}
           <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
         <div className="mx-auto max-w-6xl px-4 md:px-6 py-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
               <input
@@ -151,7 +141,6 @@ const EventsPage = () => {
               />
             </div>
 
-            {/* Category Filter */}
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
               <select
@@ -171,7 +160,6 @@ const EventsPage = () => {
               </select>
             </div>
 
-            {/* Month Filter */}
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
               <select
@@ -194,14 +182,12 @@ const EventsPage = () => {
             </div>
           </div>
 
-          {/* Results Count */}
           <p className="mt-4 text-sm text-slate-600">
             {filteredEvents.length} {filteredEvents.length === 1 ? 'evento encontrado' : 'eventos encontrados'}
           </p>
         </div>
       </div>
 
-      {/* Events List */}
       <div className="mx-auto max-w-6xl px-4 md:px-6 py-12">
         {Object.keys(groupedEvents).length === 0 ? (
           <div className="text-center py-16">

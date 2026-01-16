@@ -14,7 +14,7 @@ const EventManager = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
-  const [useUrl, setUseUrl] = useState(true); // Toggle entre URL e upload
+  const [useUrl, setUseUrl] = useState(true); 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -28,7 +28,6 @@ const EventManager = () => {
     status: 'open' as Event['status']
   });
 
-  // Carregar eventos
   useEffect(() => {
     loadEvents();
   }, []);
@@ -40,7 +39,6 @@ const EventManager = () => {
     setLoading(false);
   };
 
-  // Upload de imagem para Firebase Storage
   const uploadImage = async (file: File): Promise<string | null> => {
     try {
       setUploadingImage(true);
@@ -61,17 +59,14 @@ const EventManager = () => {
     }
   };
 
-  // Lidar com seleção de arquivo
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validar tipo de arquivo
       if (!file.type.startsWith('image/')) {
         alert('Por favor, selecione apenas arquivos de imagem.');
         return;
       }
       
-      // Validar tamanho (5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('A imagem deve ter no máximo 5MB.');
         return;
@@ -79,7 +74,6 @@ const EventManager = () => {
       
       setImageFile(file);
       
-      // Criar preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -88,20 +82,18 @@ const EventManager = () => {
     }
   };
 
-  // Criar novo evento
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
       let imageUrl = formData.image;
       
-      // Se tiver arquivo selecionado, fazer upload
       if (!useUrl && imageFile) {
         const uploadedUrl = await uploadImage(imageFile);
         if (uploadedUrl) {
           imageUrl = uploadedUrl;
         } else {
-          return; // Cancelar se upload falhou
+          return; 
         }
       }
       
@@ -121,20 +113,18 @@ const EventManager = () => {
     }
   };
 
-  // Atualizar evento
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingEvent) return;
 
     let imageUrl = formData.image;
     
-    // Se tiver arquivo selecionado, fazer upload
     if (!useUrl && imageFile) {
       const uploadedUrl = await uploadImage(imageFile);
       if (uploadedUrl) {
         imageUrl = uploadedUrl;
       } else {
-        return; // Cancelar se upload falhou
+        return; 
       }
     }
     
@@ -150,7 +140,6 @@ const EventManager = () => {
     }
   };
 
-  // Toggle destaque (featured)
   const toggleFeatured = async (eventId: string, currentStatus: boolean) => {
     const success = await updateEvent(eventId, { isFeatured: !currentStatus });
     
@@ -161,7 +150,6 @@ const EventManager = () => {
     }
   };
 
-  // Deletar evento
   const handleDelete = async (eventId: string, eventTitle: string) => {
     const confirmDelete = window.confirm(`Tem certeza que deseja deletar "${eventTitle}"?`);
     
@@ -177,7 +165,6 @@ const EventManager = () => {
     }
   };
 
-  // Editar evento
   const handleEdit = (event: Event) => {
     setEditingEvent(event);
     setFormData({
@@ -198,7 +185,6 @@ const EventManager = () => {
     setShowForm(true);
   };
 
-  // Resetar formulário
   const resetForm = () => {
     setFormData({
       title: '',
@@ -228,7 +214,6 @@ const EventManager = () => {
     });
   };
 
-  // Traduzir categoria
   const translateCategory = (category: Event['category']): string => {
     const translations = {
       conference: 'Conferência',
@@ -243,7 +228,6 @@ const EventManager = () => {
     return translations[category] || category;
   };
 
-  // Traduzir status
   const translateStatus = (status: Event['status']): string => {
     const translations = {
       open: 'Inscrições Abertas',
@@ -268,7 +252,6 @@ const EventManager = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-12 pt-32">
       <div className="mx-auto max-w-6xl px-4">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <Link 
@@ -313,7 +296,6 @@ const EventManager = () => {
           </div>
         </div>
 
-        {/* Formulário */}
         {showForm && (
           <div className="mb-8 rounded-xl bg-white p-6 shadow-lg">
             <h2 className="mb-6 text-xl font-bold text-slate-900">
@@ -413,13 +395,11 @@ const EventManager = () => {
                 </div>
               </div>
 
-              {/* Imagem - URL ou Upload */}
               <div className="space-y-4">
                 <label className="block text-sm font-medium text-slate-700">
                   Imagem do Evento (opcional)
                 </label>
                 
-                {/* Toggle entre URL e Upload */}
                 <div className="flex gap-4 mb-3">
                   <button
                     type="button"
@@ -454,7 +434,6 @@ const EventManager = () => {
                   </button>
                 </div>
 
-                {/* Campo de URL */}
                 {useUrl ? (
                   <input
                     type="url"
@@ -467,7 +446,6 @@ const EventManager = () => {
                     className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
                 ) : (
-                  /* Campo de Upload */
                   <div>
                     <input
                       type="file"
@@ -481,7 +459,6 @@ const EventManager = () => {
                   </div>
                 )}
 
-                {/* Preview da Imagem */}
                 {imagePreview && (
                   <div className="mt-3">
                     <p className="text-sm font-medium text-slate-700 mb-2">Preview:</p>
@@ -561,7 +538,6 @@ const EventManager = () => {
           </div>
         )}
 
-        {/* Lista de eventos */}
         {!showForm && (
           <div className="space-y-4">
             {events.length === 0 ? (
@@ -577,7 +553,6 @@ const EventManager = () => {
                   className="rounded-xl bg-white overflow-hidden shadow-md hover:shadow-lg transition-shadow"
                 >
                   <div className="flex flex-col lg:flex-row">
-                    {/* Imagem */}
                     {event.image && (
                       <div className="lg:w-80 flex-shrink-0 overflow-hidden">
                         <img 
@@ -588,7 +563,6 @@ const EventManager = () => {
                       </div>
                     )}
 
-                    {/* Conteúdo */}
                     <div className="flex-1 p-6">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">

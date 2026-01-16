@@ -30,7 +30,6 @@ const Footer = () => {
 
   return (
     <footer className="relative bg-slate-100 text-slate-600" translate="no">
-      {/* ===== RECORTE EM V ===== */}
       <div className="absolute top-0 left-0 w-full h-20 bg-slate-100">
         <div
           className="absolute bottom-0 left-0 w-full h-20 bg-slate-200"
@@ -40,7 +39,6 @@ const Footer = () => {
         />
       </div>
 
-      {/* ===== LOGO + FRASE ===== */}
       <div className="relative z-10 flex flex-col items-center text-center pt-16">
         <img src={logo} alt="Logo CVB" className="h-12 w-auto" />
 
@@ -58,10 +56,8 @@ const Footer = () => {
         </p>
       </div>
 
-      {/* ===== CONTEÚDO CENTRAL ===== */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-6 pt-10 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:ml-auto md:max-w-4xl">
-          {/* Menu */}
           <div className="text-left">
             <h4 className="text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wide">
               Menu
@@ -81,7 +77,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Seções */}
           <div className="text-left">
             <h4 className="text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wide">
               Seções
@@ -101,7 +96,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contato */}
           <div className="text-left">
             <h4 className="text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wide">
               Contato
@@ -135,7 +129,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* ===== LINHA FINAL ===== */}
         <div className="mt-8 pt-3 border-t border-slate-200 flex items-center justify-center gap-3 text-xs text-slate-400">
           <span>
             © 2026 Convention Bureau Campina Grande —{" "}

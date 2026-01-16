@@ -28,7 +28,6 @@ export const sendAssociateNotification = async (data: AssociateEmailData): Promi
   }
 };
 
-// Email quando novo associado solicita cadastro
 export const sendNewAssociateEmail = async (associate: Associate): Promise<void> => {
   return sendAssociateNotification({
     associate,
@@ -36,7 +35,6 @@ export const sendNewAssociateEmail = async (associate: Associate): Promise<void>
   });
 };
 
-// Email quando associado é aprovado
 export const sendApprovalEmail = async (associate: Associate): Promise<void> => {
   return sendAssociateNotification({
     associate,
@@ -44,7 +42,6 @@ export const sendApprovalEmail = async (associate: Associate): Promise<void> => 
   });
 };
 
-// Email quando associado é rejeitado
 export const sendRejectionEmail = async (associate: Associate & { rejectionReason?: string }): Promise<void> => {
   return sendAssociateNotification({
     associate,

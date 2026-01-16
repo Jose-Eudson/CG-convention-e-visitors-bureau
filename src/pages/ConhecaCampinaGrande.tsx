@@ -44,11 +44,9 @@ const ConhecaCampinaGrande = () => {
 
     return (
         <main className="relative bg-gray-100 py-12 md:py-24">
-            {/* Overlay leve para profundidade */}
             <div className="absolute inset-0 pointer-events-none bg-gray-900/5"></div>
 
             <div className="mx-auto max-w-6xl px-4 md:px-6 z-10">
-                {/* BOTÃO VOLTAR */}
                 <div className="fixed left-4 top-24 z-40">
                     <Link
                         to="/"
@@ -59,14 +57,11 @@ const ConhecaCampinaGrande = () => {
                     </Link>
                 </div>
 
-                {/* TÍTULO */}
                 <h1 className="mb-8 text-3xl font-bold text-gray-800 drop-shadow-sm">
                     Conheça Campina Grande
                 </h1>
 
-                {/* BUSCA + FILTROS */}
                 <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    {/* BUSCA */}
                     <div className="relative w-full md:max-w-sm">
                         <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input
@@ -78,7 +73,6 @@ const ConhecaCampinaGrande = () => {
                         />
                     </div>
 
-                    {/* FILTRO CATEGORIAS */}
                     <div className="flex flex-wrap gap-2">
                         {categorias.map((categoria) => (
                             <button
@@ -96,7 +90,6 @@ const ConhecaCampinaGrande = () => {
                     </div>
                 </div>
 
-                {/* GRID DE LOCAIS */}
                 {locaisFiltrados.length === 0 ? (
                     <p className="text-gray-500">
                         Nenhum local encontrado.
@@ -131,7 +124,6 @@ const ConhecaCampinaGrande = () => {
                     </div>
                 )}
 
-                {/* MODAL */}
                 {localSelecionado && (
                     <LocalModal
                         local={localSelecionado}

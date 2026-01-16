@@ -4,7 +4,6 @@ import AdicionarEmpresa from "./components/add";
 import "./index.css";
 import "./i18n";
 import { AuthProvider } from "./contexts/AuthContext";
-import ScrollToTop from "./components/ScrollToTop";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -19,7 +18,6 @@ import AssociatesManagerPage from "./pages/AssociatesManagerPage";
 import LoginPage from "./pages/LoginPage";
 import FormularioAssoc from "./components/form";
 
-/* Página de proposta / formulário */
 function PropostaPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -35,13 +33,11 @@ function PropostaPage() {
 export default function App() {
   return (
     <AuthProvider>
-      <ScrollToTop />
 
       <div className="min-h-screen bg-slate-50 scroll-smooth">
         <Header />
 
         <Routes>
-          {/* Públicas */}
           <Route path="/" element={<Home />} />
           <Route path="/conheca" element={<ConhecaCampinaGrande />} />
           <Route path="/proposta" element={<PropostaPage />} />
@@ -49,7 +45,6 @@ export default function App() {
           <Route path="/solicitar-evento" element={<EventRequestPage />} />
           <Route path="/admin/login" element={<LoginPage />} />
 
-          {/* --- NOVA ROTA ADICIONADA AQUI --- */}
           <Route
             path="/admin/adicionar"
             element={
@@ -61,7 +56,6 @@ export default function App() {
             }
           />
 
-          {/* Protegidas */}
           <Route
             path="/admin/eventos"
             element={

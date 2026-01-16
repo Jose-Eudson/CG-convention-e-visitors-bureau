@@ -15,7 +15,6 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHero, setIsHero] = useState(true);
   const [isVisible, setIsVisible] = useState(true);
-  const [isAtTop, setIsAtTop] = useState(true);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
@@ -23,54 +22,35 @@ const Header = () => {
   const isHomePage = location.pathname === "/";
   const isAdminRoute = location.pathname.startsWith("/admin");
 
-  /* Detecta HERO e SEÇÕES */
-  useEffect(() => {
-    // Se não estiver na home, sempre usar estilo não-hero (header branco)
-    if (!isHomePage) {
-      setIsHero(false);
-      return;
-    }
-
-    const sections = document.querySelectorAll<HTMLElement>(
-      "section[data-header]"
-    );
-    if (!sections.length) {
-      setIsHero(false);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsHero(
-              (entry.target as HTMLElement).getAttribute("data-header") ===
-                "hero"
-            );
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, [isHomePage]);
-
-  /* Esconde ao descer */
+  
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
+      
+      
       setIsVisible(currentY < lastScrollY.current || currentY < 80);
-      setIsAtTop(currentY < 50);
       lastScrollY.current = currentY;
+
+      
+      if (isHomePage) {
+        const hero = document.getElementById("inicio");
+        if (hero) {
+          const rect = hero.getBoundingClientRect();
+          
+          setIsHero(rect.bottom > 80);
+        }
+      } else {
+        setIsHero(false);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
+    
+    handleScroll();
+    
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHomePage]);
 
-  /* Clique fora idioma */
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -95,12 +75,12 @@ const Header = () => {
     { id: "associados", label: t("menu.associados") },
   ];
 
-  const textColor = (isAtTop && isHero && isHomePage) ? "text-white" : "text-black";
-  const hoverColor = (isAtTop && isHero && isHomePage)
+  const textColor = (isHero && isHomePage) ? "text-white" : "text-black";
+  const hoverColor = (isHero && isHomePage)
     ? "hover:text-emerald-300"
     : "hover:text-emerald-600";
 
-  // Handler único, compatível com desktop e mobile
+  
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     sectionId: string
@@ -136,11 +116,11 @@ const Header = () => {
         transition-[transform,opacity,background-color,backdrop-filter]
         duration-700 ease-in-out
         ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"}
-        ${isAtTop && isHero && isHomePage ? "bg-transparent backdrop-blur-0 shadow-none" : "bg-white/70 backdrop-blur-md shadow-sm"}
+        ${isHero && isHomePage ? "bg-transparent backdrop-blur-0 shadow-none" : "bg-white/70 backdrop-blur-md shadow-sm"}
       `}
     >
       <div className="flex items-center justify-between px-4 md:px-6 lg:px-12 py-4">
-        {/* LOGO */}
+        
         <div className="flex items-center gap-3">
           <img src={logo} alt={t("logoAlt")} className="h-10 md:h-12" />
           <div className={`hidden sm:flex flex-col ${textColor}`}>
@@ -153,7 +133,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* MENU DESKTOP */}
+        
         <nav className="hidden lg:flex items-center gap-8">
           {navItems.map((item) => (
             <a
@@ -167,7 +147,7 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* AÇÕES */}
+        
         <div className="flex items-center gap-4">
           {user && isAdminRoute && (
             <button
@@ -180,7 +160,7 @@ const Header = () => {
             </button>
           )}
 
-          {/* IDIOMA */}
+          
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsLanguageOpen(!isLanguageOpen)}
@@ -213,7 +193,7 @@ const Header = () => {
             )}
           </div>
 
-          {/* MOBILE */}
+          
           <button
             className={`lg:hidden ${textColor}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -223,7 +203,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* MENU MOBILE */}
+      
       {isMobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-100 bg-white">
           <nav className="flex flex-col p-4">

@@ -4,12 +4,10 @@ import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getApprovedAssociates } from "../services/associatesService";
 
-// Importando as imagens dos logos das parcerias
 import brasilCvbLogo from "../assets/logos_partnerships/logo-brasil-cvb.png";
 import accgLogo from "../assets/logos_partnerships/accg_min.png";
 import sindcampinaLogo from "../assets/logos_partnerships/sind_campina.png";
 
-// Tipo para as opções de categoria (fixas no código para garantir integridade)
 type CategoryKey =
   | "institucional"
   | "hospedagem"
@@ -54,7 +52,6 @@ const Associates = () => {
   const { t } = useTranslation("associates");
   const navigate = useNavigate();
 
-  // Parcerias Institucionais como Associates
   const institutionalPartners: Associate[] = [
     {
       name: "Brasil CVB",
@@ -76,11 +73,9 @@ const Associates = () => {
     },
   ];
 
-  // Estado para associados do Firestore
   const [firestoreAssociates, setFirestoreAssociates] = useState<Associate[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Buscar associados do Firestore
   useEffect(() => {
     const fetchAssociates = async () => {
       try {
@@ -97,13 +92,11 @@ const Associates = () => {
     fetchAssociates();
   }, []);
 
-  // Recupera a lista de associados do JSON (fallback)
   const rawAssociates = t("associates", { returnObjects: true });
   const associatesFromJson: Associate[] = Array.isArray(rawAssociates)
     ? (rawAssociates as Associate[])
     : [];
 
-  // Combinar: JSON primeiro, depois institucionais, por último Firestore (novos ficam no fim)
   const associates: Associate[] = [
     ...associatesFromJson,
     ...institutionalPartners,
@@ -124,13 +117,11 @@ const Associates = () => {
   const perPage = 8;
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Debounce da busca
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(handler);
   }, [search]);
 
-  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -145,12 +136,10 @@ const Associates = () => {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Resetar página quando filtro muda
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch, category]);
 
-  // Filtragem
   const filtered = useMemo(() => {
     const s = debouncedSearch.trim().toLowerCase();
     return associates.filter((a) => {
@@ -163,7 +152,6 @@ const Associates = () => {
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
-  // Função auxiliar para traduzir a categoria visualmente
   const getCategoryLabel = (catValueInJson: string) => {
     const found = CATEGORY_MAP.find((c) => c.valuePt === catValueInJson);
     return found
@@ -172,7 +160,7 @@ const Associates = () => {
   };
 
   return (
-    <section id="associados" className="bg-slate-50 py-12 md:py-20">
+    <section id="associados" className="bg-slate-100 py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <h2 className="mb-4 text-2xl md:text-3xl font-bold text-orange-600">
           {t("title", { defaultValue: "Conheça nossos parceiros" })}
@@ -254,7 +242,6 @@ const Associates = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {loading ? (
-            // Loading skeleton
             Array.from({ length: 8 }).map((_, idx) => (
               <div
                 key={`skeleton-${idx}`}
