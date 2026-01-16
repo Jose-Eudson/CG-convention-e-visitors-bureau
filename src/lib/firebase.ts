@@ -12,17 +12,13 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Verificar se todas as variáveis de ambiente estão configuradas
 const isConfigured = Object.values(firebaseConfig).every(value => value !== undefined);
 
 if (!isConfigured) {
   console.warn('⚠️ Firebase não está totalmente configurado. Verifique o arquivo .env.local');
 }
 
-// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
-
-// Inicializar serviços
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const auth = getAuth(app);

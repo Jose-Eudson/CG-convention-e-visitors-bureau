@@ -9,7 +9,6 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  // Mostra loading enquanto verifica autenticação
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -21,11 +20,9 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  // Se não estiver autenticado, redireciona para login passando a rota de origem
   if (!user) {
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 
-  // Se estiver autenticado, mostra o conteúdo
   return <>{children}</>;
 }

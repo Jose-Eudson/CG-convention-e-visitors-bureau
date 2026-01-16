@@ -34,15 +34,13 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/20 p-4"
-      onClick={onClose} // fecha ao clicar fora
+      onClick={onClose} 
     >
       <div
         className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-lg flex flex-col"
-        onClick={(e) => e.stopPropagation()} // impede fechar ao clicar dentro
+        onClick={(e) => e.stopPropagation()} 
       >
-        {/* Conteúdo com scroll interno */}
         <div className="overflow-y-auto max-h-[90vh]">
-          {/* Imagem */}
           <img
             src={local.imagem}
             alt={local.nome}
@@ -59,7 +57,6 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
             </span>
             <p className="mt-4 text-gray-700">{local.descricao}</p>
 
-            {/* Endereço e Contatos */}
             <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
                 <h4 className="text-sm font-semibold text-gray-700 mb-1">
@@ -110,7 +107,6 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
               )}
             </div>
 
-            {/* Mapa */}
             <div className="mt-6">
               <iframe
                 src={getEmbedUrl(local.googleMapsUrl)}
@@ -123,7 +119,6 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
           </div>
         </div>
 
-        {/* Botão fechar */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-700 shadow hover:text-red-500 transition"

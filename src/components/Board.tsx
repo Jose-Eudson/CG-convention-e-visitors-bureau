@@ -13,7 +13,7 @@ import luizImg from "../assets/luizcarloslira.jpg";
 import izabelliImg from "../assets/izabelliaraujo.jpg";
 import tupacImg from "../assets/tupacrodrigues.jpg";
 
-/* ---------- Arrows ---------- */
+
 const NextArrow = ({ onClick }: { onClick?: () => void }) => (
   <button
     onClick={onClick}
@@ -34,7 +34,7 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
   </button>
 );
 
-/* ---------- Component ---------- */
+
 const Board = () => {
   const { t } = useTranslation("board");
 
@@ -80,11 +80,11 @@ const Board = () => {
         <Slider {...settings}>
           {boardMembers.map((member, index) => (
             <div key={index} className="h-full px-4 pb-16">
-              {/* Slide wrapper */}
+
               <div className="flex h-full">
-                {/* Card */}
+
                 <div className="group flex h-[320px] w-full flex-col justify-between rounded-t-[28px] rounded-b-2xl bg-white border border-slate-300 p-6 text-center transition-all duration-500 hover:-translate-y-1 hover:shadow-md">
-                  {/* Conteúdo superior */}
+
                   <div className="flex flex-col items-center">
                     <div className="mb-4 h-32 w-32 overflow-hidden rounded-full border-4 border-slate-200 shadow-sm">
                       <img
@@ -99,7 +99,7 @@ const Board = () => {
                     </h3>
                   </div>
 
-                  {/* Cargo */}
+
                   <div className="pt-3">
                     <span className="inline-block rounded-full bg-slate-50 px-4 py-1 text-sm font-medium text-emerald-600">
                       {member.role}
@@ -112,7 +112,7 @@ const Board = () => {
         </Slider>
       </div>
 
-      {/* ===== CSS Animations + Slick Fix ===== */}
+
       <style>
         {`
           @keyframes fadeUp {
@@ -128,7 +128,7 @@ const Board = () => {
             animation-delay: 0.1s;
           }
 
-          /* Slick normalize */
+
           .slick-track {
             display: flex !important;
           }

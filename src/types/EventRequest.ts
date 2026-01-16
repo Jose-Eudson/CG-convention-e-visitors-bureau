@@ -10,7 +10,6 @@ export interface EventRequest {
   category: 'conference' | 'workshop' | 'seminar' | 'exhibition' | 'networking' | 'cultural' | 'sports' | 'other';
   status: 'pending' | 'approved' | 'rejected';
   
-  // Informações do solicitante
   submittedBy: {
     name: string;
     email: string;
@@ -18,7 +17,6 @@ export interface EventRequest {
     organization?: string;
   };
   
-  // Metadados
   submittedAt: string;
   reviewedAt?: string;
   reviewedBy?: string;

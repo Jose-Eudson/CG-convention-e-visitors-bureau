@@ -70,7 +70,7 @@ const Institutional = () => {
                   {group.map((service) => (
                     <div
                       key={service.key}
-                      className="flex flex-col items-center justify-center h-[200px] rounded-xl bg-white text-slate-700 border border-slate-300 p-6 text-center shadow-sm"
+                      className="flex flex-col items-center justify-center h-[200px] rounded-xl bg-white text-slate-700 border border-slate-300 p-6 text-center shadow-sm hover:shadow-md transition-opacity duration-300"
                     >
                       <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-600 text-white mb-3">
                         <service.icon className="h-6 w-6" />

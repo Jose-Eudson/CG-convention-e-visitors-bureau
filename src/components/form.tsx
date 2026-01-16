@@ -35,20 +35,17 @@ const FormularioAssoc: React.FC = () => {
     const formData = new FormData(formRef.current);
 
     try {
-      // 1. Upload da logo (se houver)
       let logoUrl = '';
       if (logoFile) {
         const nomeEmpresa = formData.get('nomeFantasia') as string || 'empresa';
         logoUrl = await uploadAssociateLogo(logoFile, nomeEmpresa);
       }
 
-      // 2. Preparar dados do associado
       const associateData = {
         name: formData.get('nomeFantasia') as string,
         category: formData.get('categoria') as string,
         logo: logoUrl,
         instagram: formData.get('instagram') as string || '',
-        // Dados adicionais para o admin revisar
         razaoSocial: formData.get('razaoSocial') as string,
         cnpj: formData.get('cnpj') as string,
         inscricaoEstadual: formData.get('inscricaoEstadual') as string || '',
@@ -66,10 +63,8 @@ const FormularioAssoc: React.FC = () => {
         numeroFuncionarios: formData.get('numeroFuncionarios') as string || '',
       };
 
-      // 3. Salvar no Firestore
       const associateId = await addAssociate(associateData);
 
-      // 4. Enviar email de notificação para admin
       try {
         await sendNewAssociateEmail({
           ...associateData,
@@ -97,7 +92,6 @@ const FormularioAssoc: React.FC = () => {
     <div className="min-h-screen bg-slate-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         
-        {/* BOTÃO VOLTAR */}
         <div className="fixed left-4 top-24 z-40">
           <button
             onClick={handleVoltar}

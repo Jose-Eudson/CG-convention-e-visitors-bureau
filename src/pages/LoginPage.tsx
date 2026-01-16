@@ -11,10 +11,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Pega a rota de origem (de onde veio antes do login) ou usa default
   const from = (location.state as any)?.from?.pathname || '/admin/eventos';
 
-  // Se já estiver logado, redireciona para a rota de origem
   if (user) {
     return <Navigate to={from} replace />;
   }
@@ -30,7 +28,6 @@ export default function LoginPage() {
     } catch (error: any) {
       console.error('Erro ao fazer login:', error);
       
-      // Mensagens de erro em português
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
         setError('E-mail ou senha incorretos');
       } else if (error.code === 'auth/user-not-found') {

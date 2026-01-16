@@ -17,12 +17,11 @@ export interface Associate {
   id?: string;
   name: string;
   category: string;
-  logo: string; // URL da imagem
+  logo: string; 
   instagram: string;
   status: 'pending' | 'approved' | 'rejected';
   createdAt: Timestamp;
   updatedAt: Timestamp;
-  // Dados adicionais do formulário
   razaoSocial?: string;
   cnpj?: string;
   inscricaoEstadual?: string;
@@ -42,7 +41,6 @@ export interface Associate {
 
 const ASSOCIATES_COLLECTION = 'associates';
 
-// Buscar todos os associados aprovados
 export const getApprovedAssociates = async (): Promise<Associate[]> => {
   try {
     const q = query(
@@ -56,7 +54,6 @@ export const getApprovedAssociates = async (): Promise<Associate[]> => {
       ...doc.data()
     } as Associate));
     
-    // Ordenar por data de criação (mais antigos primeiro - novos aparecem no final)
     return associates.sort((a, b) => {
       const timeA = a.createdAt?.toMillis() || 0;
       const timeB = b.createdAt?.toMillis() || 0;
@@ -68,7 +65,6 @@ export const getApprovedAssociates = async (): Promise<Associate[]> => {
   }
 };
 
-// Buscar todos os associados (para admin)
 export const getAllAssociates = async (): Promise<Associate[]> => {
   try {
     const q = query(
@@ -87,7 +83,6 @@ export const getAllAssociates = async (): Promise<Associate[]> => {
   }
 };
 
-// Buscar associados pendentes
 export const getPendingAssociates = async (): Promise<Associate[]> => {
   try {
     const q = query(
@@ -107,7 +102,6 @@ export const getPendingAssociates = async (): Promise<Associate[]> => {
   }
 };
 
-// Upload de logo
 export const uploadAssociateLogo = async (file: File, associateName: string): Promise<string> => {
   try {
     const timestamp = Date.now();
@@ -124,7 +118,6 @@ export const uploadAssociateLogo = async (file: File, associateName: string): Pr
   }
 };
 
-// Adicionar novo associado (status pendente)
 export const addAssociate = async (
   associate: Omit<Associate, 'id' | 'status' | 'createdAt' | 'updatedAt'>
 ): Promise<string> => {
@@ -143,7 +136,6 @@ export const addAssociate = async (
   }
 };
 
-// Aprovar associado
 export const approveAssociate = async (id: string): Promise<void> => {
   try {
     const docRef = doc(db, ASSOCIATES_COLLECTION, id);
@@ -157,7 +149,6 @@ export const approveAssociate = async (id: string): Promise<void> => {
   }
 };
 
-// Rejeitar associado
 export const rejectAssociate = async (id: string): Promise<void> => {
   try {
     const docRef = doc(db, ASSOCIATES_COLLECTION, id);
@@ -171,10 +162,8 @@ export const rejectAssociate = async (id: string): Promise<void> => {
   }
 };
 
-// Deletar associado
 export const deleteAssociate = async (id: string, logoUrl: string): Promise<void> => {
   try {
-    // Deletar logo do storage
     if (logoUrl && logoUrl.includes('firebase')) {
       try {
         const logoRef = ref(storage, logoUrl);
@@ -184,7 +173,6 @@ export const deleteAssociate = async (id: string, logoUrl: string): Promise<void
       }
     }
     
-    // Deletar documento
     await deleteDoc(doc(db, ASSOCIATES_COLLECTION, id));
   } catch (error) {
     console.error('Erro ao deletar associado:', error);
@@ -192,7 +180,6 @@ export const deleteAssociate = async (id: string, logoUrl: string): Promise<void
   }
 };
 
-// Atualizar associado
 export const updateAssociate = async (
   id: string,
   data: Partial<Omit<Associate, 'id' | 'createdAt'>>

@@ -10,7 +10,6 @@ import type { EventRequest } from '../types/EventRequest';
 const EventRequestPage = () => {
   const navigate = useNavigate();
   
-  // Scroll para o topo quando a página carregar
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -37,7 +36,6 @@ const EventRequestPage = () => {
     }
   });
 
-  // Upload de imagem
   const uploadImage = async (file: File): Promise<string | null> => {
     try {
       setUploadingImage(true);
@@ -88,7 +86,6 @@ const EventRequestPage = () => {
     try {
       let imageUrl = formData.image;
       
-      // Upload de imagem se necessário
       if (!useUrl && imageFile) {
         const uploadedUrl = await uploadImage(imageFile);
         if (uploadedUrl) {
@@ -99,7 +96,6 @@ const EventRequestPage = () => {
         }
       }
 
-      // Preparar dados da solicitação (remover campos vazios)
       const requestData: any = {
         title: formData.title,
         description: formData.description,
@@ -113,7 +109,6 @@ const EventRequestPage = () => {
         }
       };
 
-      // Adicionar campos opcionais apenas se preenchidos
       if (formData.endDate) requestData.endDate = formData.endDate;
       if (formData.externalLink) requestData.externalLink = formData.externalLink;
       if (formData.submittedBy.phone) requestData.submittedBy.phone = formData.submittedBy.phone;
@@ -123,10 +118,8 @@ const EventRequestPage = () => {
       const requestId = await createEventRequest(requestData);
 
       if (requestId) {
-        // Enviar emails de notificação
         console.log('📧 Enviando notificações por email...');
         
-        // Email para o solicitante
         const confirmationSent = await sendConfirmationEmail({
           submitterName: formData.submittedBy.name,
           submitterEmail: formData.submittedBy.email,
@@ -135,7 +128,6 @@ const EventRequestPage = () => {
           location: formData.location
         });
 
-        // Email para o admin
         const adminNotified = await sendAdminNotification({
           title: formData.title,
           description: formData.description,
@@ -171,7 +163,6 @@ const EventRequestPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-12">
       <div className="mx-auto max-w-4xl px-4">
-        {/* Header */}
         <Link 
           to="/" 
           className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 transition-colors"
@@ -188,10 +179,8 @@ const EventRequestPage = () => {
           </p>
         </div>
 
-        {/* Formulário */}
         <div className="rounded-xl bg-white p-8 shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Informações do Solicitante */}
             <div className="border-b pb-6">
               <h2 className="text-xl font-bold text-slate-900 mb-4">
                 Suas Informações
@@ -264,7 +253,6 @@ const EventRequestPage = () => {
               </div>
             </div>
 
-            {/* Informações do Evento */}
             <div>
               <h2 className="text-xl font-bold text-slate-900 mb-4">
                 Informações do Evento
@@ -371,7 +359,6 @@ const EventRequestPage = () => {
                 />
               </div>
 
-              {/* Imagem */}
               <div className="mt-4 space-y-4">
                 <label className="block text-sm font-medium text-slate-700">
                   Imagem do Evento (opcional)
@@ -458,7 +445,6 @@ const EventRequestPage = () => {
               </div>
             </div>
 
-            {/* Aviso */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
                 ℹ️ Sua solicitação será analisada por nossa equipe. 
@@ -466,7 +452,6 @@ const EventRequestPage = () => {
               </p>
             </div>
 
-            {/* Botões */}
             <div className="flex gap-3">
               <button
                 type="submit"

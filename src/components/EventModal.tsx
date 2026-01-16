@@ -35,7 +35,6 @@ const EventModal = ({ event, isOpen, onClose }: EventModalProps) => {
 
   return (
     <>
-      {/* Modal Container com Overlay */}
       <div 
         className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
@@ -45,7 +44,6 @@ const EventModal = ({ event, isOpen, onClose }: EventModalProps) => {
             className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Botão Fechar */}
             <button
               onClick={onClose}
               className="absolute top-4 right-4 z-10 rounded-full bg-white/90 p-2 text-slate-600 hover:bg-white hover:text-slate-900 transition-all shadow-lg hover:shadow-xl"
@@ -53,7 +51,6 @@ const EventModal = ({ event, isOpen, onClose }: EventModalProps) => {
               <X className="h-6 w-6" />
             </button>
 
-            {/* Imagem */}
             {event.image && (
               <div className="relative h-64 md:h-96 w-full overflow-hidden">
                 <img
@@ -65,9 +62,7 @@ const EventModal = ({ event, isOpen, onClose }: EventModalProps) => {
               </div>
             )}
 
-            {/* Conteúdo */}
             <div className="p-6 md:p-8">
-              {/* Categoria e Status */}
               <div className="flex flex-wrap gap-2 mb-4">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-800">
                   <Tag className="h-3 w-3" />
@@ -80,12 +75,10 @@ const EventModal = ({ event, isOpen, onClose }: EventModalProps) => {
                 )}
               </div>
 
-              {/* Título */}
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
                 {event.title}
               </h2>
 
-              {/* Data e Local */}
               <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6 text-slate-600">
                 <div className="flex items-center gap-2">
                   <div className="rounded-lg bg-indigo-100 p-2">
@@ -119,10 +112,8 @@ const EventModal = ({ event, isOpen, onClose }: EventModalProps) => {
                 </div>
               </div>
 
-              {/* Divisor */}
               <div className="border-t border-slate-200 my-6" />
 
-              {/* Descrição */}
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-slate-900 mb-3">Sobre o Evento</h3>
                 <p className="text-slate-700 leading-relaxed whitespace-pre-line">
@@ -130,7 +121,6 @@ const EventModal = ({ event, isOpen, onClose }: EventModalProps) => {
                 </p>
               </div>
 
-              {/* Link Externo */}
               {event.externalLink && (
                 <div className="mt-6 pt-6 border-t border-slate-200">
                   <a

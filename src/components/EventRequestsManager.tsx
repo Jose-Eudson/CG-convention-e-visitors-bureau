@@ -29,7 +29,7 @@ const EventRequestsManager = () => {
   const handleApprove = async (requestId: string) => {
     if (!confirm('Aprovar esta solicitação e criar o evento?')) return;
     
-    // Encontrar a solicitação para obter dados para o email
+
     const request = requests.find(r => r.id === requestId);
     if (!request) return;
     
@@ -37,7 +37,7 @@ const EventRequestsManager = () => {
     const success = await approveEventRequest(requestId);
     
     if (success) {
-      // Enviar email de aprovação
+
       console.log('📧 Enviando email de aprovação...');
       await sendApprovalEmail({
         submitterName: request.submittedBy.name,
@@ -58,7 +58,7 @@ const EventRequestsManager = () => {
     const reason = prompt('Motivo da rejeição (será enviado por email):');
     if (!reason) return;
     
-    // Encontrar a solicitação para obter dados para o email
+
     const request = requests.find(r => r.id === requestId);
     if (!request) return;
     
@@ -66,7 +66,7 @@ const EventRequestsManager = () => {
     const success = await rejectEventRequest(requestId, reason);
     
     if (success) {
-      // Enviar email de rejeição
+
       console.log('📧 Enviando email de rejeição...');
       await sendRejectionEmail({
         submitterName: request.submittedBy.name,
@@ -119,7 +119,7 @@ const EventRequestsManager = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-12 pt-32">
       <div className="mx-auto max-w-6xl px-4">
-        {/* Header */}
+
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <Link 
@@ -146,7 +146,7 @@ const EventRequestsManager = () => {
           </div>
         </div>
 
-        {/* Lista de Solicitações */}
+
         {requests.length === 0 ? (
           <div className="rounded-xl bg-white p-12 text-center shadow-md">
             <p className="text-slate-600 text-lg">Nenhuma solicitação pendente no momento.</p>
@@ -159,7 +159,7 @@ const EventRequestsManager = () => {
                 className="rounded-xl bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden"
               >
                 <div className="flex flex-col lg:flex-row">
-                  {/* Imagem */}
+
                   {request.image && (
                     <div className="lg:w-80 flex-shrink-0 overflow-hidden">
                       <img 
@@ -170,7 +170,7 @@ const EventRequestsManager = () => {
                     </div>
                   )}
 
-                  {/* Conteúdo */}
+
                   <div className="flex-1 p-6">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
@@ -239,7 +239,7 @@ const EventRequestsManager = () => {
         )}
       </div>
 
-      {/* Modal de Detalhes */}
+
       {isModalOpen && selectedRequest && (
         <>
           <div

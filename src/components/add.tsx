@@ -26,12 +26,9 @@ const AdicionarEmpresa: React.FC = () => {
   };
 
   return (
-    /* mt-24 garante que fique abaixo do Header, py-10 dá respiro no final da página */
     <div className="mt-24 mb-10 px-4 min-h-[calc(100vh-150px)] flex flex-col items-center justify-center">
       
       <div className="flex flex-col md:flex-row gap-12 w-full max-w-5xl items-center md:items-start justify-center">
-        
-        {/* FORMULÁRIO */}
         <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-t-8 border-orange-500">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">Aprovar Parceiro</h2>
           
@@ -78,7 +75,6 @@ const AdicionarEmpresa: React.FC = () => {
           </form>
         </div>
 
-        {/* PRÉVIA DO CARD */}
         <div className="flex flex-col items-center sticky top-28">
           <p className="text-xs text-gray-400 mb-4 font-black uppercase tracking-widest">Visualização no Site</p>
           <div className="bg-white w-72 p-5 rounded-[2rem] shadow-2xl border border-gray-50 transform scale-110 md:scale-100">

@@ -2,12 +2,12 @@ export interface Event {
   id: string;
   title: string;
   description: string;
-  date: string; // ISO format YYYY-MM-DD
-  endDate?: string; // Para eventos com múltiplos dias
+  date: string; 
+  endDate?: string; 
   location: string;
-  image?: string; // URL da imagem
-  externalLink?: string; // Link para inscrição/mais informações
-  isFeatured: boolean; // Se é evento em destaque
+  image?: string; 
+  externalLink?: string; 
+  isFeatured: boolean; 
   category: 'conference' | 'workshop' | 'seminar' | 'exhibition' | 'networking' | 'cultural' | 'sports' | 'other';
   status: 'upcoming' | 'ongoing' | 'completed' | 'cancelled' | 'open';
 }

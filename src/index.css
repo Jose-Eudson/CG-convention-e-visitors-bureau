@@ -14,7 +14,6 @@
   opacity: 1;
 }
 
-/* Se for fonte local */
 @font-face {
   font-family: 'ConventionFont';
   src: url('./assets/fonts/ConventionFont.woff2') format('woff2');
