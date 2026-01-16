@@ -18,6 +18,7 @@ const AssociatesManagerPage = () => {
   const [showRejectModal, setShowRejectModal] = useState<{ id: string; name: string; associate: Associate } | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState<{ id: string; name: string; logo: string } | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState<{ type: 'approve' | 'reject' | 'delete'; message: string } | null>(null);
 
   const fetchAssociates = async () => {
     try {
@@ -48,12 +49,12 @@ const AssociatesManagerPage = () => {
         console.warn('Email não enviado, mas associado foi aprovado:', emailError);
       }
       
-      alert('✅ Associado aprovado com sucesso!');
+      setShowApproveModal(null);
+      setShowSuccessModal({ type: 'approve', message: 'Associado aprovado com sucesso!' });
       fetchAssociates();
     } catch (error) {
       console.error('Erro ao aprovar:', error);
       alert('❌ Erro ao aprovar associado');
-    } finally {
       setShowApproveModal(null);
     }
   };
@@ -75,12 +76,13 @@ const AssociatesManagerPage = () => {
         console.warn('Email não enviado, mas associado foi rejeitado:', emailError);
       }
       
-      alert('✅ Associado rejeitado!');
+      setShowRejectModal(null);
+      setRejectionReason('');
+      setShowSuccessModal({ type: 'reject', message: 'Associado rejeitado!' });
       fetchAssociates();
     } catch (error) {
       console.error('Erro ao rejeitar:', error);
       alert('❌ Erro ao rejeitar associado');
-    } finally {
       setShowRejectModal(null);
       setRejectionReason('');
     }
@@ -91,12 +93,12 @@ const AssociatesManagerPage = () => {
     
     try {
       await deleteAssociate(showDeleteModal.id, showDeleteModal.logo);
-      alert('✅ Associado deletado!');
+      setShowDeleteModal(null);
+      setShowSuccessModal({ type: 'delete', message: 'Associado deletado!' });
       fetchAssociates();
     } catch (error) {
       console.error('Erro ao deletar:', error);
       alert('❌ Erro ao deletar associado');
-    } finally {
       setShowDeleteModal(null);
     }
   };
@@ -118,10 +120,8 @@ const AssociatesManagerPage = () => {
       'Bairro': a.bairro || '',
       'CEP': a.cep || '',
       'Responsável': a.nomeResponsavel || '',
-      'CPF Responsável': a.cpfResponsavel || '',
       'Telefone': a.telefone || '',
       'Email': a.email || '',
-      'Cargo': a.cargo || '',
       'Instagram': a.instagram || '',
       'Status': a.status === 'pending' ? 'Pendente' : a.status === 'approved' ? 'Aprovado' : 'Rejeitado',
       'Data Criação': a.createdAt?.toDate().toLocaleDateString('pt-BR') || ''
@@ -335,18 +335,6 @@ const AssociatesManagerPage = () => {
                         <p className="text-sm">
                           <span className="font-semibold text-slate-600">Nome:</span>{' '}
                           <span className="text-slate-800">{associate.nomeResponsavel}</span>
-                        </p>
-                      )}
-                      {associate.cpfResponsavel && (
-                        <p className="text-sm">
-                          <span className="font-semibold text-slate-600">CPF:</span>{' '}
-                          <span className="text-slate-800">{associate.cpfResponsavel}</span>
-                        </p>
-                      )}
-                      {associate.cargo && (
-                        <p className="text-sm">
-                          <span className="font-semibold text-slate-600">Cargo:</span>{' '}
-                          <span className="text-slate-800">{associate.cargo}</span>
                         </p>
                       )}
                       {associate.telefoneResponsavel && (
@@ -581,6 +569,48 @@ const AssociatesManagerPage = () => {
                       Deletar
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showSuccessModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowSuccessModal(null)}
+          />
+          <div className="fixed inset-0 z-[70] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className={`mx-auto w-20 h-20 rounded-2xl flex items-center justify-center mb-6 ${
+                    showSuccessModal.type === 'approve' ? 'bg-emerald-100' :
+                    showSuccessModal.type === 'reject' ? 'bg-orange-100' :
+                    'bg-slate-100'
+                  }`}>
+                    {showSuccessModal.type === 'approve' && <CheckCircle className="h-10 w-10 text-emerald-600" />}
+                    {showSuccessModal.type === 'reject' && <XCircle className="h-10 w-10 text-orange-600" />}
+                    {showSuccessModal.type === 'delete' && <Trash2 className="h-10 w-10 text-slate-600" />}
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                    {showSuccessModal.type === 'approve' && 'Aprovado!'}
+                    {showSuccessModal.type === 'reject' && 'Rejeitado!'}
+                    {showSuccessModal.type === 'delete' && 'Deletado!'}
+                  </h3>
+                  <p className="text-slate-600 mb-8">{showSuccessModal.message}</p>
+                  <button
+                    onClick={() => setShowSuccessModal(null)}
+                    className={`px-8 py-3 rounded-xl text-white font-semibold transition-all ${
+                      showSuccessModal.type === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' :
+                      showSuccessModal.type === 'reject' ? 'bg-orange-600 hover:bg-orange-700' :
+                      'bg-slate-600 hover:bg-slate-700'
+                    }`}
+                  >
+                    OK
+                  </button>
                 </div>
               </div>
             </div>

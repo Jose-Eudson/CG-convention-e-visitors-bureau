@@ -55,6 +55,7 @@ const FormularioAssoc: React.FC = () => {
         bairro: formData.get('bairro') as string,
         cep: formData.get('cep') as string,
         nomeResponsavel: formData.get('nomeResponsavel') as string,
+        dataAniversarioResponsavel: formData.get('dataAniversarioResponsavel') as string || '',
         telefone: formData.get('telefone') as string,
         email: formData.get('email') as string,
         telefoneResponsavel: formData.get('telefoneResponsavel') as string || '',
@@ -243,9 +244,15 @@ const FormularioAssoc: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              <div>
-                <label htmlFor="nomeResponsavel" className={labelClass}>Nome Completo do Responsável</label>
-                <input type="text" id="nomeResponsavel" name="nomeResponsavel" required className={inputClass} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="nomeResponsavel" className={labelClass}>Nome Completo do Responsável</label>
+                  <input type="text" id="nomeResponsavel" name="nomeResponsavel" required className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="dataAniversarioResponsavel" className={labelClass}>Data de Aniversário</label>
+                  <input type="date" id="dataAniversarioResponsavel" name="dataAniversarioResponsavel" className={inputClass} />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -301,6 +308,7 @@ const FormularioAssoc: React.FC = () => {
         </form>
       </div>
 
+      {/* Modal de Sucesso */}
       {showSuccessModal && (
         <>
           <div
