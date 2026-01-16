@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createEventRequest } from '../services/eventRequestService';
 import { sendAdminNotification, sendConfirmationEmail } from '../services/emailServiceAPI';
-import { Upload, Link as LinkIcon, ArrowLeft, Send } from 'lucide-react';
+import { Upload, Link as LinkIcon, ArrowLeft, Send, CheckCircle } from 'lucide-react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../lib/firebase';
 import type { EventRequest } from '../types/EventRequest';
@@ -13,11 +13,13 @@ const EventRequestPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
   const [submitting, setSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [useUrl, setUseUrl] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -120,7 +122,7 @@ const EventRequestPage = () => {
       if (requestId) {
         console.log('📧 Enviando notificações por email...');
         
-        const confirmationSent = await sendConfirmationEmail({
+        await sendConfirmationEmail({
           submitterName: formData.submittedBy.name,
           submitterEmail: formData.submittedBy.email,
           title: formData.title,
@@ -128,7 +130,7 @@ const EventRequestPage = () => {
           location: formData.location
         });
 
-        const adminNotified = await sendAdminNotification({
+        await sendAdminNotification({
           title: formData.title,
           description: formData.description,
           date: formData.date,
@@ -140,15 +142,7 @@ const EventRequestPage = () => {
           submitterOrganization: formData.submittedBy.organization
         });
 
-        if (confirmationSent && adminNotified) {
-          alert('✅ Solicitação enviada com sucesso! Você receberá uma resposta por email em breve.');
-        } else if (confirmationSent || adminNotified) {
-          alert('✅ Solicitação enviada! (Alguns emails podem não ter sido enviados)');
-        } else {
-          alert('✅ Solicitação salva! (Notificações por email não configuradas)');
-        }
-        
-        navigate('/');
+        setShowSuccessModal(true);
       } else {
         alert('❌ Erro ao enviar solicitação. Tente novamente.');
       }
@@ -158,6 +152,14 @@ const EventRequestPage = () => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowSuccessModal(false);
+    navigate('/#eventos');
+    setTimeout(() => {
+      document.getElementById('eventos')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   return (
@@ -480,6 +482,55 @@ const EventRequestPage = () => {
           </form>
         </div>
       </div>
+
+      {showSuccessModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={handleCloseModal}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
+                    <CheckCircle className="h-10 w-10 text-emerald-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Solicitação enviada com sucesso!</h3>
+                  <p className="text-slate-600 mb-2">
+                    Sua solicitação de evento foi recebida e será analisada por nossa equipe.
+                  </p>
+                  <p className="text-sm text-slate-500 mb-8">
+                    Você receberá uma resposta por email em até 48 horas úteis.
+                  </p>
+                  <button
+                    onClick={handleCloseModal}
+                    className="px-8 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <style>{`
+            @keyframes scale-in {
+              from {
+                opacity: 0;
+                transform: scale(0.95);
+              }
+              to {
+                opacity: 1;
+                transform: scale(1);
+              }
+            }
+            .animate-scale-in {
+              animation: scale-in 0.2s ease-out;
+            }
+          `}</style>
+        </>
+      )}
     </div>
   );
 };

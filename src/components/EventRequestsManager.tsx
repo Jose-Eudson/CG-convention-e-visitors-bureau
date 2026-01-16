@@ -11,6 +11,9 @@ const EventRequestsManager = () => {
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<EventRequest | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState<string | null>(null);
+  const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
 
   useEffect(() => {
     loadRequests();
@@ -27,9 +30,6 @@ const EventRequestsManager = () => {
   };
 
   const handleApprove = async (requestId: string) => {
-    if (!confirm('Aprovar esta solicitação e criar o evento?')) return;
-    
-
     const request = requests.find(r => r.id === requestId);
     if (!request) return;
     
@@ -37,7 +37,6 @@ const EventRequestsManager = () => {
     const success = await approveEventRequest(requestId);
     
     if (success) {
-
       console.log('📧 Enviando email de aprovação...');
       await sendApprovalEmail({
         submitterName: request.submittedBy.name,
@@ -45,7 +44,6 @@ const EventRequestsManager = () => {
         title: request.title,
         date: request.date
       });
-      
       alert('✅ Solicitação aprovada! Evento criado com sucesso.');
       await loadRequests();
     } else {
@@ -54,33 +52,31 @@ const EventRequestsManager = () => {
     setProcessingId(null);
   };
 
-  const handleReject = async (requestId: string) => {
-    const reason = prompt('Motivo da rejeição (será enviado por email):');
-    if (!reason) return;
+  const handleRejectConfirmed = async () => {
+    if (!rejectReason.trim() || !showRejectModal) return;
     
-
-    const request = requests.find(r => r.id === requestId);
+    const request = requests.find(r => r.id === showRejectModal);
     if (!request) return;
     
-    setProcessingId(requestId);
-    const success = await rejectEventRequest(requestId, reason);
+    setProcessingId(showRejectModal);
+    const success = await rejectEventRequest(showRejectModal, rejectReason);
     
     if (success) {
-
       console.log('📧 Enviando email de rejeição...');
       await sendRejectionEmail({
         submitterName: request.submittedBy.name,
         submitterEmail: request.submittedBy.email,
         title: request.title,
-        rejectionReason: reason
+        rejectionReason: rejectReason
       });
-      
       alert('✅ Solicitação rejeitada.');
       await loadRequests();
     } else {
       alert('❌ Erro ao rejeitar solicitação');
     }
     setProcessingId(null);
+    setShowRejectModal(null);
+    setRejectReason('');
   };
 
   const formatDate = (dateString: string) => {
@@ -119,7 +115,6 @@ const EventRequestsManager = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-12 pt-32">
       <div className="mx-auto max-w-6xl px-4">
-
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <Link 
@@ -146,7 +141,6 @@ const EventRequestsManager = () => {
           </div>
         </div>
 
-
         {requests.length === 0 ? (
           <div className="rounded-xl bg-white p-12 text-center shadow-md">
             <p className="text-slate-600 text-lg">Nenhuma solicitação pendente no momento.</p>
@@ -159,7 +153,6 @@ const EventRequestsManager = () => {
                 className="rounded-xl bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden"
               >
                 <div className="flex flex-col lg:flex-row">
-
                   {request.image && (
                     <div className="lg:w-80 flex-shrink-0 overflow-hidden">
                       <img 
@@ -169,7 +162,6 @@ const EventRequestsManager = () => {
                       />
                     </div>
                   )}
-
 
                   <div className="flex-1 p-6">
                     <div className="flex items-start justify-between gap-4">
@@ -214,7 +206,7 @@ const EventRequestsManager = () => {
 
                       <div className="flex gap-2">
                         <button
-                          onClick={() => handleApprove(request.id)}
+                          onClick={() => setShowApproveModal(request.id)}
                           disabled={processingId === request.id}
                           className="rounded-lg bg-emerald-100 p-2 text-emerald-600 hover:bg-emerald-200 transition-colors disabled:opacity-50"
                           title="Aprovar"
@@ -222,7 +214,10 @@ const EventRequestsManager = () => {
                           <CheckCircle className="h-5 w-5" />
                         </button>
                         <button
-                          onClick={() => handleReject(request.id)}
+                          onClick={() => {
+                            setShowRejectModal(request.id);
+                            setRejectReason('');
+                          }}
                           disabled={processingId === request.id}
                           className="rounded-lg bg-red-100 p-2 text-red-600 hover:bg-red-200 transition-colors disabled:opacity-50"
                           title="Rejeitar"
@@ -239,6 +234,105 @@ const EventRequestsManager = () => {
         )}
       </div>
 
+      {showApproveModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowApproveModal(null)}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
+                    <CheckCircle className="h-10 w-10 text-emerald-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Aprovar solicitação?</h3>
+                  <p className="text-slate-600 mb-8">Esta ação criará o evento e enviará email de confirmação ao solicitante.</p>
+                  <div className="flex gap-3 justify-center">
+                    <button
+                      onClick={() => setShowApproveModal(null)}
+                      className="px-6 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowApproveModal(null);
+                        handleApprove(showApproveModal!);
+                      }}
+                      disabled={processingId === showApproveModal}
+                      className="px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center gap-2"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                      Aprovar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showRejectModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => {
+              setShowRejectModal(null);
+              setRejectReason('');
+            }}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8">
+                  <div className="mx-auto w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                    <XCircle className="h-10 w-10 text-red-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2 text-center">Rejeitar solicitação?</h3>
+                  <p className="text-slate-600 mb-6 text-center">O motivo será enviado por email ao solicitante.</p>
+                  
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Motivo da rejeição</label>
+                    <textarea
+                      value={rejectReason}
+                      onChange={(e) => setRejectReason(e.target.value)}
+                      placeholder="Digite o motivo da rejeição..."
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl resize-vertical focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-h-[100px]"
+                      rows={4}
+                    />
+                    {rejectReason.trim().length > 0 && rejectReason.trim().length < 10 && (
+                      <p className="text-xs text-red-600 mt-1">O motivo deve ter pelo menos 10 caracteres.</p>
+                    )}
+                  </div>
+                  
+                  <div className="flex gap-3 mt-8">
+                    <button
+                      onClick={() => {
+                        setShowRejectModal(null);
+                        setRejectReason('');
+                      }}
+                      className="flex-1 px-6 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleRejectConfirmed}
+                      disabled={processingId === showRejectModal || rejectReason.trim().length < 10}
+                      className="flex-1 px-6 py-2.5 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      <XCircle className="h-4 w-4" />
+                      Rejeitar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {isModalOpen && selectedRequest && (
         <>
@@ -386,7 +480,7 @@ const EventRequestsManager = () => {
                     <button
                       onClick={() => {
                         setIsModalOpen(false);
-                        handleApprove(selectedRequest.id);
+                        setShowApproveModal(selectedRequest.id);
                       }}
                       disabled={processingId === selectedRequest.id}
                       className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-emerald-700 disabled:opacity-50"
@@ -397,7 +491,8 @@ const EventRequestsManager = () => {
                     <button
                       onClick={() => {
                         setIsModalOpen(false);
-                        handleReject(selectedRequest.id);
+                        setShowRejectModal(selectedRequest.id);
+                        setRejectReason('');
                       }}
                       disabled={processingId === selectedRequest.id}
                       className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-red-700 disabled:opacity-50"

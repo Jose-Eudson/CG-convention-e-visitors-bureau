@@ -7,13 +7,17 @@ import {
   type Associate
 } from '../services/associatesService';
 import { sendApprovalEmail, sendRejectionEmail } from '../services/associateEmailService';
-import { Check, X, Trash2, Clock, CheckCircle, XCircle, Download, ExternalLink } from 'lucide-react';
+import { Check, X, Trash2, Clock, CheckCircle, XCircle, Download, ExternalLink, AlertCircle } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 const AssociatesManagerPage = () => {
   const [associates, setAssociates] = useState<Associate[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [showApproveModal, setShowApproveModal] = useState<{ id: string; name: string; associate: Associate } | null>(null);
+  const [showRejectModal, setShowRejectModal] = useState<{ id: string; name: string; associate: Associate } | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState<{ id: string; name: string; logo: string } | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   const fetchAssociates = async () => {
     try {
@@ -32,61 +36,68 @@ const AssociatesManagerPage = () => {
     fetchAssociates();
   }, []);
 
-  const handleApprove = async (id: string, associate: Associate) => {
-    if (!confirm('Deseja aprovar este associado?')) return;
+  const handleApproveConfirmed = async () => {
+    if (!showApproveModal) return;
     
     try {
-      await approveAssociate(id);
+      await approveAssociate(showApproveModal.id);
       
       try {
-        await sendApprovalEmail(associate);
+        await sendApprovalEmail(showApproveModal.associate);
       } catch (emailError) {
         console.warn('Email não enviado, mas associado foi aprovado:', emailError);
       }
       
-      alert('Associado aprovado com sucesso!');
+      alert('✅ Associado aprovado com sucesso!');
       fetchAssociates();
     } catch (error) {
       console.error('Erro ao aprovar:', error);
-      alert('Erro ao aprovar associado');
+      alert('❌ Erro ao aprovar associado');
+    } finally {
+      setShowApproveModal(null);
     }
   };
 
-  const handleReject = async (id: string, associate: Associate) => {
-    const rejectionReason = prompt('Por favor, informe o motivo da rejeição:');
+  const handleRejectConfirmed = async () => {
+    if (!showRejectModal) return;
     
-    if (!rejectionReason || rejectionReason.trim() === '') {
-      alert('É necessário informar um motivo para rejeitar.');
+    if (!rejectionReason.trim()) {
+      alert('⚠️ É necessário informar um motivo para rejeitar.');
       return;
     }
     
     try {
-      await rejectAssociate(id);
+      await rejectAssociate(showRejectModal.id);
     
       try {
-        await sendRejectionEmail({ ...associate, rejectionReason });
+        await sendRejectionEmail({ ...showRejectModal.associate, rejectionReason });
       } catch (emailError) {
         console.warn('Email não enviado, mas associado foi rejeitado:', emailError);
       }
       
-      alert('Associado rejeitado!');
+      alert('✅ Associado rejeitado!');
       fetchAssociates();
     } catch (error) {
       console.error('Erro ao rejeitar:', error);
-      alert('Erro ao rejeitar associado');
+      alert('❌ Erro ao rejeitar associado');
+    } finally {
+      setShowRejectModal(null);
+      setRejectionReason('');
     }
   };
 
-  const handleDelete = async (id: string, logoUrl: string) => {
-    if (!confirm('Deseja deletar este associado permanentemente?')) return;
+  const handleDeleteConfirmed = async () => {
+    if (!showDeleteModal) return;
     
     try {
-      await deleteAssociate(id, logoUrl);
-      alert('Associado deletado!');
+      await deleteAssociate(showDeleteModal.id, showDeleteModal.logo);
+      alert('✅ Associado deletado!');
       fetchAssociates();
     } catch (error) {
       console.error('Erro ao deletar:', error);
-      alert('Erro ao deletar associado');
+      alert('❌ Erro ao deletar associado');
+    } finally {
+      setShowDeleteModal(null);
     }
   };
 
@@ -401,14 +412,14 @@ const AssociatesManagerPage = () => {
                     {associate.status === 'pending' && (
                       <>
                         <button
-                          onClick={() => handleApprove(associate.id!, associate)}
+                          onClick={() => setShowApproveModal({ id: associate.id!, name: associate.name, associate })}
                           className="flex items-center justify-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                         >
                           <Check className="h-4 w-4" />
                           Aprovar
                         </button>
                         <button
-                          onClick={() => handleReject(associate.id!, associate)}
+                          onClick={() => setShowRejectModal({ id: associate.id!, name: associate.name, associate })}
                           className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                         >
                           <X className="h-4 w-4" />
@@ -418,7 +429,7 @@ const AssociatesManagerPage = () => {
                     )}
                     {associate.status === 'approved' && (
                       <button
-                        onClick={() => handleReject(associate.id!, associate)}
+                        onClick={() => setShowRejectModal({ id: associate.id!, name: associate.name, associate })}
                         className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                       >
                         <X className="h-4 w-4" />
@@ -427,7 +438,7 @@ const AssociatesManagerPage = () => {
                     )}
                     {associate.status === 'rejected' && (
                       <button
-                        onClick={() => handleApprove(associate.id!, associate)}
+                        onClick={() => setShowApproveModal({ id: associate.id!, name: associate.name, associate })}
                         className="flex items-center justify-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                       >
                         <Check className="h-4 w-4" />
@@ -435,7 +446,7 @@ const AssociatesManagerPage = () => {
                       </button>
                     )}
                     <button
-                      onClick={() => handleDelete(associate.id!, associate.logo)}
+                      onClick={() => setShowDeleteModal({ id: associate.id!, name: associate.name, logo: associate.logo })}
                       className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -448,6 +459,150 @@ const AssociatesManagerPage = () => {
           </div>
         )}
       </div>
+
+      {showApproveModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowApproveModal(null)}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-4">
+                    <CheckCircle className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Aprovar Associado</h3>
+                  <p className="text-slate-600 mb-6">
+                    Tem certeza que deseja aprovar <strong>{showApproveModal.name}</strong>?
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowApproveModal(null)}
+                      className="flex-1 px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-semibold hover:bg-slate-300 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleApproveConfirmed}
+                      className="flex-1 px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700 transition-all"
+                    >
+                      Confirmar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showRejectModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => {
+              setShowRejectModal(null);
+              setRejectionReason('');
+            }}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8">
+                  <div className="mx-auto w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-4">
+                    <AlertCircle className="h-8 w-8 text-red-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2 text-center">Rejeitar Associado</h3>
+                  <p className="text-slate-600 mb-4 text-center">
+                    Informe o motivo da rejeição de <strong>{showRejectModal.name}</strong>:
+                  </p>
+                  <textarea
+                    value={rejectionReason}
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    placeholder="Digite o motivo da rejeição..."
+                    rows={4}
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none mb-6"
+                  />
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => {
+                        setShowRejectModal(null);
+                        setRejectionReason('');
+                      }}
+                      className="flex-1 px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-semibold hover:bg-slate-300 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleRejectConfirmed}
+                      className="flex-1 px-4 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-all"
+                    >
+                      Rejeitar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showDeleteModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowDeleteModal(null)}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
+                    <Trash2 className="h-8 w-8 text-slate-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Deletar Associado</h3>
+                  <p className="text-slate-600 mb-6">
+                    Tem certeza que deseja deletar <strong>{showDeleteModal.name}</strong>?<br/>
+                    <span className="text-sm text-red-600">Esta ação não pode ser desfeita.</span>
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowDeleteModal(null)}
+                      className="flex-1 px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-semibold hover:bg-slate-300 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleDeleteConfirmed}
+                      className="flex-1 px-4 py-2 rounded-xl bg-slate-600 text-white font-semibold hover:bg-slate-700 transition-all"
+                    >
+                      Deletar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <style>{`
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .animate-scale-in {
+          animation: scale-in 0.2s ease-out;
+        }
+      `}</style>
     </main>
   );
 };
