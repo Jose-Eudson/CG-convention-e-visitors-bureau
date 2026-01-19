@@ -149,6 +149,12 @@ const Header = () => {
 
         
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate("/admin")}
+            className={`hidden sm:flex items-center gap-2 text-sm font-medium font-header tracking-wide ${textColor} ${hoverColor} transition-colors px-3 py-2 rounded-md`}
+          >
+            Área Administrativa
+          </button>
           {user && isAdminRoute && (
             <button
               onClick={handleLogout}
@@ -217,6 +223,12 @@ const Header = () => {
                 {item.label}
               </a>
             ))}
+            <button
+              onClick={() => { setIsMobileMenuOpen(false); navigate("/admin"); }}
+              className="mt-3 py-3 text-base font-semibold text-white bg-emerald-600 rounded-md shadow hover:bg-emerald-700 transition-colors"
+            >
+              Área Administrativa
+            </button>
           </nav>
         </div>
       )}

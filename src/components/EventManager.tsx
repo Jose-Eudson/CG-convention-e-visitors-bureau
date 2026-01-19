@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { getAllEvents, createEvent, updateEvent, deleteEvent } from '../services/eventsService';
 import type { Event } from '../types/Event';
-import { Calendar, MapPin, Trash2, Edit2, Plus, X, ArrowLeft, Upload, Link as LinkIcon, Star } from 'lucide-react';
+import { Calendar, MapPin, Trash2, Edit2, Plus, X, ArrowLeft, Upload, Link as LinkIcon, Star, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../lib/firebase';
 
 const EventManager = () => {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -16,7 +18,7 @@ const EventManager = () => {
   const [imagePreview, setImagePreview] = useState<string>('');
   const [useUrl, setUseUrl] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState<{ id: string; title: string } | null>(null);
-
+  const [showSuccessModal, setShowSuccessModal] = useState<{ type: 'create' | 'update' | 'delete'; message: string } | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -106,7 +108,7 @@ const EventManager = () => {
       const eventId = await createEvent(eventData);
       
       if (eventId) {
-        alert('Evento criado com sucesso!');
+        setShowSuccessModal({ type: 'create', message: 'Evento criado com sucesso!' });
         await loadEvents();
         resetForm();
       } else {
@@ -141,7 +143,7 @@ const EventManager = () => {
     const success = await updateEvent(editingEvent.id, eventData);
     
     if (success) {
-      alert('Evento atualizado com sucesso!');
+      setShowSuccessModal({ type: 'update', message: 'Evento atualizado com sucesso!' });
       await loadEvents();
       resetForm();
     } else {
@@ -164,12 +166,13 @@ const EventManager = () => {
     const success = await deleteEvent(showDeleteModal.id);
     
     if (success) {
-      alert('Evento deletado com sucesso!');
+      setShowDeleteModal(null);
+      setShowSuccessModal({ type: 'delete', message: 'Evento deletado com sucesso!' });
       await loadEvents();
     } else {
       alert('Erro ao deletar evento');
+      setShowDeleteModal(null);
     }
-    setShowDeleteModal(null);
   };
 
   const handleEdit = (event: Event) => {
@@ -261,13 +264,15 @@ const EventManager = () => {
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <Link 
-              to="/" 
-              className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Voltar para o site
-            </Link>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate('/admin')}
+                className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors rounded px-3 py-2 font-medium"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Voltar para Área Administrativa
+              </button>
+            </div>
 
             <Link 
               to="/admin/solicitacoes" 
@@ -679,24 +684,68 @@ const EventManager = () => {
               </div>
             </div>
           </div>
-
-          <style>{`
-            @keyframes scale-in {
-              from {
-                opacity: 0;
-                transform: scale(0.95);
-              }
-              to {
-                opacity: 1;
-                transform: scale(1);
-              }
-            }
-            .animate-scale-in {
-              animation: scale-in 0.2s ease-out;
-            }
-          `}</style>
         </>
       )}
+
+      {showSuccessModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowSuccessModal(null)}
+          />
+          <div className="fixed inset-0 z-[70] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className={`mx-auto w-20 h-20 rounded-2xl flex items-center justify-center mb-6 ${
+                    showSuccessModal.type === 'create' ? 'bg-emerald-100' :
+                    showSuccessModal.type === 'update' ? 'bg-indigo-100' :
+                    'bg-slate-100'
+                  }`}>
+                    <CheckCircle className={`h-10 w-10 ${
+                      showSuccessModal.type === 'create' ? 'text-emerald-600' :
+                      showSuccessModal.type === 'update' ? 'text-indigo-600' :
+                      'text-slate-600'
+                    }`} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                    {showSuccessModal.type === 'create' && 'Criado!'}
+                    {showSuccessModal.type === 'update' && 'Atualizado!'}
+                    {showSuccessModal.type === 'delete' && 'Deletado!'}
+                  </h3>
+                  <p className="text-slate-600 mb-8">{showSuccessModal.message}</p>
+                  <button
+                    onClick={() => setShowSuccessModal(null)}
+                    className={`px-8 py-3 rounded-xl text-white font-semibold transition-all ${
+                      showSuccessModal.type === 'create' ? 'bg-emerald-600 hover:bg-emerald-700' :
+                      showSuccessModal.type === 'update' ? 'bg-indigo-600 hover:bg-indigo-700' :
+                      'bg-slate-600 hover:bg-slate-700'
+                    }`}
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <style>{`
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .animate-scale-in {
+          animation: scale-in 0.2s ease-out;
+        }
+      `}</style>
     </div>
   );
 };

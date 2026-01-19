@@ -9,8 +9,11 @@ import {
 import { sendApprovalEmail, sendRejectionEmail } from '../services/associateEmailService';
 import { Check, X, Trash2, Clock, CheckCircle, XCircle, Download, ExternalLink, AlertCircle } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AssociatesManagerPage = () => {
+    const navigate = useNavigate();
   const [associates, setAssociates] = useState<Associate[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
@@ -170,6 +173,15 @@ const AssociatesManagerPage = () => {
     <main className="min-h-screen bg-slate-50 pt-24 pb-12 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex gap-4 mb-4">
+            <button
+              onClick={() => navigate('/admin')}
+              className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors rounded px-3 py-2 font-medium"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar para Área Administrativa
+            </button>
+          </div>
           <div>
             <h1 className="text-3xl font-bold text-slate-800 mb-2">
               Gerenciar Associados
@@ -178,10 +190,9 @@ const AssociatesManagerPage = () => {
               Aprove ou rejeite solicitações de novos associados
             </p>
           </div>
-          
           <button
             onClick={handleDownloadExcel}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
           >
             <Download className="h-5 w-5" />
             Baixar Planilha
