@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/cvb-cg-api/index.js"
+    }
+  ]
+}
