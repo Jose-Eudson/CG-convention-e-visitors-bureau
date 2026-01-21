@@ -1,8 +1,4 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/cvb-cg-api/index.cjs"
-    }
-  ]
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
 }
