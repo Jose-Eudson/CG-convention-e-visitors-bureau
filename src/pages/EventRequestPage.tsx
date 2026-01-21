@@ -2,25 +2,26 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createEventRequest } from '../services/eventRequestService';
 import { sendAdminNotification, sendConfirmationEmail } from '../services/emailServiceAPI';
-import { Upload, Link as LinkIcon, ArrowLeft, Send, CheckCircle } from 'lucide-react';
+import { Upload, Link as LinkIcon, ArrowLeft, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../lib/firebase';
 import type { EventRequest } from '../types/EventRequest';
 
 const EventRequestPage = () => {
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
+
   const [submitting, setSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [useUrl, setUseUrl] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  
+  const [showErrorModal, setShowErrorModal] = useState<{ title: string; message: string } | null>(null);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -53,7 +54,10 @@ const EventRequestPage = () => {
     } catch (error) {
       console.error('Erro ao fazer upload da imagem:', error);
       setUploadingImage(false);
-      alert('Erro ao fazer upload da imagem. Tente novamente.');
+      setShowErrorModal({
+        title: 'Erro no Upload',
+        message: 'Erro ao fazer upload da imagem. Tente novamente.'
+      });
       return null;
     }
   };
@@ -62,17 +66,22 @@ const EventRequestPage = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        alert('Por favor, selecione apenas arquivos de imagem.');
+        setShowErrorModal({
+          title: 'Arquivo Inválido',
+          message: 'Por favor, selecione apenas arquivos de imagem.'
+        });
         return;
       }
       
-      if (file.size > 5 * 1024 * 1024) {
-        alert('A imagem deve ter no máximo 5MB.');
+      if (file.size > 10 * 1024 * 1024) {
+        setShowErrorModal({
+          title: 'Arquivo Muito Grande',
+          message: 'A imagem deve ter no máximo 10MB.'
+        });
         return;
       }
-      
+
       setImageFile(file);
-      
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -116,11 +125,11 @@ const EventRequestPage = () => {
       if (formData.submittedBy.phone) requestData.submittedBy.phone = formData.submittedBy.phone;
       if (formData.submittedBy.organization) requestData.submittedBy.organization = formData.submittedBy.organization;
 
-      console.log('📝 Enviando solicitação:', requestData);
+      console.log('Enviando solicitação:', requestData);
       const requestId = await createEventRequest(requestData);
-
+      
       if (requestId) {
-        console.log('📧 Enviando notificações por email...');
+        console.log('Enviando notificações por email...');
         
         await sendConfirmationEmail({
           submitterName: formData.submittedBy.name,
@@ -144,11 +153,17 @@ const EventRequestPage = () => {
 
         setShowSuccessModal(true);
       } else {
-        alert('❌ Erro ao enviar solicitação. Tente novamente.');
+        setShowErrorModal({
+          title: 'Erro ao Enviar',
+          message: 'Erro ao enviar solicitação. Tente novamente.'
+        });
       }
     } catch (error) {
       console.error('Erro:', error);
-      alert('❌ Erro ao enviar solicitação: ' + (error as Error).message);
+      setShowErrorModal({
+        title: 'Erro Inesperado',
+        message: `Erro ao enviar solicitação: ${(error as Error).message}`
+      });
     } finally {
       setSubmitting(false);
     }
@@ -156,7 +171,7 @@ const EventRequestPage = () => {
 
   const handleCloseModal = () => {
     setShowSuccessModal(false);
-    navigate('/#eventos');
+    navigate('/eventos');
     setTimeout(() => {
       document.getElementById('eventos')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
@@ -165,10 +180,7 @@ const EventRequestPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-12">
       <div className="mx-auto max-w-4xl px-4">
-        <Link 
-          to="/" 
-          className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 transition-colors"
-        >
+        <Link to="/" className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 transition-colors">
           <ArrowLeft className="h-4 w-4" />
           Voltar para o site
         </Link>
@@ -176,47 +188,38 @@ const EventRequestPage = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900">Solicitar Cadastro de Evento</h1>
           <p className="text-slate-600 mt-2">
-            Preencha o formulário abaixo para solicitar a inclusão do seu evento no nosso calendário.
-            Sua solicitação será analisada por nossa equipe.
+            Preencha o formulário abaixo para solicitar a inclusão do seu evento no nosso calendário. Sua solicitação será analisada por nossa equipe.
           </p>
         </div>
 
         <div className="rounded-xl bg-white p-8 shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="border-b pb-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">
-                Suas Informações
-              </h2>
+              <h2 className="text-xl font-bold text-slate-900 mb-4">📋 Suas Informações</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Seu Nome *
+                    Seu Nome
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.submittedBy.name}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
-                      submittedBy: { ...formData.submittedBy, name: e.target.value }
-                    })}
+                    onChange={(e) => setFormData({ ...formData, submittedBy: { ...formData.submittedBy, name: e.target.value } })}
                     className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Email *
+                    Email
                   </label>
                   <input
                     type="email"
                     required
                     value={formData.submittedBy.email}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
-                      submittedBy: { ...formData.submittedBy, email: e.target.value }
-                    })}
+                    onChange={(e) => setFormData({ ...formData, submittedBy: { ...formData.submittedBy, email: e.target.value } })}
                     className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
                 </div>
@@ -228,10 +231,7 @@ const EventRequestPage = () => {
                   <input
                     type="tel"
                     value={formData.submittedBy.phone}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
-                      submittedBy: { ...formData.submittedBy, phone: e.target.value }
-                    })}
+                    onChange={(e) => setFormData({ ...formData, submittedBy: { ...formData.submittedBy, phone: e.target.value } })}
                     placeholder="(83) 99999-9999"
                     className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
@@ -244,10 +244,7 @@ const EventRequestPage = () => {
                   <input
                     type="text"
                     value={formData.submittedBy.organization}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
-                      submittedBy: { ...formData.submittedBy, organization: e.target.value }
-                    })}
+                    onChange={(e) => setFormData({ ...formData, submittedBy: { ...formData.submittedBy, organization: e.target.value } })}
                     placeholder="Nome da empresa/instituição"
                     className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
@@ -256,14 +253,12 @@ const EventRequestPage = () => {
             </div>
 
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-4">
-                Informações do Evento
-              </h2>
+              <h2 className="text-xl font-bold text-slate-900 mb-4">🎉 Informações do Evento</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Título do Evento *
+                    Título do Evento
                   </label>
                   <input
                     type="text"
@@ -276,7 +271,7 @@ const EventRequestPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Local *
+                    Local
                   </label>
                   <input
                     type="text"
@@ -289,7 +284,7 @@ const EventRequestPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Data Início *
+                    Data Início
                   </label>
                   <input
                     type="date"
@@ -314,7 +309,7 @@ const EventRequestPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Categoria *
+                    Categoria
                   </label>
                   <select
                     required
@@ -349,7 +344,7 @@ const EventRequestPage = () => {
 
               <div className="mt-4">
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Descrição *
+                  Descrição
                 </label>
                 <textarea
                   required
@@ -375,14 +370,13 @@ const EventRequestPage = () => {
                       setImagePreview('');
                     }}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                      useUrl 
-                        ? 'bg-indigo-600 text-white' 
-                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                      useUrl ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                     }`}
                   >
                     <LinkIcon className="h-4 w-4" />
                     URL da Imagem
                   </button>
+                  
                   <button
                     type="button"
                     onClick={() => {
@@ -390,9 +384,7 @@ const EventRequestPage = () => {
                       setFormData({ ...formData, image: '' });
                     }}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                      !useUrl 
-                        ? 'bg-indigo-600 text-white' 
-                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                      !useUrl ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                     }`}
                   >
                     <Upload className="h-4 w-4" />
@@ -420,7 +412,7 @@ const EventRequestPage = () => {
                       className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                     />
                     <p className="mt-1 text-xs text-slate-500">
-                      Máximo 5MB. Formatos: JPG, PNG, GIF, WebP
+                      Máximo 10MB. Formatos: JPG, PNG, GIF, WebP
                     </p>
                   </div>
                 )}
@@ -429,9 +421,9 @@ const EventRequestPage = () => {
                   <div>
                     <p className="text-sm font-medium text-slate-700 mb-2">Preview:</p>
                     <div className="w-full h-48 rounded-lg overflow-hidden border border-slate-300">
-                      <img 
-                        src={imagePreview} 
-                        alt="Preview" 
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -449,8 +441,7 @@ const EventRequestPage = () => {
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                ℹ️ Sua solicitação será analisada por nossa equipe. 
-                Você receberá uma resposta por email em até 48 horas úteis.
+                ℹ️ Sua solicitação será analisada por nossa equipe. Você receberá uma resposta por email em até 48 horas úteis.
               </p>
             </div>
 
@@ -472,6 +463,7 @@ const EventRequestPage = () => {
                   </>
                 )}
               </button>
+              
               <Link
                 to="/"
                 className="rounded-lg bg-slate-200 px-6 py-3 text-slate-700 font-semibold hover:bg-slate-300 transition-colors"
@@ -506,6 +498,50 @@ const EventRequestPage = () => {
                   <button
                     onClick={handleCloseModal}
                     className="px-8 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <style>{`
+            @keyframes scale-in {
+              from {
+                opacity: 0;
+                transform: scale(0.95);
+              }
+              to {
+                opacity: 1;
+                transform: scale(1);
+              }
+            }
+            .animate-scale-in {
+              animation: scale-in 0.2s ease-out;
+            }
+          `}</style>
+        </>
+      )}
+
+      {showErrorModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowErrorModal(null)}
+          />
+          <div className="fixed inset-0 z-[70] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                    <AlertCircle className="h-10 w-10 text-red-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{showErrorModal.title}</h3>
+                  <p className="text-slate-600 mb-8">{showErrorModal.message}</p>
+                  <button
+                    onClick={() => setShowErrorModal(null)}
+                    className="px-8 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-all"
                   >
                     OK
                   </button>

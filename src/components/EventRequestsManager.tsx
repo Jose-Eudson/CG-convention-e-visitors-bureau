@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { getPendingRequests, approveEventRequest, rejectEventRequest } from '../services/eventRequestService';
 import { sendApprovalEmail, sendRejectionEmail } from '../services/emailServiceAPI';
 import type { EventRequest } from '../types/EventRequest';
-import { Calendar, MapPin, User, Mail, Phone, Building, CheckCircle, XCircle, ArrowLeft, Eye, X } from 'lucide-react';
+import { Calendar, MapPin, User, Mail, Phone, Building, CheckCircle, XCircle, ArrowLeft, Eye, X, AlertCircle } from 'lucide-react';
 
 const EventRequestsManager = () => {
   const [requests, setRequests] = useState<EventRequest[]>([]);
@@ -14,65 +14,81 @@ const EventRequestsManager = () => {
   const [showApproveModal, setShowApproveModal] = useState<string | null>(null);
   const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState<{ type: 'approve' | 'reject'; message: string } | null>(null);
+  const [showErrorModal, setShowErrorModal] = useState<{ title: string; message: string } | null>(null);
 
   useEffect(() => {
     loadRequests();
   }, []);
 
   const loadRequests = async () => {
-    console.log('🔄 Carregando solicitações...');
+    console.log('Carregando solicitações...');
     setLoading(true);
     const data = await getPendingRequests();
-    console.log('📦 Solicitações recebidas:', data);
-    console.log('📊 Total de solicitações:', data.length);
+    console.log('Solicitações recebidas:', data);
+    console.log('Total de solicitações:', data.length);
     setRequests(data);
     setLoading(false);
   };
 
   const handleApprove = async (requestId: string) => {
-    const request = requests.find(r => r.id === requestId);
+    const request = requests.find((r) => r.id === requestId);
     if (!request) return;
-    
+
     setProcessingId(requestId);
     const success = await approveEventRequest(requestId);
     
     if (success) {
-      console.log('📧 Enviando email de aprovação...');
+      console.log('Enviando email de aprovação...');
       await sendApprovalEmail({
         submitterName: request.submittedBy.name,
         submitterEmail: request.submittedBy.email,
         title: request.title,
         date: request.date
       });
-      alert('✅ Solicitação aprovada! Evento criado com sucesso.');
+      
+      setShowSuccessModal({
+        type: 'approve',
+        message: 'Solicitação aprovada! Evento criado com sucesso.'
+      });
       await loadRequests();
     } else {
-      alert('❌ Erro ao aprovar solicitação');
+      setShowErrorModal({
+        title: 'Erro ao Aprovar',
+        message: 'Erro ao aprovar solicitação. Tente novamente.'
+      });
     }
     setProcessingId(null);
   };
 
   const handleRejectConfirmed = async () => {
     if (!rejectReason.trim() || !showRejectModal) return;
-    
-    const request = requests.find(r => r.id === showRejectModal);
+
+    const request = requests.find((r) => r.id === showRejectModal);
     if (!request) return;
-    
+
     setProcessingId(showRejectModal);
     const success = await rejectEventRequest(showRejectModal, rejectReason);
     
     if (success) {
-      console.log('📧 Enviando email de rejeição...');
+      console.log('Enviando email de rejeição...');
       await sendRejectionEmail({
         submitterName: request.submittedBy.name,
         submitterEmail: request.submittedBy.email,
         title: request.title,
         rejectionReason: rejectReason
       });
-      alert('✅ Solicitação rejeitada.');
+      
+      setShowSuccessModal({
+        type: 'reject',
+        message: 'Solicitação rejeitada.'
+      });
       await loadRequests();
     } else {
-      alert('❌ Erro ao rejeitar solicitação');
+      setShowErrorModal({
+        title: 'Erro ao Rejeitar',
+        message: 'Erro ao rejeitar solicitação. Tente novamente.'
+      });
     }
     setProcessingId(null);
     setShowRejectModal(null);
@@ -118,7 +134,7 @@ const EventRequestsManager = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <Link 
-              to="/" 
+              to="/"
               className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -129,7 +145,7 @@ const EventRequestsManager = () => {
               to="/admin/eventos" 
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg"
             >
-              📋 Gerenciar eventos
+              📅 Gerenciar eventos
             </Link>
           </div>
 
@@ -173,7 +189,7 @@ const EventRequestsManager = () => {
                               {translateCategory(request.category)}
                             </span>
                             <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">
-                              Pendente
+                              ⏳ Pendente
                             </span>
                           </div>
                         </div>
@@ -307,7 +323,7 @@ const EventRequestsManager = () => {
                       <p className="text-xs text-red-600 mt-1">O motivo deve ter pelo menos 10 caracteres.</p>
                     )}
                   </div>
-                  
+
                   <div className="flex gap-3 mt-8">
                     <button
                       onClick={() => {
@@ -337,15 +353,12 @@ const EventRequestsManager = () => {
       {isModalOpen && selectedRequest && (
         <>
           <div
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 z-[50] bg-black/60 backdrop-blur-sm transition-opacity"
             onClick={() => setIsModalOpen(false)}
           />
-          <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="fixed inset-0 z-[50] overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4">
-              <div
-                className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in"
-                onClick={(e) => e.stopPropagation()}
-              >
+              <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className="absolute top-4 right-4 z-10 rounded-full bg-white/90 p-2 text-slate-600 hover:bg-white hover:text-slate-900 transition-all shadow-lg"
@@ -369,7 +382,7 @@ const EventRequestsManager = () => {
                       {translateCategory(selectedRequest.category)}
                     </span>
                     <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">
-                      Pendente
+                      ⏳ Pendente
                     </span>
                   </div>
 
@@ -407,7 +420,7 @@ const EventRequestsManager = () => {
                   <div className="border-t border-slate-200 my-6" />
 
                   <div className="mb-6">
-                    <h3 className="text-lg font-bold text-slate-900 mb-3">Descrição do Evento</h3>
+                    <h3 className="text-lg font-bold text-slate-900 mb-3">📋 Descrição do Evento</h3>
                     <p className="text-slate-700 leading-relaxed whitespace-pre-line">
                       {selectedRequest.description}
                     </p>
@@ -415,7 +428,7 @@ const EventRequestsManager = () => {
 
                   {selectedRequest.externalLink && (
                     <div className="mb-6">
-                      <h3 className="text-lg font-bold text-slate-900 mb-3">Link do Evento</h3>
+                      <h3 className="text-lg font-bold text-slate-900 mb-3">🔗 Link do Evento</h3>
                       <a
                         href={selectedRequest.externalLink}
                         target="_blank"
@@ -430,7 +443,7 @@ const EventRequestsManager = () => {
                   <div className="border-t border-slate-200 my-6" />
 
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-4">Informações do Solicitante</h3>
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">👤 Informações do Solicitante</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex items-start gap-3">
                         <User className="h-5 w-5 text-slate-400 mt-0.5" />
@@ -439,26 +452,35 @@ const EventRequestsManager = () => {
                           <p className="text-slate-700">{selectedRequest.submittedBy.name}</p>
                         </div>
                       </div>
+
                       <div className="flex items-start gap-3">
                         <Mail className="h-5 w-5 text-slate-400 mt-0.5" />
                         <div>
                           <p className="text-xs font-semibold text-slate-500 mb-1">Email</p>
-                          <a href={`mailto:${selectedRequest.submittedBy.email}`} className="text-indigo-600 hover:text-indigo-700 break-all">
+                          <a
+                            href={`mailto:${selectedRequest.submittedBy.email}`}
+                            className="text-indigo-600 hover:text-indigo-700 break-all"
+                          >
                             {selectedRequest.submittedBy.email}
                           </a>
                         </div>
                       </div>
+
                       {selectedRequest.submittedBy.phone && (
                         <div className="flex items-start gap-3">
                           <Phone className="h-5 w-5 text-slate-400 mt-0.5" />
                           <div>
                             <p className="text-xs font-semibold text-slate-500 mb-1">Telefone</p>
-                            <a href={`tel:${selectedRequest.submittedBy.phone}`} className="text-slate-700 hover:text-indigo-600">
+                            <a
+                              href={`tel:${selectedRequest.submittedBy.phone}`}
+                              className="text-slate-700 hover:text-indigo-600"
+                            >
                               {selectedRequest.submittedBy.phone}
                             </a>
                           </div>
                         </div>
                       )}
+
                       {selectedRequest.submittedBy.organization && (
                         <div className="flex items-start gap-3">
                           <Building className="h-5 w-5 text-slate-400 mt-0.5" />
@@ -469,6 +491,7 @@ const EventRequestsManager = () => {
                         </div>
                       )}
                     </div>
+
                     <div className="mt-4 pt-4 border-t border-slate-200">
                       <p className="text-xs text-slate-500">
                         📅 Solicitado em: {formatDate(selectedRequest.submittedAt)}
@@ -505,24 +528,92 @@ const EventRequestsManager = () => {
               </div>
             </div>
           </div>
-
-          <style>{`
-            @keyframes scale-in {
-              from {
-                opacity: 0;
-                transform: scale(0.95);
-              }
-              to {
-                opacity: 1;
-                transform: scale(1);
-              }
-            }
-            .animate-scale-in {
-              animation: scale-in 0.2s ease-out;
-            }
-          `}</style>
         </>
       )}
+
+      {showSuccessModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowSuccessModal(null)}
+          />
+          <div className="fixed inset-0 z-[70] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className={`mx-auto w-20 h-20 rounded-2xl flex items-center justify-center mb-6 ${
+                    showSuccessModal.type === 'approve' ? 'bg-emerald-100' : 'bg-orange-100'
+                  }`}>
+                    {showSuccessModal.type === 'approve' ? (
+                      <CheckCircle className="h-10 w-10 text-emerald-600" />
+                    ) : (
+                      <XCircle className="h-10 w-10 text-orange-600" />
+                    )}
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                    {showSuccessModal.type === 'approve' ? 'Aprovado!' : 'Rejeitado!'}
+                  </h3>
+                  <p className="text-slate-600 mb-8">{showSuccessModal.message}</p>
+                  <button
+                    onClick={() => setShowSuccessModal(null)}
+                    className={`px-8 py-3 rounded-xl text-white font-semibold transition-all ${
+                      showSuccessModal.type === 'approve' 
+                        ? 'bg-emerald-600 hover:bg-emerald-700' 
+                        : 'bg-orange-600 hover:bg-orange-700'
+                    }`}
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showErrorModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowErrorModal(null)}
+          />
+          <div className="fixed inset-0 z-[70] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                    <AlertCircle className="h-10 w-10 text-red-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{showErrorModal.title}</h3>
+                  <p className="text-slate-600 mb-8">{showErrorModal.message}</p>
+                  <button
+                    onClick={() => setShowErrorModal(null)}
+                    className="px-8 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-all"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <style>{`
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .animate-scale-in {
+          animation: scale-in 0.2s ease-out;
+        }
+      `}</style>
     </div>
   );
 };

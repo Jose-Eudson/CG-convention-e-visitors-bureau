@@ -1,6 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
-import eventoImg from "../assets/campina_cvb3.jpeg";
+
+const eventoImg = "/assets/campina_cvb3.jpeg";
 import { Link } from "react-router-dom";
 
 const Hero = () => {

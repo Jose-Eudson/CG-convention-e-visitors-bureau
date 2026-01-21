@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
-import logo from "../assets/logo_cvbcg.svg";
-import logoGov from "../assets/GovPBT.png";
+
+const logo = "/assets/logo_cvbcg.svg";
+const logoGov = "/assets/GovPBT.png";
 import {
   Home,
   Users,

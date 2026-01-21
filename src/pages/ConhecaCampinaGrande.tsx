@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FiArrowLeft, FiSearch } from "react-icons/fi";
-import locais from "../assets/data/locais.json";
+const locaisUrl = "/assets/data/locais.json";
 import LocalModal from "../components/LocalModal";
 
 const capitalize = (text: string) =>
@@ -21,13 +21,23 @@ interface LocalTuristico {
 const ConhecaCampinaGrande = () => {
     const [search, setSearch] = useState("");
     const [categoriaAtiva, setCategoriaAtiva] = useState("Todas");
-    const [localSelecionado, setLocalSelecionado] =
-        useState<LocalTuristico | null>(null);
+    const [localSelecionado, setLocalSelecionado] = useState<LocalTuristico | null>(null);
+    const [locais, setLocais] = useState<LocalTuristico[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch(locaisUrl)
+            .then((res) => res.json())
+            .then((data) => {
+                setLocais(data);
+                setLoading(false);
+            });
+    }, []);
 
     const categorias = useMemo(() => {
         const cats = locais.map((local: LocalTuristico) => local.categoria);
         return ["Todas", ...Array.from(new Set(cats))];
-    }, []);
+    }, [locais]);
 
     const locaisFiltrados = useMemo(() => {
         return locais.filter((local: LocalTuristico) => {
@@ -40,7 +50,11 @@ const ConhecaCampinaGrande = () => {
 
             return matchCategoria && matchBusca;
         });
-    }, [search, categoriaAtiva]);
+    }, [search, categoriaAtiva, locais]);
+
+    if (loading) {
+        return <div>Carregando...</div>;
+    }
 
     return (
         <main className="relative bg-gray-100 py-12 md:py-24">

@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Globe, Menu, X, LogOut } from "lucide-react";
-import logo from "../assets/logo_cvbcg.svg";
+
+const logo = "/assets/logo_cvbcg.svg";
 import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
@@ -69,7 +70,7 @@ const Header = () => {
   const navItems = [
     { id: "inicio", label: t("menu.inicio") },
     { id: "quem-somos", label: t("menu.quemSomos") },
-    { id: "o-que-fazemos", label: t("menu.oQueFazemos") },
+    { id: "quem-somos", label: t("menu.oQueFazemos") },
     { id: "diretoria", label: t("menu.diretoria") },
     { id: "eventos", label: t("menu.eventos") },
     { id: "associados", label: t("menu.associados") },

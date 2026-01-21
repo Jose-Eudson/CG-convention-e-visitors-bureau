@@ -4,14 +4,14 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import andreImg from "../assets/andremotta.jpg";
-import pabloImg from "../assets/pablojatoba.jpg";
-import fabiolaImg from "../assets/fabiolacortezzi.jpg";
-import divaildoImg from "../assets/divaildojunior.jpg";
-import manuelaImg from "../assets/manueladantas.jpg";
-import luizImg from "../assets/luizcarloslira.jpg";
-import izabelliImg from "../assets/izabelliaraujo.jpg";
-import tupacImg from "../assets/tupacrodrigues.jpg";
+const andreImg = "/assets/andremotta.jpg";
+const pabloImg = "/assets/pablojatoba.jpg";
+const fabiolaImg = "/assets/fabiolacortezzi.jpg";
+const divaildoImg = "/assets/divaildojunior.jpg";
+const manuelaImg = "/assets/manueladantas.jpg";
+const luizImg = "/assets/luizcarloslira.jpg";
+const izabelliImg = "/assets/izabelliaraujo.jpg";
+const tupacImg = "/assets/tupacrodrigues.jpg";
 
 
 const NextArrow = ({ onClick }: { onClick?: () => void }) => (

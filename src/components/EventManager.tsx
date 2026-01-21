@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getAllEvents, createEvent, updateEvent, deleteEvent } from '../services/eventsService';
 import type { Event } from '../types/Event';
-import { Calendar, MapPin, Trash2, Edit2, Plus, X, ArrowLeft, Upload, Link as LinkIcon, Star, CheckCircle } from 'lucide-react';
+import { Calendar, MapPin, Trash2, Edit2, Plus, X, ArrowLeft, Upload, Link as LinkIcon, Star, CheckCircle, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -19,6 +19,8 @@ const EventManager = () => {
   const [useUrl, setUseUrl] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState<{ id: string; title: string } | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState<{ type: 'create' | 'update' | 'delete'; message: string } | null>(null);
+  const [showErrorModal, setShowErrorModal] = useState<{ title: string; message: string } | null>(null);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -58,7 +60,10 @@ const EventManager = () => {
     } catch (error) {
       console.error('Erro ao fazer upload da imagem:', error);
       setUploadingImage(false);
-      alert('Erro ao fazer upload da imagem. Tente novamente.');
+      setShowErrorModal({
+        title: 'Erro no Upload',
+        message: 'Erro ao fazer upload da imagem. Tente novamente.'
+      });
       return null;
     }
   };
@@ -67,12 +72,18 @@ const EventManager = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        alert('Por favor, selecione apenas arquivos de imagem.');
+        setShowErrorModal({
+          title: 'Arquivo Inválido',
+          message: 'Por favor, selecione apenas arquivos de imagem.'
+        });
         return;
       }
       
-      if (file.size > 5 * 1024 * 1024) {
-        alert('A imagem deve ter no máximo 5MB.');
+      if (file.size > 10 * 1024 * 1024) {
+        setShowErrorModal({
+          title: 'Arquivo Muito Grande',
+          message: 'A imagem deve ter no máximo 10MB.'
+        });
         return;
       }
 
@@ -112,11 +123,17 @@ const EventManager = () => {
         await loadEvents();
         resetForm();
       } else {
-        alert('Erro ao criar evento. Verifique as regras de segurança do Firestore.');
+        setShowErrorModal({
+          title: 'Erro ao Criar',
+          message: 'Erro ao criar evento. Verifique as regras de segurança do Firestore.'
+        });
       }
     } catch (error) {
       console.error('Erro ao criar evento:', error);
-      alert('Erro ao criar evento: ' + (error as Error).message);
+      setShowErrorModal({
+        title: 'Erro Inesperado',
+        message: `Erro ao criar evento: ${(error as Error).message}`
+      });
     }
   };
 
@@ -147,7 +164,10 @@ const EventManager = () => {
       await loadEvents();
       resetForm();
     } else {
-      alert('Erro ao atualizar evento');
+      setShowErrorModal({
+        title: 'Erro ao Atualizar',
+        message: 'Erro ao atualizar evento. Tente novamente.'
+      });
     }
   };
 
@@ -156,7 +176,10 @@ const EventManager = () => {
     if (success) {
       await loadEvents();
     } else {
-      alert('Erro ao atualizar evento');
+      setShowErrorModal({
+        title: 'Erro ao Atualizar',
+        message: 'Erro ao atualizar status de destaque do evento.'
+      });
     }
   };
 
@@ -170,7 +193,10 @@ const EventManager = () => {
       setShowSuccessModal({ type: 'delete', message: 'Evento deletado com sucesso!' });
       await loadEvents();
     } else {
-      alert('Erro ao deletar evento');
+      setShowErrorModal({
+        title: 'Erro ao Deletar',
+        message: 'Erro ao deletar evento. Tente novamente.'
+      });
       setShowDeleteModal(null);
     }
   };
@@ -464,7 +490,7 @@ const EventManager = () => {
                       className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                     />
                     <p className="mt-1 text-xs text-slate-500">
-                      Máximo 5MB. Formatos: JPG, PNG, GIF, WebP
+                      Máximo 10MB. Formatos: JPG, PNG, GIF, WebP
                     </p>
                   </>
                 )}
@@ -721,6 +747,34 @@ const EventManager = () => {
                       showSuccessModal.type === 'update' ? 'bg-indigo-600 hover:bg-indigo-700' :
                       'bg-slate-600 hover:bg-slate-700'
                     }`}
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showErrorModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowErrorModal(null)}
+          />
+          <div className="fixed inset-0 z-[70] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                    <AlertCircle className="h-10 w-10 text-red-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{showErrorModal.title}</h3>
+                  <p className="text-slate-600 mb-8">{showErrorModal.message}</p>
+                  <button
+                    onClick={() => setShowErrorModal(null)}
+                    className="px-8 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-all"
                   >
                     OK
                   </button>

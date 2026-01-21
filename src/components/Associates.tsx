@@ -4,9 +4,9 @@ import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getApprovedAssociates } from "../services/associatesService";
 
-import brasilCvbLogo from "../assets/logos_partnerships/logo-brasil-cvb.png";
-import accgLogo from "../assets/logos_partnerships/accg_min.png";
-import sindcampinaLogo from "../assets/logos_partnerships/sind_campina.png";
+const brasilCvbLogo = "/assets/logos_partnerships/logo-brasil-cvb.png";
+const accgLogo = "/assets/logos_partnerships/accg_min.png";
+const sindcampinaLogo = "/assets/logos_partnerships/sind_campina.png";
 
 type CategoryKey =
   | "institucional"
