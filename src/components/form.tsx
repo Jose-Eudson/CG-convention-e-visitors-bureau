@@ -167,6 +167,10 @@ const FormularioAssoc: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
+                  <label htmlFor="numeroFuncionarios" className={labelClass}>Número de Funcionários</label>
+                  <input type="number" id="numeroFuncionarios" name="numeroFuncionarios" className={inputClass} />
+                </div>
+                <div>
                   <label htmlFor="cnpj" className={labelClass}>CNPJ</label>
                   <input type="text" id="cnpj" name="cnpj" required className={inputClass} />
                 </div>
@@ -179,7 +183,6 @@ const FormularioAssoc: React.FC = () => {
                   <input type="text" id="inscricaoMunicipal" name="inscricaoMunicipal" className={inputClass} />
                 </div>
               </div>
-
               <div>
                 <label htmlFor="instagram" className={labelClass}>Link do Instagram ou Site (opcional)</label>
                 <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/..." className={inputClass} />
@@ -263,10 +266,6 @@ const FormularioAssoc: React.FC = () => {
                 <div>
                   <label htmlFor="emailResponsavel" className={labelClass}>E-mail do Responsável</label>
                   <input type="email" id="emailResponsavel" name="emailResponsavel" className={inputClass} />
-                </div>
-                <div>
-                  <label htmlFor="numeroFuncionarios" className={labelClass}>Número de Funcionários</label>
-                  <input type="number" id="numeroFuncionarios" name="numeroFuncionarios" className={inputClass} />
                 </div>
               </div>
             </div>
