@@ -102,12 +102,14 @@ const ConhecaCampinaGrande = () => {
                         />
                     </div>
 
-                    <div className="flex flex-wrap gap-2 justify-center lg:justify-end">
+                    <div className="flex flex-wrap gap-2 justify-start">
                         {categorias.map((categoria) => (
                             <button
                                 key={categoria}
                                 onClick={() => setCategoriaAtiva(categoria)}
                                 className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200
+                                    ${['Compras','Acomodacao','Estrutura para eventos'].includes(categoria) ? 'order-10' : 'order-1'}
+                                    ${categoria === 'Todas' ? 'order-first' : ''}
                                     ${categoriaAtiva === categoria
                                         ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20 scale-105"
                                         : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"}

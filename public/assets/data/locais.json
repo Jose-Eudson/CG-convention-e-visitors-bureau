@@ -795,7 +795,7 @@
     {
         "id": 63,
         "nome": "Hotel Slaviero",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Hotel moderno com estrutura para eventos e hospedagem executiva.",
         "descricao": "O Hotel Slaviero oferece apartamentos confortáveis, estrutura para eventos e serviços voltados tanto para turismo quanto para negócios.",
         "imagem": "/assets/imagesCG/hotel-slaviero.webp",
@@ -807,7 +807,7 @@
     {
         "id": 64,
         "nome": "Garden Hotel",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Hotel de grande porte com ampla capacidade para eventos.",
         "descricao": "O Garden Hotel é um dos maiores da cidade, oferecendo ampla estrutura para hospedagem, eventos corporativos e sociais.",
         "imagem": "/assets/imagesCG/garden-hotel.webp",
@@ -819,7 +819,7 @@
     {
         "id": 65,
         "nome": "Hotel Village Confort",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Hotel confortável próximo ao centro da cidade.",
         "descricao": "O Hotel Village Confort oferece hospedagem prática, com boa localização e estrutura adequada para viagens a trabalho ou lazer.",
         "imagem": "/assets/imagesCG/village-confort.jpg",
@@ -831,7 +831,7 @@
     {
         "id": 66,
         "nome": "Hotel Village Premium",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Hotel premium com estrutura moderna e eventos.",
         "descricao": "O Hotel Village Premium oferece apartamentos modernos, espaços para eventos e serviços voltados ao público executivo.",
         "imagem": "/assets/imagesCG/village-premium.jpg",
@@ -843,7 +843,7 @@
     {
         "id": 67,
         "nome": "Hotel Serrano",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Hotel tradicional com localização central.",
         "descricao": "O Hotel Serrano é uma opção tradicional de hospedagem, localizado próximo a serviços e pontos comerciais da cidade.",
         "imagem": "/assets/imagesCG/hotel-serrano.webp",
@@ -855,7 +855,7 @@
     {
         "id": 68,
         "nome": "Ibis Styles",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Hotel da rede Ibis com design moderno.",
         "descricao": "O Ibis Styles oferece hospedagem moderna, confortável e padronizada, ideal para turistas e viajantes a trabalho.",
         "imagem": "/assets/imagesCG/ibis-styles.webp",
@@ -867,7 +867,7 @@
     {
         "id": 69,
         "nome": "Titão Plaza Hotel",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Hotel funcional com boa localização.",
         "descricao": "O Titão Plaza Hotel oferece hospedagem prática e confortável, com fácil acesso às principais áreas da cidade.",
         "imagem": "/assets/imagesCG/titao-plaza.webp",
@@ -879,7 +879,7 @@
     {
         "id": 70,
         "nome": "Hotel do Vale",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Hotel simples com ambiente tranquilo.",
         "descricao": "O Hotel do Vale oferece uma opção acessível de hospedagem, com ambiente tranquilo e atendimento acolhedor.",
         "imagem": "/assets/imagesCG/hotel-do-vale.webp",
@@ -891,7 +891,7 @@
     {
         "id": 71,
         "nome": "Majestic Hotel",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Hotel compacto com localização central.",
         "descricao": "O Majestic Hotel oferece hospedagem prática no centro da cidade, com fácil acesso a serviços e comércio.",
         "imagem": "/assets/imagesCG/majestic-hotel.jpg",
@@ -903,7 +903,7 @@
     {
         "id": 72,
         "nome": "Inter City",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Hotel executivo com estrutura para eventos.",
         "descricao": "O Inter City oferece hospedagem confortável, estrutura moderna e espaços para eventos corporativos.",
         "imagem": "/assets/imagesCG/intercity.webp",
@@ -915,7 +915,7 @@
     {
         "id": 73,
         "nome": "Pousada Granville",
-        "categoria": "acomodacao",
+        "categoria": "acomodação",
         "resumo": "Pousada aconchegante em bairro residencial.",
         "descricao": "A Pousada Granville oferece hospedagem simples e acolhedora, ideal para quem busca tranquilidade.",
         "imagem": "/assets/imagesCG/pousada-granville.jpg",
