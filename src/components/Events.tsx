@@ -205,7 +205,7 @@ const Events = () => {
 
   if (loading) {
     return (
-      <section id="eventos" className="bg-slate-50 py-12 md:py-20">
+      <section id="eventos" className="bg-slate-100 py-12 md:py-20">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <div className="text-center py-20">
             <p className="text-slate-600">Carregando eventos...</p>
