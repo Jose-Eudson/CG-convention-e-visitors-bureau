@@ -108,7 +108,7 @@ const Footer = () => {
                   className="inline-flex items-center gap-2 hover:text-emerald-600 transition-colors"
                 >
                   <Mail className="h-4 w-4 opacity-80" />
-                  contato@cvbcg.com
+                  adm.comercial@cvbcg.com.br
                 </a>
               </li>
 

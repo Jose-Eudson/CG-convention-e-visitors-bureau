@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -33,8 +34,99 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
   </button>
 );
 
+
 const Board = () => {
   const { t } = useTranslation("board");
+  const sliderRef = useRef<any>(null);
+  const [mounted, setMounted] = useState(false);
+  const [slidesToShow, setSlidesToShow] = useState(3);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setSlidesToShow(1);
+      } else if (window.innerWidth < 1024) {
+        setSlidesToShow(2);
+      } else {
+        setSlidesToShow(3);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
+    const runResize = () => {
+      try {
+        if (sliderRef.current?.innerSlider?.onWindowResized) {
+          sliderRef.current.innerSlider.onWindowResized();
+        }
+      } catch (e) {
+      }
+    };
+
+    const debounced = (() => {
+      let t: any = 0;
+      return () => {
+        clearTimeout(t);
+        t = setTimeout(runResize, 150);
+      };
+    })();
+
+    const waitImagesAndRun = () => {
+      const imgs = Array.from(document.querySelectorAll('#diretoria img')) as HTMLImageElement[];
+      if (imgs.length === 0) {
+        runResize();
+        return;
+      }
+
+      let remaining = imgs.filter(i => !i.complete).length;
+      if (remaining === 0) {
+        runResize();
+        return;
+      }
+
+      const onLoadOrError = () => {
+        remaining -= 1;
+        if (remaining <= 0) runResize();
+      };
+
+      imgs.forEach(img => {
+        if (img.complete) return;
+        img.addEventListener('load', onLoadOrError, { once: true });
+        img.addEventListener('error', onLoadOrError, { once: true });
+      });
+    };
+
+    const initId = setTimeout(waitImagesAndRun, 120);
+
+    window.addEventListener("load", debounced);
+    window.addEventListener("resize", debounced);
+    window.addEventListener("orientationchange", debounced);
+    let ro: ResizeObserver | null = null;
+    try {
+      const container = document.getElementById('diretoria');
+      if (container && (window as any).ResizeObserver) {
+        ro = new (window as any).ResizeObserver(debounced);
+        if (ro) ro.observe(container);
+      }
+    } catch (e) {
+      ro = null;
+    }
+
+    return () => {
+      clearTimeout(initId);
+      window.removeEventListener("load", debounced);
+      window.removeEventListener("resize", debounced);
+      window.removeEventListener("orientationchange", debounced);
+      if (ro) {
+        try { ro.disconnect(); } catch (e) {}
+      }
+    };
+  }, []);
 
   const boardMembers = [
     { name: "ANDRÉ DANTAS MOTTA", role: t("roles.president"), photo: andreImg },
@@ -49,15 +141,18 @@ const Board = () => {
 
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: boardMembers.length > slidesToShow,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: slidesToShow,
     slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     arrows: true, 
+    swipe: true,
     swipeToSlide: true,
-    touchThreshold: 10,
+    touchMove: true,
+    draggable: true,
+    touchThreshold: 20,
     responsive: [
       { 
         breakpoint: 1024, 
@@ -93,35 +188,39 @@ const Board = () => {
         </p>
 
         <div className="relative px-0 sm:px-4">
-          <Slider {...settings}>
+        {mounted ? (
+          <Slider key={slidesToShow} ref={sliderRef} {...settings}>
             {boardMembers.map((member, index) => (
-              <div key={index} className="h-full px-2 sm:px-4 pb-12 md:pb-16">
-                <div className="flex h-full">
-                  <div className="group flex h-[280px] sm:h-[320px] w-full flex-col justify-between rounded-t-[28px] rounded-b-2xl bg-white border border-slate-300 p-4 sm:p-6 text-center transition-all duration-500 hover:-translate-y-1 hover:shadow-md">
-                    <div className="flex flex-col items-center">
-                      <div className="mb-3 sm:mb-4 h-24 w-24 sm:h-32 sm:w-32 overflow-hidden rounded-full border-4 border-slate-200 shadow-sm">
-                        <img
-                          src={member.photo}
-                          alt={member.name}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
+                <div key={index} className="h-full px-2 sm:px-4 pb-12 md:pb-16">
+                  <div className="flex h-full">
+                    <div className="group flex h-[280px] sm:h-[320px] w-full flex-col justify-between rounded-t-[28px] rounded-b-2xl bg-white border border-slate-300 p-4 sm:p-6 text-center transition-all duration-500 hover:-translate-y-1 hover:shadow-md">
+                      <div className="flex flex-col items-center">
+                        <div className="mb-3 sm:mb-4 h-24 w-24 sm:h-32 sm:w-32 overflow-hidden rounded-full border-4 border-slate-200 shadow-sm">
+                          <img
+                            src={member.photo}
+                            alt={member.name}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        </div>
+
+                        <h3 className="min-h-[48px] sm:min-h-[56px] text-base sm:text-lg font-semibold tracking-wide text-slate-900 px-2">
+                          {member.name}
+                        </h3>
                       </div>
 
-                      <h3 className="min-h-[48px] sm:min-h-[56px] text-base sm:text-lg font-semibold tracking-wide text-slate-900 px-2">
-                        {member.name}
-                      </h3>
-                    </div>
-
-                    <div className="pt-2 sm:pt-3">
-                      <span className="inline-block rounded-full bg-slate-50 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium text-emerald-600">
-                        {member.role}
-                      </span>
+                      <div className="pt-2 sm:pt-3">
+                        <span className="inline-block rounded-full bg-slate-50 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium text-emerald-600">
+                          {member.role}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </Slider>
+              ))}
+            </Slider>
+          ) : (
+            <div className="h-[360px] md:h-[420px]" />
+          )}
         </div>
       </div>
 

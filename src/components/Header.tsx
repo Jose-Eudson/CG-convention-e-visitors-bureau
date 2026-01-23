@@ -65,7 +65,7 @@ const Header = () => {
   const navItems = [
     { id: "inicio", label: t("menu.inicio") },
     { id: "quem-somos", label: t("menu.quemSomos") },
-    { id: "quem-somos", label: t("menu.oQueFazemos") },
+    { id: "institucional", label: t("menu.oQueFazemos") },
     { id: "diretoria", label: t("menu.diretoria") },
     { id: "eventos", label: t("menu.eventos") },
     { id: "associados", label: t("menu.associados") },
@@ -115,7 +115,6 @@ const Header = () => {
       `}
     >
       <div className="h-16 md:h-20 flex items-center justify-between px-3 md:px-6 lg:px-12">
-        {/* Logo */}
         <div className="flex items-center gap-2 md:gap-3 h-full">
           <img 
             src={logo} 

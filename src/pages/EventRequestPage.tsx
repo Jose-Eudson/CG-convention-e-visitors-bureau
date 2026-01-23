@@ -178,12 +178,21 @@ const EventRequestPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12">
+    <div className="min-h-screen bg-slate-50 py-12 pt-28">
       <div className="mx-auto max-w-4xl px-4">
-        <Link to="/" className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 transition-colors">
+        <button
+          type="button"
+          onClick={() => {
+            navigate('/');
+            setTimeout(() => {
+              document.getElementById('eventos')?.scrollIntoView({ behavior: 'smooth' });
+            }, 160);
+          }}
+          className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 transition-colors px-2 py-1 rounded-md"
+        >
           <ArrowLeft className="h-4 w-4" />
           Voltar para o site
-        </Link>
+        </button>
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900">Solicitar Cadastro de Evento</h1>
