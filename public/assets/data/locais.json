@@ -1171,5 +1171,31 @@
         "instagram": "https://www.instagram.com/espaco267cg",
         "facebook": null,
         "telefone": "(83) 98173-0987"
+    },
+    {
+        "id": 95,
+        "nome": "Shopping Centro Edson Diniz",
+        "categoria": "compras",
+        "resumo": "Centro comercial popular com grande diversidade de lojas e serviços no centro da cidade.",
+        "descricao": "O Shopping Centro Edson Diniz é um dos principais espaços de comércio popular em Campina Grande, com diversas lojas, serviços e opções de compras no coração da cidade.",
+        "imagem": "/assets/imagesCG/edson-diniz.webp",
+        "endereco": "Rua Marquês do Herval, 38 - Centro, Campina Grande - PB",
+        "googleMapsUrl": "https://www.google.com/maps?q=Shopping+Centro+Edson+Diniz+Campina+Grande",
+        "instagram": null,
+        "facebook": null,
+        "telefone": "(83) 3077-1411"
+    },
+    {
+        "id": 96,
+        "nome": "Design mall",
+        "categoria": "compras",
+        "resumo": "Shopping moderno com mix de lojas, serviços e lazer no bairro Catolé.",
+        "descricao": "O Design Mall é um shopping contemporâneo em Campina Grande, oferecendo lojas, serviços, ambiente confortável e experiência diferenciada de compras e lazer. Instagram oficial com conteúdo sobre eventos e ofertas.",
+        "imagem": "/assets/imagesCG/design-mall.jpg",
+        "endereco": "R. Otacílio Nepomuceno, 600 - Catolé, Campina Grande - PB",
+        "googleMapsUrl": "https://www.google.com/maps?q=Design+Mall+Campina+Grande",
+        "instagram": "https://www.instagram.com/designmallcg",
+        "facebook": "https://www.facebook.com/designmallcg",
+        "telefone": null
     }
 ]
