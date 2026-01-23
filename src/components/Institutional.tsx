@@ -1,217 +1,188 @@
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useRef, useEffect, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
-  Star, Eye, Handshake, Megaphone, HelpCircle,
-  BookOpen, Award, BarChart, Users, ChevronLeft, ChevronRight
+  Star,
+  Eye,
+  Handshake,
+  Megaphone,
+  HelpCircle,
+  BookOpen,
+  Award,
+  BarChart,
+  Users,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 type Service = {
   key: string;
   icon: React.ElementType;
-  color: string;
-};
-
-const NextArrow = ({ onClick }: { onClick?: () => void }) => {
-  return (
-    <button
-      onClick={onClick}
-      className="absolute right-[-28px] md:-right-12 top-[48%] md:top-1/2 md:-translate-y-1/2 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
-      aria-label="Próximo"
-    >
-      <ChevronRight size={24} />
-    </button>
-  );
-};
-
-const PrevArrow = ({ onClick }: { onClick?: () => void }) => {
-  return (
-    <button
-      onClick={onClick}
-      className="absolute left-[-28px] md:-left-12 top-[48%] md:top-1/2 md:-translate-y-1/2 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
-      aria-label="Anterior"
-    >
-      <ChevronLeft size={24} />
-    </button>
-  );
 };
 
 const Institutional = () => {
   const { t } = useTranslation("institutional");
+  const sliderRef = useRef<Slider | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [visible, setVisible] = useState(false);
 
   const services: Service[] = [
-    { key: "captacao", icon: Star, color: "text-white" },
-    { key: "monitoramento", icon: Eye, color: "text-white" },
-    { key: "intermediacao", icon: Handshake, color: "text-white" },
-    { key: "promocao", icon: Megaphone, color: "text-white" },
-    { key: "apoio", icon: HelpCircle, color: "text-white" },
-    { key: "consultoria", icon: BookOpen, color: "text-white" },
-    { key: "qualificacao", icon: Award, color: "text-white" },
-    { key: "observatorio", icon: BarChart, color: "text-white" },
-    { key: "articulacao", icon: Users, color: "text-white" },
+    { key: "captacao", icon: Star },
+    { key: "monitoramento", icon: Eye },
+    { key: "intermediacao", icon: Handshake },
+    { key: "promocao", icon: Megaphone },
+    { key: "apoio", icon: HelpCircle },
+    { key: "consultoria", icon: BookOpen },
+    { key: "qualificacao", icon: Award },
+    { key: "observatorio", icon: BarChart },
+    { key: "articulacao", icon: Users },
   ];
 
   const sliderSettings = {
     dots: true,
-    arrows: true,
+    arrows: false,
     infinite: true,
-    speed: 500,
+    speed: 600,
     slidesToShow: 1,
     slidesToScroll: 1,
-    swipe: true,
-    swipeToSlide: true,
-    touchMove: true,
-    draggable: true,
-    touchThreshold: 20,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          arrows: true,
-          dots: true,
-          swipe: true,
-          draggable: true,
-          touchMove: true,
-        }
-      }
-    ]
   };
-
-  const sliderRef = useRef<any>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-
-    const runResize = () => {
-      try {
-        if (sliderRef.current?.innerSlider?.onWindowResized) {
-          sliderRef.current.innerSlider.onWindowResized();
-        }
-      } catch (e) {
-      }
-    };
-
-    const debounced = (() => {
-      let t: any = 0;
-      return () => {
-        clearTimeout(t);
-        t = setTimeout(runResize, 150);
-      };
-    })();
-    const waitImagesAndRun = () => {
-      const imgs = Array.from(document.querySelectorAll('#institucional img')) as HTMLImageElement[];
-      if (imgs.length === 0) {
-        runResize();
-        return;
-      }
-
-      let remaining = imgs.filter(i => !i.complete).length;
-      if (remaining === 0) {
-        runResize();
-        return;
-      }
-
-      const onLoadOrError = () => {
-        remaining -= 1;
-        if (remaining <= 0) runResize();
-      };
-
-      imgs.forEach(img => {
-        if (img.complete) return;
-        img.addEventListener('load', onLoadOrError, { once: true });
-        img.addEventListener('error', onLoadOrError, { once: true });
-      });
-    };
-
-    const initId = setTimeout(waitImagesAndRun, 120);
-
-    let ro: ResizeObserver | null = null;
-    try {
-      const container = document.getElementById('institucional');
-      if (container && (window as any).ResizeObserver) {
-        ro = new (window as any).ResizeObserver(debounced);
-        ro?.observe(container);
-      }
-    } catch (e) {
-      ro = null;
-    }
-
-    window.addEventListener("load", debounced);
-    window.addEventListener("resize", debounced);
-    window.addEventListener("orientationchange", debounced);
-
-    return () => {
-      clearTimeout(initId);
-      window.removeEventListener("load", debounced);
-      window.removeEventListener("resize", debounced);
-      window.removeEventListener("orientationchange", debounced);
-      if (ro) {
-        try { ro.disconnect(); } catch (e) {}
-      }
-    };
-  }, []);
 
   const chunkedServices = Array.from(
     { length: Math.ceil(services.length / 4) },
     (_, i) => services.slice(i * 4, i * 4 + 4)
   );
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section id="institucional" className="py-24 bg-white">
-      <div className="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="md:col-span-3 p-4 md:p-10">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-slate-700">
-            {t("whoweare.title")}
-          </h2>
-          <p className="text-base max-w-2xl whitespace-pre-line text-slate-700 mb-6">
-            {t("whoweare.description.part1")}
-          </p>
-          <p className="text-lg font-medium text-slate-700 border-l-4 border-emerald-600 pl-4 mb-6">
-            {t("whoweare.description.lead")}
-          </p>
-          <p className="text-base max-w-2xl whitespace-pre-line text-slate-700">
-            {t("whoweare.description.part2")}
-          </p>
-        </div>
-        <div className="md:col-span-2 bg-white text-slate-700 p-4 md:p-10 rounded-xl flex flex-col">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6">
-            {t("whatwedo.title")}
-          </h2>
-          {mounted ? (
-            <Slider ref={sliderRef} {...sliderSettings}>
-              {chunkedServices.map((group, i) => (
-              <div key={i} className="px-2 pb-8">
-                <div className="grid grid-cols-2 gap-6">
-                  {group.map((service) => (
-                    <div
-                      key={service.key}
-                      className="flex flex-col items-center justify-center h-[220px] rounded-xl bg-white text-slate-700 border border-slate-300 p-6 text-center shadow-sm hover:shadow-md transition-opacity duration-300"
-                    >
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white mb-4">
-                        <service.icon className="h-8 w-8" />
-                      </div>
-                      <h3 className="mb-2 text-sm font-semibold">
-                        {t(`whatwedo.${service.key}.title`)}
-                      </h3>
-                      <p className="text-xs opacity-90">
-                        {t(`whatwedo.${service.key}.description`)}
-                      </p>
+    <section
+      ref={sectionRef}
+      id="institucional"
+      className="relative overflow-hidden bg-transparent"
+    >
+      {/* CONTEÚDO */}
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
+        <div className="relative">
+          {/* CARD PRINCIPAL */}
+          <div
+            className={`
+              grid grid-cols-1 lg:grid-cols-2 gap-10
+              rounded-2xl bg-white
+              shadow-[0_30px_60px_-15px_rgba(0,0,0,0.25)]
+              px-6 sm:px-8 lg:px-10 py-10 sm:py-12
+              transition-all duration-[1600ms]
+              ease-[cubic-bezier(0.22,1,0.36,1)]
+              ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+            `}
+          >
+            <div className="flex flex-col justify-center">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#1f3d2b] mb-4 sm:mb-5">
+                {t("whoweare.title")}
+              </h2>
+
+              <p className="text-[#2f4f3f] mb-4 sm:mb-5 leading-relaxed max-w-xl text-sm sm:text-base">
+                {t("whoweare.description.part1")}
+              </p>
+
+              <p className="text-[#1f3d2b] font-medium border-l-4 border-[#3b7a57] pl-4 mb-4 sm:mb-5 max-w-xl text-sm sm:text-base">
+                {t("whoweare.description.lead")}
+              </p>
+
+              <p className="text-[#3f5f52] leading-relaxed max-w-xl text-sm sm:text-base">
+                {t("whoweare.description.part2")}
+              </p>
+            </div>
+
+            <div className="hidden lg:block" />
+          </div>
+
+          {/* CARD CARROSSEL */}
+          <div
+            className={`
+              relative z-20
+              mt-8 lg:mt-0
+              lg:absolute lg:right-0 lg:top-1/2
+              lg:-translate-y-1/2
+              lg:w-[42%]
+              transition-all duration-[2200ms]
+              ease-[cubic-bezier(0.22,1,0.36,1)]
+              delay-300
+              ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
+            `}
+          >
+            <div className="h-full rounded-2xl bg-white shadow-[0_40px_80px_-20px_rgba(0,0,0,0.35)] px-5 sm:px-7 py-10 sm:py-12">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#1f3d2b] mb-6 sm:mb-8 text-center">
+                O que fazemos
+              </h3>
+
+              <Slider ref={sliderRef} {...sliderSettings}>
+                {chunkedServices.map((group, i) => (
+                  <div key={i} className="px-2">
+                    <div className="grid grid-cols-2 gap-4 sm:gap-5">
+                      {group.map((service) => (
+                        <div
+                          key={service.key}
+                          className="flex flex-col items-center justify-center h-[150px] sm:h-[170px] rounded-xl border border-slate-300 p-4 sm:p-5 text-center shadow-sm hover:shadow-md transition"
+                        >
+                          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-lg bg-[#3b7a57] text-white mb-3">
+                            <service.icon className="h-5 w-5" />
+                          </div>
+
+                          <h3 className="mb-1 text-xs sm:text-sm font-semibold text-[#1f3d2b]">
+                            {t(`whatwedo.${service.key}.title`)}
+                          </h3>
+
+                          <p className="text-[11px] sm:text-xs text-[#4f6f61] leading-snug">
+                            {t(`whatwedo.${service.key}.description`)}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
+              </Slider>
+
+              <div className="mt-6 flex justify-center gap-4">
+                <button
+                  onClick={() => sliderRef.current?.slickPrev()}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-slate-700 hover:bg-[#3b7a57] hover:text-white transition"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+
+                <button
+                  onClick={() => sliderRef.current?.slickNext()}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-slate-700 hover:bg-[#3b7a57] hover:text-white transition"
+                >
+                  <ChevronRight size={20} />
+                </button>
               </div>
-              ))}
-            </Slider>
-          ) : (
-            <div className="h-[360px]" />
-          )}
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* V INFERIOR – LIGA AS SEÇÕES */}
+      <div className="absolute bottom-0 left-0 w-full h-20 bg-slate-100"
+        style={{
+          clipPath: "polygon(0 0, 50% 70%, 100% 0, 100% 100%, 0 100%)",
+        }}
+      />
     </section>
   );
 };
