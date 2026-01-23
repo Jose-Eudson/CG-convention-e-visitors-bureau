@@ -1,12 +1,14 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar, MapPin, ExternalLink, Search, Filter } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, MapPin, ExternalLink, Search, Filter, ArrowLeft } from 'lucide-react';
 import { getAllEvents } from '../services/eventsService';
 import type { Event } from '../types/Event';
 import EventModal from '../components/EventModal';
 
 const EventsPage = () => {
   const { t } = useTranslation('events');
+  const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -103,9 +105,23 @@ const EventsPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-        <div className="mx-auto max-w-6xl px-4 md:px-6 py-16 md:py-24">
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white pt-28">
+        <div className="mx-auto max-w-6xl px-4 md:px-6 pb-16 md:pb-24">
           <div className="relative">
+            <button
+              type="button"
+              onClick={() => {
+                navigate('/');
+                setTimeout(() => {
+                  document.getElementById('eventos')?.scrollIntoView({ behavior: 'smooth' });
+                }, 160);
+              }}
+              className="inline-flex items-center gap-3 text-slate-300 hover:text-white mb-6 transition-colors px-3 py-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar para o site
+            </button>
+
             <div className="absolute -top-8 -left-8 w-32 h-32 bg-cvb-yellow/10 rounded-full blur-3xl" />
             <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-cvb-yellow/10 rounded-full blur-3xl" />
             

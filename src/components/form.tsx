@@ -1,13 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiCheckCircle } from 'react-icons/fi';
 import { addAssociate, uploadAssociateLogo } from '../services/associatesService';
 import { sendNewAssociateEmail } from '../services/associateEmailService';
 
 const FormularioAssoc: React.FC = () => {
-  const [categoria, setCategoria] = useState<string>('');
-  const [isEnviando, setIsEnviando] = useState<boolean>(false);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [categoria, setCategoria] = useState('');
+  const [isEnviando, setIsEnviando] = useState(false);
+  const [logoFile, setLogoFile] = useState<any>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
 
@@ -30,8 +31,8 @@ const FormularioAssoc: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
-
     setIsEnviando(true);
+
     const formData = new FormData(formRef.current);
 
     try {
@@ -54,10 +55,9 @@ const FormularioAssoc: React.FC = () => {
         bairro: formData.get('bairro') as string,
         cep: formData.get('cep') as string,
         nomeResponsavel: formData.get('nomeResponsavel') as string,
-        cpfResponsavel: formData.get('cpfResponsavel') as string,
+        dataAniversarioResponsavel: formData.get('dataAniversarioResponsavel') as string || '',
         telefone: formData.get('telefone') as string,
         email: formData.get('email') as string,
-        cargo: formData.get('cargo') as string || '',
         telefoneResponsavel: formData.get('telefoneResponsavel') as string || '',
         emailResponsavel: formData.get('emailResponsavel') as string || '',
         numeroFuncionarios: formData.get('numeroFuncionarios') as string || '',
@@ -74,8 +74,7 @@ const FormularioAssoc: React.FC = () => {
         console.warn('Email não enviado, mas solicitação foi salva:', emailError);
       }
 
-      alert("Solicitação enviada com sucesso! Em breve entraremos em contato.");
-      navigate("/");
+      setShowSuccessModal(true);
     } catch (err) {
       console.error('Erro ao enviar:', err);
       alert("Erro ao enviar solicitação. Por favor, tente novamente.");
@@ -84,218 +83,275 @@ const FormularioAssoc: React.FC = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    setShowSuccessModal(false);
+    navigate('/#associados');
+    setTimeout(() => {
+      document.getElementById('associados')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   const labelClass = "block text-sm font-bold text-slate-700 mb-1";
   const inputClass = "w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-white";
   const sectionClass = "bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4";
 
   return (
-    <div className="min-h-screen bg-slate-100 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        
-        <div className="fixed left-4 top-24 z-40">
-          <button
-            onClick={handleVoltar}
-            className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 shadow-md text-gray-700 hover:bg-white transition"
-          >
-            <FiArrowLeft size={18} />
-            Voltar
-          </button>
-        </div>
-       
-        <div className="text-center mb-10">
-          <img 
-            src="https://www.cvbcg.com.br/assets/img/logo_cvbcg.svg" 
-            alt="CVB Campina" 
-            className="max-w-[150px] mx-auto mb-6"
-          />
-          <h1 className="text-3xl font-extrabold text-slate-800">Seja um Parceiro</h1>
-          <p className="text-slate-500 mt-2">Preencha os dados abaixo para solicitar sua associação ao Convention Bureau.</p>
+    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        <button
+          onClick={handleVoltar}
+          className="flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-6 transition-colors font-medium"
+        >
+          <FiArrowLeft size={20} />
+          Voltar
+        </button>
+
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-8 rounded-t-xl shadow-lg">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Seja um Parceiro</h1>
+          <p className="text-orange-100">
+            Preencha os dados abaixo para solicitar sua associação ao Convention Bureau.
+          </p>
         </div>
 
-        <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
-          
-          
-          <section className={sectionClass}>
-            <div className="flex items-center gap-2 mb-4 border-b pb-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white font-bold">1</span>
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-b-xl shadow-lg">
+          <div className={sectionClass}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                1
+              </div>
               <h2 className="text-xl font-bold text-slate-800">Identificação Empresarial</h2>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <label className={labelClass}>Categoria de Negócio</label>
-                <select 
-                  name="categoria" required value={categoria}
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="categoria" className={labelClass}>Categoria de Negócio</label>
+                <select
+                  id="categoria"
+                  name="categoria"
+                  required
+                  value={categoria}
                   onChange={(e) => setCategoria(e.target.value)}
                   className={inputClass}
                 >
-                  <option value="" disabled>Selecione a categoria:</option>
-                  <option>Agência de Viagens e Turismo</option>
-                  <option>Casa de Eventos</option>
-                  <option>Serviço de Guiamento Turístico (Guia de Turismo)</option>
-                  <option>Hotel (até 70 unidades habitacionais)</option>
-                  <option>Hotel (70 a 100 unidades habitacionais)</option>
-                  <option>Hotel (acima de 100 unidades habitacionais)</option>
-                  <option>Instituição (Shopping, Empresa, Universidade)</option>
-                  <option>Pousada / Hostel</option>
-                  <option>Estabelecimento Gastronômico (Restaurante)</option>
+                  <option value="">Selecione a categoria:</option>
+                  <option value="Agência de Viagens, Receptivo e Aluguis de Automóveis">Agência de Viagens e Turismo</option>
+                  <option value="Casas de Shows, Espetáculos e Museus">Casa de Eventos</option>
+                  <option value="Guia de Turismo">Serviço de Guiamento Turístico (Guia de Turismo)</option>
+                  <option value="Hospedagem">Hotel (até 70 unidades habitacionais)</option>
+                  <option value="Hospedagem">Hotel (70 a 100 unidades habitacionais)</option>
+                  <option value="Hospedagem">Hotel (acima de 100 unidades habitacionais)</option>
+                  <option value="Institucional">Instituição (Shopping, Empresa, Universidade)</option>
+                  <option value="Hospedagem">Pousada / Hostel</option>
+                  <option value="Alimentação">Estabelecimento Gastronômico (Restaurante)</option>
                   <option value="outro">Outro</option>
                 </select>
               </div>
 
               {categoria === 'outro' && (
-                <div className="md:col-span-2 animate-in slide-in-from-top-2 duration-300">
-                  <label className={labelClass}>Especifique a Categoria</label>
-                  <input type="text" name="outro" required className={inputClass} />
+                <div>
+                  <label htmlFor="categoriaOutro" className={labelClass}>Especifique a Categoria</label>
+                  <input type="text" id="categoriaOutro" name="categoriaOutro" className={inputClass} />
                 </div>
               )}
 
-              <div className="md:col-span-2">
-                <label className={labelClass}>Razão Social</label>
-                <input type="text" name="razaoSocial" required className={inputClass} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="razaoSocial" className={labelClass}>Razão Social</label>
+                  <input type="text" id="razaoSocial" name="razaoSocial" required className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="nomeFantasia" className={labelClass}>Nome Fantasia</label>
+                  <input type="text" id="nomeFantasia" name="nomeFantasia" required className={inputClass} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label htmlFor="numeroFuncionarios" className={labelClass}>Número de Funcionários</label>
+                  <input type="number" id="numeroFuncionarios" name="numeroFuncionarios" className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="cnpj" className={labelClass}>CNPJ</label>
+                  <input type="text" id="cnpj" name="cnpj" required className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="inscricaoEstadual" className={labelClass}>Inscrição Estadual</label>
+                  <input type="text" id="inscricaoEstadual" name="inscricaoEstadual" className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="inscricaoMunicipal" className={labelClass}>Inscrição Municipal</label>
+                  <input type="text" id="inscricaoMunicipal" name="inscricaoMunicipal" className={inputClass} />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="instagram" className={labelClass}>Link do Instagram ou Site (opcional)</label>
+                <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/..." className={inputClass} />
               </div>
 
               <div>
-                <label className={labelClass}>Nome Fantasia</label>
-                <input type="text" name="nomeFantasia" required className={inputClass} placeholder="Nome que aparecerá no site" />
-              </div>
-
-              <div>
-                <label className={labelClass}>CNPJ</label>
-                <input type="text" name="cnpj" required className={inputClass} placeholder="00.000.000/0000-00" />
-              </div>
-
-              <div>
-                <label className={labelClass}>Inscrição Estadual</label>
-                <input type="text" name="inscricaoEstadual" className={inputClass} />
-              </div>
-
-              <div>
-                <label className={labelClass}>Inscrição Municipal</label>
-                <input type="text" name="inscricaoMunicipal" className={inputClass} />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className={labelClass}>Link do Instagram ou Site (opcional)</label>
-                <input type="url" name="instagram" className={inputClass} placeholder="https://instagram.com/... ou https://seusite.com.br" />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className={labelClass}>Logo / Foto da Empresa</label>
-                <input 
-                  type="file" 
-                  accept="image/*" 
+                <label htmlFor="logo" className={labelClass}>Logo / Foto da Empresa</label>
+                <input
+                  type="file"
+                  id="logo"
+                  name="logo"
+                  accept="image/*"
                   onChange={handleLogoChange}
-                  className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 file:cursor-pointer"
+                  className="w-full p-2.5 border border-slate-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                 />
-                <p className="text-xs text-slate-500 mt-1">
-                  Envie a logo que aparecerá na página de associados (PNG, JPG ou SVG)
-                </p>
+                <p className="text-xs text-slate-500 mt-1">Envie a logo que aparecerá na página de associados (PNG, JPG ou SVG)</p>
               </div>
             </div>
-          </section>
+          </div>
 
-         
-          <section className={sectionClass}>
-            <div className="flex items-center gap-2 mb-4 border-b pb-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white font-bold">2</span>
+          <div className={sectionClass}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                2
+              </div>
               <h2 className="text-xl font-bold text-slate-800">Localização e Contato</h2>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className={labelClass}>Bairro</label>
-                <input type="text" name="bairro" required className={inputClass} />
+                <label htmlFor="bairro" className={labelClass}>Bairro</label>
+                <input type="text" id="bairro" name="bairro" required className={inputClass} />
               </div>
               <div className="md:col-span-2">
-                <label className={labelClass}>Endereço Completo</label>
-                <input type="text" name="endereco" required className={inputClass} />
-              </div>
-              <div>
-                <label className={labelClass}>CEP</label>
-                <input type="text" name="cep" required className={inputClass} />
-              </div>
-              <div>
-                <label className={labelClass}>Telefone Fixo/Empresa</label>
-                <input type="tel" name="telefone" required className={inputClass} />
-              </div>
-              <div className="md:col-span-2">
-                <label className={labelClass}>E-mail Corporativo</label>
-                <input type="email" name="email" required className={inputClass} />
+                <label htmlFor="endereco" className={labelClass}>Endereço Completo</label>
+                <input type="text" id="endereco" name="endereco" required className={inputClass} />
               </div>
             </div>
-          </section>
 
-        
-          <section className={sectionClass}>
-            <div className="flex items-center gap-2 mb-4 border-b pb-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white font-bold">3</span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="cep" className={labelClass}>CEP</label>
+                <input type="text" id="cep" name="cep" required className={inputClass} />
+              </div>
+              <div>
+                <label htmlFor="telefone" className={labelClass}>Telefone Fixo/Empresa</label>
+                <input type="tel" id="telefone" name="telefone" required className={inputClass} />
+              </div>
+              <div>
+                <label htmlFor="email" className={labelClass}>E-mail Corporativo</label>
+                <input type="email" id="email" name="email" required className={inputClass} />
+              </div>
+            </div>
+          </div>
+
+          <div className={sectionClass}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                3
+              </div>
               <h2 className="text-xl font-bold text-slate-800">Dados do Presidente / Responsável</h2>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <label className={labelClass}>Nome Completo do Responsável</label>
-                <input type="text" name="nomeResponsavel" required className={inputClass} />
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="nomeResponsavel" className={labelClass}>Nome Completo do Responsável</label>
+                  <input type="text" id="nomeResponsavel" name="nomeResponsavel" required className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="dataAniversarioResponsavel" className={labelClass}>Data de Aniversário</label>
+                  <input type="date" id="dataAniversarioResponsavel" name="dataAniversarioResponsavel" className={inputClass} />
+                </div>
               </div>
-              <div>
-                <label className={labelClass}>CPF do Responsável</label>
-                <input type="text" name="cpfResponsavel" required className={inputClass} placeholder="000.000.000-00" />
-              </div>
-              <div>
-                <label className={labelClass}>Cargo</label>
-                <input type="text" name="cargo" className={inputClass} placeholder="Ex: Diretor, Gerente, etc" />
-              </div>
-              <div>
-                <label className={labelClass}>Telefone do Responsável</label>
-                <input type="tel" name="telefoneResponsavel" className={inputClass} placeholder="(83) 99999-9999" />
-              </div>
-              <div>
-                <label className={labelClass}>E-mail do Responsável</label>
-                <input type="email" name="emailResponsavel" className={inputClass} placeholder="responsavel@email.com" />
-              </div>
-              <div className="md:col-span-2">
-                <label className={labelClass}>Número de Funcionários</label>
-                <input type="number" name="numeroFuncionarios" className={inputClass} placeholder="Quantidade de funcionários" min="0" />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label htmlFor="telefoneResponsavel" className={labelClass}>Telefone do Responsável</label>
+                  <input type="tel" id="telefoneResponsavel" name="telefoneResponsavel" className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="emailResponsavel" className={labelClass}>E-mail do Responsável</label>
+                  <input type="email" id="emailResponsavel" name="emailResponsavel" className={inputClass} />
+                </div>
               </div>
             </div>
-          </section>
+          </div>
 
-          
-          <div className="flex flex-col items-center gap-6 pt-4">
-            <div className="flex items-start gap-2 text-sm text-slate-500 max-w-lg text-center">
-              <input type="checkbox" required className="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500" />
-              <span>Declaro que as informações acima são verdadeiras e estou ciente de que a admissão está sujeita à aprovação da diretoria.</span>
-            </div>
+          <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <input
+              type="checkbox"
+              id="termos"
+              required
+              className="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+            />
+            <label htmlFor="termos" className="text-sm text-slate-700">
+              Declaro que as informações acima são verdadeiras e estou ciente de que a admissão está sujeita à aprovação da diretoria.
+            </label>
+          </div>
 
-            <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-              <button 
-                type="submit" 
-                disabled={isEnviando}
-                className="inline-flex justify-center items-center px-12 py-4 border border-transparent text-lg font-bold rounded-xl shadow-lg text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isEnviando ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processando...
-                  </>
-                ) : "ENVIAR PROPOSTA"}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {formRef.current?.reset(); setCategoria('')}}
-                className="px-8 py-4 text-slate-500 font-semibold hover:text-slate-800 transition-colors"
-              >
-                Limpar Campos
-              </button>
-            </div>
+          <div className="flex gap-4 pt-4">
+            <button
+              type="submit"
+              disabled={isEnviando}
+              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            >
+              {isEnviando ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Processando...
+                </>
+              ) : "ENVIAR PROPOSTA"}
+            </button>
+            <button
+              type="button"
+              onClick={() => { formRef.current?.reset(); setCategoria(''); }}
+              className="px-8 py-4 text-slate-500 font-semibold hover:text-slate-800 transition-colors"
+            >
+              Limpar Campos
+            </button>
           </div>
         </form>
       </div>
+
+      {showSuccessModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={handleCloseModal}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
+                    <FiCheckCircle className="h-10 w-10 text-emerald-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Solicitação enviada com sucesso!</h3>
+                  <p className="text-slate-600 mb-8">
+                    Sua solicitação de associação foi recebida. Em breve entraremos em contato!
+                  </p>
+                  <button
+                    onClick={handleCloseModal}
+                    className="px-8 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <style>{`
+            @keyframes scale-in {
+              from {
+                opacity: 0;
+                transform: scale(0.95);
+              }
+              to {
+                opacity: 1;
+                transform: scale(1);
+              }
+            }
+            .animate-scale-in {
+              animation: scale-in 0.2s ease-out;
+            }
+          `}</style>
+        </>
+      )}
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { getPendingRequests, approveEventRequest, rejectEventRequest } from '../services/eventRequestService';
 import { sendApprovalEmail, sendRejectionEmail } from '../services/emailServiceAPI';
 import type { EventRequest } from '../types/EventRequest';
-import { Calendar, MapPin, User, Mail, Phone, Building, CheckCircle, XCircle, ArrowLeft, Eye, X } from 'lucide-react';
+import { Calendar, MapPin, User, Mail, Phone, Building, CheckCircle, XCircle, ArrowLeft, Eye, X, AlertCircle } from 'lucide-react';
 
 const EventRequestsManager = () => {
   const [requests, setRequests] = useState<EventRequest[]>([]);
@@ -11,34 +11,35 @@ const EventRequestsManager = () => {
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<EventRequest | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState<string | null>(null);
+  const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState<{ type: 'approve' | 'reject'; message: string } | null>(null);
+  const [showErrorModal, setShowErrorModal] = useState<{ title: string; message: string } | null>(null);
 
   useEffect(() => {
     loadRequests();
   }, []);
 
   const loadRequests = async () => {
-    console.log('🔄 Carregando solicitações...');
+    console.log('Carregando solicitações...');
     setLoading(true);
     const data = await getPendingRequests();
-    console.log('📦 Solicitações recebidas:', data);
-    console.log('📊 Total de solicitações:', data.length);
+    console.log('Solicitações recebidas:', data);
+    console.log('Total de solicitações:', data.length);
     setRequests(data);
     setLoading(false);
   };
 
   const handleApprove = async (requestId: string) => {
-    if (!confirm('Aprovar esta solicitação e criar o evento?')) return;
-    
-
-    const request = requests.find(r => r.id === requestId);
+    const request = requests.find((r) => r.id === requestId);
     if (!request) return;
-    
+
     setProcessingId(requestId);
     const success = await approveEventRequest(requestId);
     
     if (success) {
-
-      console.log('📧 Enviando email de aprovação...');
+      console.log('Enviando email de aprovação...');
       await sendApprovalEmail({
         submitterName: request.submittedBy.name,
         submitterEmail: request.submittedBy.email,
@@ -46,41 +47,52 @@ const EventRequestsManager = () => {
         date: request.date
       });
       
-      alert('✅ Solicitação aprovada! Evento criado com sucesso.');
+      setShowSuccessModal({
+        type: 'approve',
+        message: 'Solicitação aprovada! Evento criado com sucesso.'
+      });
       await loadRequests();
     } else {
-      alert('❌ Erro ao aprovar solicitação');
+      setShowErrorModal({
+        title: 'Erro ao Aprovar',
+        message: 'Erro ao aprovar solicitação. Tente novamente.'
+      });
     }
     setProcessingId(null);
   };
 
-  const handleReject = async (requestId: string) => {
-    const reason = prompt('Motivo da rejeição (será enviado por email):');
-    if (!reason) return;
-    
+  const handleRejectConfirmed = async () => {
+    if (!rejectReason.trim() || !showRejectModal) return;
 
-    const request = requests.find(r => r.id === requestId);
+    const request = requests.find((r) => r.id === showRejectModal);
     if (!request) return;
-    
-    setProcessingId(requestId);
-    const success = await rejectEventRequest(requestId, reason);
+
+    setProcessingId(showRejectModal);
+    const success = await rejectEventRequest(showRejectModal, rejectReason);
     
     if (success) {
-
-      console.log('📧 Enviando email de rejeição...');
+      console.log('Enviando email de rejeição...');
       await sendRejectionEmail({
         submitterName: request.submittedBy.name,
         submitterEmail: request.submittedBy.email,
         title: request.title,
-        rejectionReason: reason
+        rejectionReason: rejectReason
       });
       
-      alert('✅ Solicitação rejeitada.');
+      setShowSuccessModal({
+        type: 'reject',
+        message: 'Solicitação rejeitada.'
+      });
       await loadRequests();
     } else {
-      alert('❌ Erro ao rejeitar solicitação');
+      setShowErrorModal({
+        title: 'Erro ao Rejeitar',
+        message: 'Erro ao rejeitar solicitação. Tente novamente.'
+      });
     }
     setProcessingId(null);
+    setShowRejectModal(null);
+    setRejectReason('');
   };
 
   const formatDate = (dateString: string) => {
@@ -119,11 +131,10 @@ const EventRequestsManager = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-12 pt-32">
       <div className="mx-auto max-w-6xl px-4">
-
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <Link 
-              to="/" 
+              to="/"
               className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -134,7 +145,7 @@ const EventRequestsManager = () => {
               to="/admin/eventos" 
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg"
             >
-              📋 Gerenciar eventos
+              📅 Gerenciar eventos
             </Link>
           </div>
 
@@ -145,7 +156,6 @@ const EventRequestsManager = () => {
             </p>
           </div>
         </div>
-
 
         {requests.length === 0 ? (
           <div className="rounded-xl bg-white p-12 text-center shadow-md">
@@ -159,7 +169,6 @@ const EventRequestsManager = () => {
                 className="rounded-xl bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden"
               >
                 <div className="flex flex-col lg:flex-row">
-
                   {request.image && (
                     <div className="lg:w-80 flex-shrink-0 overflow-hidden">
                       <img 
@@ -169,7 +178,6 @@ const EventRequestsManager = () => {
                       />
                     </div>
                   )}
-
 
                   <div className="flex-1 p-6">
                     <div className="flex items-start justify-between gap-4">
@@ -181,7 +189,7 @@ const EventRequestsManager = () => {
                               {translateCategory(request.category)}
                             </span>
                             <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">
-                              Pendente
+                              ⏳ Pendente
                             </span>
                           </div>
                         </div>
@@ -214,7 +222,7 @@ const EventRequestsManager = () => {
 
                       <div className="flex gap-2">
                         <button
-                          onClick={() => handleApprove(request.id)}
+                          onClick={() => setShowApproveModal(request.id)}
                           disabled={processingId === request.id}
                           className="rounded-lg bg-emerald-100 p-2 text-emerald-600 hover:bg-emerald-200 transition-colors disabled:opacity-50"
                           title="Aprovar"
@@ -222,7 +230,10 @@ const EventRequestsManager = () => {
                           <CheckCircle className="h-5 w-5" />
                         </button>
                         <button
-                          onClick={() => handleReject(request.id)}
+                          onClick={() => {
+                            setShowRejectModal(request.id);
+                            setRejectReason('');
+                          }}
                           disabled={processingId === request.id}
                           className="rounded-lg bg-red-100 p-2 text-red-600 hover:bg-red-200 transition-colors disabled:opacity-50"
                           title="Rejeitar"
@@ -239,19 +250,115 @@ const EventRequestsManager = () => {
         )}
       </div>
 
+      {showApproveModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowApproveModal(null)}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
+                    <CheckCircle className="h-10 w-10 text-emerald-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Aprovar solicitação?</h3>
+                  <p className="text-slate-600 mb-8">Esta ação criará o evento e enviará email de confirmação ao solicitante.</p>
+                  <div className="flex gap-3 justify-center">
+                    <button
+                      onClick={() => setShowApproveModal(null)}
+                      className="px-6 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowApproveModal(null);
+                        handleApprove(showApproveModal!);
+                      }}
+                      disabled={processingId === showApproveModal}
+                      className="px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center gap-2"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                      Aprovar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showRejectModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => {
+              setShowRejectModal(null);
+              setRejectReason('');
+            }}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8">
+                  <div className="mx-auto w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                    <XCircle className="h-10 w-10 text-red-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2 text-center">Rejeitar solicitação?</h3>
+                  <p className="text-slate-600 mb-6 text-center">O motivo será enviado por email ao solicitante.</p>
+                  
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Motivo da rejeição</label>
+                    <textarea
+                      value={rejectReason}
+                      onChange={(e) => setRejectReason(e.target.value)}
+                      placeholder="Digite o motivo da rejeição..."
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl resize-vertical focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-h-[100px]"
+                      rows={4}
+                    />
+                    {rejectReason.trim().length > 0 && rejectReason.trim().length < 10 && (
+                      <p className="text-xs text-red-600 mt-1">O motivo deve ter pelo menos 10 caracteres.</p>
+                    )}
+                  </div>
+
+                  <div className="flex gap-3 mt-8">
+                    <button
+                      onClick={() => {
+                        setShowRejectModal(null);
+                        setRejectReason('');
+                      }}
+                      className="flex-1 px-6 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleRejectConfirmed}
+                      disabled={processingId === showRejectModal || rejectReason.trim().length < 10}
+                      className="flex-1 px-6 py-2.5 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      <XCircle className="h-4 w-4" />
+                      Rejeitar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {isModalOpen && selectedRequest && (
         <>
           <div
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 z-[50] bg-black/60 backdrop-blur-sm transition-opacity"
             onClick={() => setIsModalOpen(false)}
           />
-          <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="fixed inset-0 z-[50] overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4">
-              <div
-                className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in"
-                onClick={(e) => e.stopPropagation()}
-              >
+              <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className="absolute top-4 right-4 z-10 rounded-full bg-white/90 p-2 text-slate-600 hover:bg-white hover:text-slate-900 transition-all shadow-lg"
@@ -275,7 +382,7 @@ const EventRequestsManager = () => {
                       {translateCategory(selectedRequest.category)}
                     </span>
                     <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">
-                      Pendente
+                      ⏳ Pendente
                     </span>
                   </div>
 
@@ -313,7 +420,7 @@ const EventRequestsManager = () => {
                   <div className="border-t border-slate-200 my-6" />
 
                   <div className="mb-6">
-                    <h3 className="text-lg font-bold text-slate-900 mb-3">Descrição do Evento</h3>
+                    <h3 className="text-lg font-bold text-slate-900 mb-3">📋 Descrição do Evento</h3>
                     <p className="text-slate-700 leading-relaxed whitespace-pre-line">
                       {selectedRequest.description}
                     </p>
@@ -321,7 +428,7 @@ const EventRequestsManager = () => {
 
                   {selectedRequest.externalLink && (
                     <div className="mb-6">
-                      <h3 className="text-lg font-bold text-slate-900 mb-3">Link do Evento</h3>
+                      <h3 className="text-lg font-bold text-slate-900 mb-3">🔗 Link do Evento</h3>
                       <a
                         href={selectedRequest.externalLink}
                         target="_blank"
@@ -336,7 +443,7 @@ const EventRequestsManager = () => {
                   <div className="border-t border-slate-200 my-6" />
 
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-4">Informações do Solicitante</h3>
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">👤 Informações do Solicitante</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex items-start gap-3">
                         <User className="h-5 w-5 text-slate-400 mt-0.5" />
@@ -345,26 +452,35 @@ const EventRequestsManager = () => {
                           <p className="text-slate-700">{selectedRequest.submittedBy.name}</p>
                         </div>
                       </div>
+
                       <div className="flex items-start gap-3">
                         <Mail className="h-5 w-5 text-slate-400 mt-0.5" />
                         <div>
                           <p className="text-xs font-semibold text-slate-500 mb-1">Email</p>
-                          <a href={`mailto:${selectedRequest.submittedBy.email}`} className="text-indigo-600 hover:text-indigo-700 break-all">
+                          <a
+                            href={`mailto:${selectedRequest.submittedBy.email}`}
+                            className="text-indigo-600 hover:text-indigo-700 break-all"
+                          >
                             {selectedRequest.submittedBy.email}
                           </a>
                         </div>
                       </div>
+
                       {selectedRequest.submittedBy.phone && (
                         <div className="flex items-start gap-3">
                           <Phone className="h-5 w-5 text-slate-400 mt-0.5" />
                           <div>
                             <p className="text-xs font-semibold text-slate-500 mb-1">Telefone</p>
-                            <a href={`tel:${selectedRequest.submittedBy.phone}`} className="text-slate-700 hover:text-indigo-600">
+                            <a
+                              href={`tel:${selectedRequest.submittedBy.phone}`}
+                              className="text-slate-700 hover:text-indigo-600"
+                            >
                               {selectedRequest.submittedBy.phone}
                             </a>
                           </div>
                         </div>
                       )}
+
                       {selectedRequest.submittedBy.organization && (
                         <div className="flex items-start gap-3">
                           <Building className="h-5 w-5 text-slate-400 mt-0.5" />
@@ -375,6 +491,7 @@ const EventRequestsManager = () => {
                         </div>
                       )}
                     </div>
+
                     <div className="mt-4 pt-4 border-t border-slate-200">
                       <p className="text-xs text-slate-500">
                         📅 Solicitado em: {formatDate(selectedRequest.submittedAt)}
@@ -386,7 +503,7 @@ const EventRequestsManager = () => {
                     <button
                       onClick={() => {
                         setIsModalOpen(false);
-                        handleApprove(selectedRequest.id);
+                        setShowApproveModal(selectedRequest.id);
                       }}
                       disabled={processingId === selectedRequest.id}
                       className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-emerald-700 disabled:opacity-50"
@@ -397,7 +514,8 @@ const EventRequestsManager = () => {
                     <button
                       onClick={() => {
                         setIsModalOpen(false);
-                        handleReject(selectedRequest.id);
+                        setShowRejectModal(selectedRequest.id);
+                        setRejectReason('');
                       }}
                       disabled={processingId === selectedRequest.id}
                       className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-red-700 disabled:opacity-50"
@@ -410,24 +528,92 @@ const EventRequestsManager = () => {
               </div>
             </div>
           </div>
-
-          <style>{`
-            @keyframes scale-in {
-              from {
-                opacity: 0;
-                transform: scale(0.95);
-              }
-              to {
-                opacity: 1;
-                transform: scale(1);
-              }
-            }
-            .animate-scale-in {
-              animation: scale-in 0.2s ease-out;
-            }
-          `}</style>
         </>
       )}
+
+      {showSuccessModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowSuccessModal(null)}
+          />
+          <div className="fixed inset-0 z-[70] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className={`mx-auto w-20 h-20 rounded-2xl flex items-center justify-center mb-6 ${
+                    showSuccessModal.type === 'approve' ? 'bg-emerald-100' : 'bg-orange-100'
+                  }`}>
+                    {showSuccessModal.type === 'approve' ? (
+                      <CheckCircle className="h-10 w-10 text-emerald-600" />
+                    ) : (
+                      <XCircle className="h-10 w-10 text-orange-600" />
+                    )}
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                    {showSuccessModal.type === 'approve' ? 'Aprovado!' : 'Rejeitado!'}
+                  </h3>
+                  <p className="text-slate-600 mb-8">{showSuccessModal.message}</p>
+                  <button
+                    onClick={() => setShowSuccessModal(null)}
+                    className={`px-8 py-3 rounded-xl text-white font-semibold transition-all ${
+                      showSuccessModal.type === 'approve' 
+                        ? 'bg-emerald-600 hover:bg-emerald-700' 
+                        : 'bg-orange-600 hover:bg-orange-700'
+                    }`}
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showErrorModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowErrorModal(null)}
+          />
+          <div className="fixed inset-0 z-[70] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                    <AlertCircle className="h-10 w-10 text-red-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{showErrorModal.title}</h3>
+                  <p className="text-slate-600 mb-8">{showErrorModal.message}</p>
+                  <button
+                    onClick={() => setShowErrorModal(null)}
+                    className="px-8 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-all"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <style>{`
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .animate-scale-in {
+          animation: scale-in 0.2s ease-out;
+        }
+      `}</style>
     </div>
   );
 };

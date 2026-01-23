@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Globe, Menu, X, LogOut } from "lucide-react";
-import logo from "../assets/logo_cvbcg.svg";
+
+const logo = "/assets/logo_cvbcg.svg";
 import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
@@ -22,21 +23,17 @@ const Header = () => {
   const isHomePage = location.pathname === "/";
   const isAdminRoute = location.pathname.startsWith("/admin");
 
-  
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
       
-      
       setIsVisible(currentY < lastScrollY.current || currentY < 80);
       lastScrollY.current = currentY;
 
-      
       if (isHomePage) {
         const hero = document.getElementById("inicio");
         if (hero) {
           const rect = hero.getBoundingClientRect();
-          
           setIsHero(rect.bottom > 80);
         }
       } else {
@@ -45,7 +42,6 @@ const Header = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
-    
     handleScroll();
     
     return () => window.removeEventListener("scroll", handleScroll);
@@ -69,7 +65,7 @@ const Header = () => {
   const navItems = [
     { id: "inicio", label: t("menu.inicio") },
     { id: "quem-somos", label: t("menu.quemSomos") },
-    { id: "o-que-fazemos", label: t("menu.oQueFazemos") },
+    { id: "institucional", label: t("menu.oQueFazemos") },
     { id: "diretoria", label: t("menu.diretoria") },
     { id: "eventos", label: t("menu.eventos") },
     { id: "associados", label: t("menu.associados") },
@@ -80,7 +76,6 @@ const Header = () => {
     ? "hover:text-emerald-300"
     : "hover:text-emerald-600";
 
-  
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     sectionId: string
@@ -119,59 +114,66 @@ const Header = () => {
         ${isHero && isHomePage ? "bg-transparent backdrop-blur-0 shadow-none" : "bg-white/70 backdrop-blur-md shadow-sm"}
       `}
     >
-      <div className="flex items-center justify-between px-4 md:px-6 lg:px-12 py-4">
-        
-        <div className="flex items-center gap-3">
-          <img src={logo} alt={t("logoAlt")} className="h-10 md:h-12" />
-          <div className={`hidden sm:flex flex-col ${textColor}`}>
-            <span className="text-sm font-bold tracking-wider">
+      <div className="h-16 md:h-20 flex items-center justify-between px-3 md:px-6 lg:px-12">
+        <div className="flex items-center gap-2 md:gap-3 h-full">
+          <img 
+            src={logo} 
+            alt={t("logoAlt")} 
+            className="h-10 md:h-12 w-auto object-contain" 
+          />
+          <div className={`hidden sm:flex flex-col justify-center ${textColor}`}>
+            <span className="text-xs md:text-sm font-bold tracking-wider leading-none mb-0.5">
               CAMPINA GRANDE
             </span>
-            <span className="text-xs tracking-wide">
+            <span className="text-[10px] md:text-xs tracking-wide leading-none">
               CONVENTION & VISITORS BUREAU
             </span>
           </div>
         </div>
 
-        
-        <nav className="hidden lg:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-7 h-full">
           {navItems.map((item) => (
             <a
               key={item.id}
               href={`#${item.id}`}
               onClick={(e) => handleNavClick(e, item.id)}
-              className={`text-sm font-medium font-header tracking-wide ${textColor} ${hoverColor} transition-colors`}
+              className={`text-sm font-medium font-header tracking-wide ${textColor} ${hoverColor} transition-colors flex items-center h-full`}
             >
               {item.label}
             </a>
           ))}
         </nav>
 
-        
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-3 h-full">
+          <button
+            onClick={() => navigate("/admin")}
+            className={`hidden md:flex items-center gap-2 text-xs md:text-sm font-medium font-header tracking-wide ${textColor} ${hoverColor} transition-colors px-3 py-2 rounded-md`}
+          >
+            Área Administrativa
+          </button>
+          
           {user && isAdminRoute && (
             <button
               onClick={handleLogout}
-              className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md hover:bg-slate-50"
+              className="hidden sm:flex items-center gap-2 text-xs md:text-sm font-medium text-slate-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md hover:bg-slate-50"
               title="Sair da conta de administrador"
             >
-              <LogOut className="h-5 w-5" />
-              Sair
+              <LogOut className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="hidden lg:inline">Sair</span>
             </button>
           )}
 
-          
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative flex items-center h-full" ref={dropdownRef}>
             <button
               onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-              className={`flex items-center gap-2 text-sm font-medium font-header tracking-wide ${textColor} ${hoverColor}`}
+              className={`flex items-center gap-1.5 md:gap-2 text-xs md:text-sm font-medium font-header tracking-wide ${textColor} ${hoverColor} px-2 py-2 rounded-md transition-colors`}
             >
-              <Globe className="h-5 w-5" />
-              Idioma
+              <Globe className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="hidden sm:inline">Idioma</span>
             </button>
 
             {isLanguageOpen && (
-              <div className="absolute right-0 mt-2 w-40 rounded-lg bg-white shadow-xl p-2">
+              <div className="absolute right-0 top-full mt-2 w-36 md:w-40 rounded-lg bg-white shadow-xl p-2 border border-slate-200">
                 {[
                   { code: "pt", label: "Português", flag: "/bandeiras/brasil.svg" },
                   { code: "en", label: "English", flag: "/bandeiras/eua.svg" },
@@ -183,9 +185,9 @@ const Header = () => {
                       i18n.changeLanguage(lang.code);
                       setIsLanguageOpen(false);
                     }}
-                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium font-header text-black hover:bg-slate-100 rounded-md w-full"
+                    className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 text-xs md:text-sm font-medium font-header text-black hover:bg-slate-100 rounded-md w-full transition-colors"
                   >
-                    <img src={lang.flag} className="h-5 w-5 rounded-full" />
+                    <img src={lang.flag} className="h-4 w-4 md:h-5 md:w-5 rounded-full" alt={lang.label} />
                     {lang.label}
                   </button>
                 ))}
@@ -193,30 +195,48 @@ const Header = () => {
             )}
           </div>
 
-          
           <button
-            className={`lg:hidden ${textColor}`}
+            className={`lg:hidden ${textColor} p-2 flex items-center`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Menu"
           >
-            {isMobileMenuOpen ? <X /> : <Menu />}
+            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
-      
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-100 bg-white">
-          <nav className="flex flex-col p-4">
+        <div className="lg:hidden border-t border-slate-100 bg-white shadow-lg">
+          <nav className="flex flex-col p-4 max-h-[calc(100vh-80px)] overflow-y-auto">
             {navItems.map((item) => (
               <a
                 key={item.id}
                 href={`#${item.id}`}
                 onClick={(e) => handleNavClick(e, item.id)}
-                className="py-3 text-base font-medium text-slate-600 hover:text-emerald-500 border-b border-slate-50 last:border-0"
+                className="py-3 text-base font-medium text-slate-600 hover:text-emerald-500 border-b border-slate-50 last:border-0 transition-colors"
               >
                 {item.label}
               </a>
             ))}
+            <button
+              onClick={() => { 
+                setIsMobileMenuOpen(false); 
+                navigate("/admin"); 
+              }}
+              className="mt-4 py-3 text-base font-semibold text-white bg-emerald-600 rounded-md shadow hover:bg-emerald-700 transition-colors"
+            >
+              Área Administrativa
+            </button>
+            
+            {user && isAdminRoute && (
+              <button
+                onClick={handleLogout}
+                className="mt-2 py-3 flex items-center justify-center gap-2 text-base font-semibold text-white bg-red-500 rounded-md shadow hover:bg-red-600 transition-colors"
+              >
+                <LogOut className="h-5 w-5" />
+                Sair
+              </button>
+            )}
           </nav>
         </div>
       )}

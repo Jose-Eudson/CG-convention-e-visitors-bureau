@@ -17,6 +17,7 @@ import EventRequestsPage from "./pages/EventRequestsPage";
 import AssociatesManagerPage from "./pages/AssociatesManagerPage";
 import LoginPage from "./pages/LoginPage";
 import FormularioAssoc from "./components/form";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function PropostaPage() {
   useEffect(() => {
@@ -44,6 +45,15 @@ export default function App() {
           <Route path="/eventos" element={<EventsPage />} />
           <Route path="/solicitar-evento" element={<EventRequestPage />} />
           <Route path="/admin/login" element={<LoginPage />} />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/admin/adicionar"

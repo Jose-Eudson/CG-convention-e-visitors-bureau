@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getFeaturedEvents } from "../services/eventsService";
 import type { Event } from "../types/Event";
 import EventModal from "./EventModal";
@@ -13,7 +13,7 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => {
   return (
     <button
       onClick={onClick}
-      className="absolute right-2 md:right-[-60px] top-1/2 -translate-y-1/2 -mt-6 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
+      className="absolute right-[-26px] md:right-[-60px] top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
       aria-label="Próximo"
     >
       <ChevronRight size={24} />
@@ -25,7 +25,7 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => {
   return (
     <button
       onClick={onClick}
-      className="absolute left-2 md:left-[-60px] top-1/2 -translate-y-1/2 -mt-6 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
+      className="absolute left-[-26px] md:left-[-60px] top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-100 hover:bg-slate-50 transition-colors"
       aria-label="Anterior"
     >
       <ChevronLeft size={24} />
@@ -35,12 +35,33 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => {
 
 const Events = () => {
   const { t } = useTranslation("events");
+  const navigate = useNavigate();
   const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   
+  const sliderRef = useRef<any>(null);
+  const [mounted, setMounted] = useState(false);
+  const [slidesToShow, setSlidesToShow] = useState(3);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setSlidesToShow(1);
+      } else if (window.innerWidth < 1024) {
+        setSlidesToShow(2);
+      } else {
+        setSlidesToShow(3);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useEffect(() => {
     const loadEvents = async () => {
       setLoading(true);
@@ -54,17 +75,97 @@ const Events = () => {
     loadEvents();
   }, []);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const runResize = () => {
+      try {
+        if (sliderRef.current?.innerSlider?.onWindowResized) {
+          sliderRef.current.innerSlider.onWindowResized();
+        }
+      } catch (e) {
+      }
+    };
+
+    const debounced = (() => {
+      let t: any = 0;
+      return () => {
+        clearTimeout(t);
+        t = setTimeout(runResize, 150);
+      };
+    })();
+    const waitImagesAndRun = () => {
+      const imgs = Array.from(document.querySelectorAll('#eventos img')) as HTMLImageElement[];
+      if (imgs.length === 0) {
+        runResize();
+        return;
+      }
+
+      let remaining = imgs.filter(i => !i.complete).length;
+      if (remaining === 0) {
+        runResize();
+        return;
+      }
+
+      const onLoadOrError = () => {
+        remaining -= 1;
+        if (remaining <= 0) runResize();
+      };
+
+      imgs.forEach(img => {
+        if (img.complete) return;
+        img.addEventListener('load', onLoadOrError, { once: true });
+        img.addEventListener('error', onLoadOrError, { once: true });
+      });
+    };
+
+    const initId = setTimeout(waitImagesAndRun, 120);
+
+    let ro: ResizeObserver | null = null;
+    try {
+      const container = document.getElementById('eventos');
+      if (container && (window as any).ResizeObserver) {
+        ro = new (window as any).ResizeObserver(debounced);
+        if (ro) ro.observe(container);
+      }
+    } catch (e) {
+      ro = null;
+    }
+
+    window.addEventListener("load", debounced);
+    window.addEventListener("resize", debounced);
+    window.addEventListener("orientationchange", debounced);
+
+    return () => {
+      clearTimeout(initId);
+      window.removeEventListener("load", debounced);
+      window.removeEventListener("resize", debounced);
+      window.removeEventListener("orientationchange", debounced);
+      if (ro) {
+        try { ro.disconnect(); } catch (e) {}
+      }
+    };
+  }, [featuredEvents.length]);
+
   const settings = {
     dots: true,
-    infinite: featuredEvents.length > 3,
+    infinite: featuredEvents.length > slidesToShow,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: slidesToShow,
     slidesToScroll: 1,
-    arrows: featuredEvents.length > 3,
+    arrows: true,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     autoplay: true,
     autoplaySpeed: 4000,
+    swipe: true,
+    swipeToSlide: true,
+    touchMove: true,
+    draggable: true,
+    touchThreshold: 18,
+    adaptiveHeight: true,
     responsive: [
       {
         breakpoint: 1024,
@@ -72,7 +173,7 @@ const Events = () => {
           slidesToShow: 2,
           slidesToScroll: 1,
           infinite: featuredEvents.length > 2,
-          arrows: featuredEvents.length > 2
+          arrows: true
         }
       },
       {
@@ -81,7 +182,7 @@ const Events = () => {
           slidesToShow: 1,
           slidesToScroll: 1,
           infinite: featuredEvents.length > 1,
-          arrows: featuredEvents.length > 1
+          arrows: true
         }
       }
     ]
@@ -104,7 +205,7 @@ const Events = () => {
 
   if (loading) {
     return (
-      <section id="eventos" className="bg-slate-50 py-12 md:py-20">
+      <section id="eventos" className="bg-slate-100 py-12 md:py-20">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <div className="text-center py-20">
             <p className="text-slate-600">Carregando eventos...</p>
@@ -140,12 +241,16 @@ const Events = () => {
           </div>
           
           <div className="flex gap-3">
-            <Link
-              to="/eventos"
+            <button
+              type="button"
+              onClick={() => {
+                navigate('/eventos');
+                setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 60);
+              }}
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-indigo-700 hover:scale-105"
             >
               {t("featured.viewAll")}
-            </Link>
+            </button>
             <Link
               to="/solicitar-evento"
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-indigo-700 hover:scale-105"
@@ -155,8 +260,9 @@ const Events = () => {
           </div>
         </div>
 
-        <Slider {...settings}>
-          {featuredEvents.map((event) => (
+        {mounted ? (
+          <Slider key={slidesToShow} ref={sliderRef} {...settings}>
+            {featuredEvents.map((event) => (
             <div key={event.id} className="px-4 pb-12">
               <div 
                 onClick={() => handleEventClick(event)}
@@ -207,8 +313,11 @@ const Events = () => {
                 </div>
               </div>
             </div>
-          ))}
-        </Slider>
+            ))}
+          </Slider>
+        ) : (
+          <div className="h-[480px]" />
+        )}
 
         <EventModal
           event={selectedEvent}

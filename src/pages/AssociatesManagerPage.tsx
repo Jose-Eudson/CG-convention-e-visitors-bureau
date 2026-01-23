@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
-import {
-  getAllAssociates,
-  approveAssociate,
-  rejectAssociate,
-  deleteAssociate,
-  type Associate
-} from '../services/associatesService';
+import { getAllAssociates, approveAssociate, rejectAssociate, deleteAssociate, type Associate } from '../services/associatesService';
 import { sendApprovalEmail, sendRejectionEmail } from '../services/associateEmailService';
-import { Check, X, Trash2, Clock, CheckCircle, XCircle, Download, ExternalLink } from 'lucide-react';
+import { Check, X, Trash2, Clock, CheckCircle, XCircle, Download, ExternalLink, AlertCircle } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AssociatesManagerPage = () => {
+  const navigate = useNavigate();
   const [associates, setAssociates] = useState<Associate[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [showApproveModal, setShowApproveModal] = useState<{ id: string; name: string; associate: Associate } | null>(null);
+  const [showRejectModal, setShowRejectModal] = useState<{ id: string; name: string; associate: Associate } | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState<{ id: string; name: string; logo: string } | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState<{ type: 'approve' | 'reject' | 'delete'; message: string } | null>(null);
+  const [showErrorModal, setShowErrorModal] = useState<{ title: string; message: string } | null>(null);
 
   const fetchAssociates = async () => {
     try {
@@ -22,7 +25,10 @@ const AssociatesManagerPage = () => {
       setAssociates(data);
     } catch (error) {
       console.error('Erro ao buscar associados:', error);
-      alert('Erro ao carregar associados');
+      setShowErrorModal({
+        title: 'Erro ao Carregar',
+        message: 'Erro ao carregar associados. Tente novamente.'
+      });
     } finally {
       setLoading(false);
     }
@@ -32,71 +38,106 @@ const AssociatesManagerPage = () => {
     fetchAssociates();
   }, []);
 
-  const handleApprove = async (id: string, associate: Associate) => {
-    if (!confirm('Deseja aprovar este associado?')) return;
-    
+  const handleApproveConfirmed = async () => {
+    if (!showApproveModal) return;
+
     try {
-      await approveAssociate(id);
+      await approveAssociate(showApproveModal.id);
       
       try {
-        await sendApprovalEmail(associate);
+        await sendApprovalEmail(showApproveModal.associate);
       } catch (emailError) {
         console.warn('Email não enviado, mas associado foi aprovado:', emailError);
       }
-      
-      alert('Associado aprovado com sucesso!');
+
+      setShowApproveModal(null);
+      setShowSuccessModal({
+        type: 'approve',
+        message: 'Associado aprovado com sucesso!'
+      });
       fetchAssociates();
     } catch (error) {
       console.error('Erro ao aprovar:', error);
-      alert('Erro ao aprovar associado');
+      setShowErrorModal({
+        title: 'Erro ao Aprovar',
+        message: 'Erro ao aprovar associado. Tente novamente.'
+      });
+      setShowApproveModal(null);
     }
   };
 
-  const handleReject = async (id: string, associate: Associate) => {
-    const rejectionReason = prompt('Por favor, informe o motivo da rejeição:');
-    
-    if (!rejectionReason || rejectionReason.trim() === '') {
-      alert('É necessário informar um motivo para rejeitar.');
+  const handleRejectConfirmed = async () => {
+    if (!showRejectModal) return;
+
+    if (!rejectionReason.trim()) {
+      setShowErrorModal({
+        title: 'Motivo Obrigatório',
+        message: 'É necessário informar um motivo para rejeitar.'
+      });
       return;
     }
-    
+
     try {
-      await rejectAssociate(id);
-    
+      await rejectAssociate(showRejectModal.id);
+      
       try {
-        await sendRejectionEmail({ ...associate, rejectionReason });
+        await sendRejectionEmail({
+          ...showRejectModal.associate,
+          rejectionReason
+        });
       } catch (emailError) {
         console.warn('Email não enviado, mas associado foi rejeitado:', emailError);
       }
-      
-      alert('Associado rejeitado!');
+
+      setShowRejectModal(null);
+      setRejectionReason('');
+      setShowSuccessModal({
+        type: 'reject',
+        message: 'Associado rejeitado!'
+      });
       fetchAssociates();
     } catch (error) {
       console.error('Erro ao rejeitar:', error);
-      alert('Erro ao rejeitar associado');
+      setShowErrorModal({
+        title: 'Erro ao Rejeitar',
+        message: 'Erro ao rejeitar associado. Tente novamente.'
+      });
+      setShowRejectModal(null);
+      setRejectionReason('');
     }
   };
 
-  const handleDelete = async (id: string, logoUrl: string) => {
-    if (!confirm('Deseja deletar este associado permanentemente?')) return;
-    
+  const handleDeleteConfirmed = async () => {
+    if (!showDeleteModal) return;
+
     try {
-      await deleteAssociate(id, logoUrl);
-      alert('Associado deletado!');
+      await deleteAssociate(showDeleteModal.id, showDeleteModal.logo);
+      setShowDeleteModal(null);
+      setShowSuccessModal({
+        type: 'delete',
+        message: 'Associado deletado!'
+      });
       fetchAssociates();
     } catch (error) {
       console.error('Erro ao deletar:', error);
-      alert('Erro ao deletar associado');
+      setShowErrorModal({
+        title: 'Erro ao Deletar',
+        message: 'Erro ao deletar associado. Tente novamente.'
+      });
+      setShowDeleteModal(null);
     }
   };
 
   const handleDownloadExcel = () => {
     if (filteredAssociates.length === 0) {
-      alert('Nenhum associado para exportar');
+      setShowErrorModal({
+        title: 'Nenhum Dado',
+        message: 'Nenhum associado para exportar.'
+      });
       return;
     }
 
-    const data = filteredAssociates.map(a => ({
+    const data = filteredAssociates.map((a) => ({
       'Nome Fantasia': a.name,
       'Razão Social': a.razaoSocial || '',
       'Categoria': a.category,
@@ -107,22 +148,20 @@ const AssociatesManagerPage = () => {
       'Bairro': a.bairro || '',
       'CEP': a.cep || '',
       'Responsável': a.nomeResponsavel || '',
-      'CPF Responsável': a.cpfResponsavel || '',
       'Telefone': a.telefone || '',
       'Email': a.email || '',
-      'Cargo': a.cargo || '',
       'Instagram': a.instagram || '',
       'Status': a.status === 'pending' ? 'Pendente' : a.status === 'approved' ? 'Aprovado' : 'Rejeitado',
-      'Data Criação': a.createdAt?.toDate().toLocaleDateString('pt-BR') || ''
+      'Data Criação': a.createdAt?.toDate().toLocaleDateString('pt-BR')
     }));
 
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Associados');
-    XLSX.writeFile(wb, `associados_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.writeFile(wb, `associados-${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
-  const filteredAssociates = associates.filter(a => {
+  const filteredAssociates = associates.filter((a) => {
     if (filter === 'all') return true;
     return a.status === filter;
   });
@@ -160,6 +199,15 @@ const AssociatesManagerPage = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
+            <div className="flex gap-4 mb-4">
+              <button
+                onClick={() => navigate('/admin')}
+                className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors rounded px-3 py-2 font-medium"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Voltar para Área Administrativa
+              </button>
+            </div>
             <h1 className="text-3xl font-bold text-slate-800 mb-2">
               Gerenciar Associados
             </h1>
@@ -167,10 +215,10 @@ const AssociatesManagerPage = () => {
               Aprove ou rejeite solicitações de novos associados
             </p>
           </div>
-          
+
           <button
             onClick={handleDownloadExcel}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
           >
             <Download className="h-5 w-5" />
             Baixar Planilha
@@ -181,9 +229,7 @@ const AssociatesManagerPage = () => {
           <button
             onClick={() => setFilter('all')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filter === 'all'
-                ? 'bg-orange-500 text-white'
-                : 'bg-white text-slate-700 hover:bg-slate-100'
+              filter === 'all' ? 'bg-orange-500 text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
             }`}
           >
             Todos ({associates.length})
@@ -191,32 +237,26 @@ const AssociatesManagerPage = () => {
           <button
             onClick={() => setFilter('pending')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filter === 'pending'
-                ? 'bg-yellow-500 text-white'
-                : 'bg-white text-slate-700 hover:bg-slate-100'
+              filter === 'pending' ? 'bg-yellow-500 text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
             }`}
           >
-            Pendentes ({associates.filter(a => a.status === 'pending').length})
+            Pendentes ({associates.filter((a) => a.status === 'pending').length})
           </button>
           <button
             onClick={() => setFilter('approved')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filter === 'approved'
-                ? 'bg-green-500 text-white'
-                : 'bg-white text-slate-700 hover:bg-slate-100'
+              filter === 'approved' ? 'bg-green-500 text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
             }`}
           >
-            Aprovados ({associates.filter(a => a.status === 'approved').length})
+            Aprovados ({associates.filter((a) => a.status === 'approved').length})
           </button>
           <button
             onClick={() => setFilter('rejected')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filter === 'rejected'
-                ? 'bg-red-500 text-white'
-                : 'bg-white text-slate-700 hover:bg-slate-100'
+              filter === 'rejected' ? 'bg-red-500 text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
             }`}
           >
-            Rejeitados ({associates.filter(a => a.status === 'rejected').length})
+            Rejeitados ({associates.filter((a) => a.status === 'rejected').length})
           </button>
         </div>
 
@@ -232,10 +272,7 @@ const AssociatesManagerPage = () => {
         ) : (
           <div className="grid gap-4">
             {filteredAssociates.map((associate) => (
-              <div
-                key={associate.id}
-                className="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
-              >
+              <div key={associate.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <div className="flex flex-col lg:flex-row gap-6">
                   <div className="w-32 h-32 flex-shrink-0 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-center p-4">
                     {associate.logo ? (
@@ -326,18 +363,6 @@ const AssociatesManagerPage = () => {
                           <span className="text-slate-800">{associate.nomeResponsavel}</span>
                         </p>
                       )}
-                      {associate.cpfResponsavel && (
-                        <p className="text-sm">
-                          <span className="font-semibold text-slate-600">CPF:</span>{' '}
-                          <span className="text-slate-800">{associate.cpfResponsavel}</span>
-                        </p>
-                      )}
-                      {associate.cargo && (
-                        <p className="text-sm">
-                          <span className="font-semibold text-slate-600">Cargo:</span>{' '}
-                          <span className="text-slate-800">{associate.cargo}</span>
-                        </p>
-                      )}
                       {associate.telefoneResponsavel && (
                         <p className="text-sm">
                           <span className="font-semibold text-slate-600">Telefone:</span>{' '}
@@ -377,8 +402,7 @@ const AssociatesManagerPage = () => {
                             rel="noopener noreferrer"
                             className="text-orange-600 hover:underline inline-flex items-center gap-1"
                           >
-                            Ver perfil
-                            <ExternalLink className="h-3 w-3" />
+                            Ver perfil <ExternalLink className="h-3 w-3" />
                           </a>
                         </p>
                       )}
@@ -401,14 +425,14 @@ const AssociatesManagerPage = () => {
                     {associate.status === 'pending' && (
                       <>
                         <button
-                          onClick={() => handleApprove(associate.id!, associate)}
+                          onClick={() => setShowApproveModal({ id: associate.id!, name: associate.name, associate })}
                           className="flex items-center justify-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                         >
                           <Check className="h-4 w-4" />
                           Aprovar
                         </button>
                         <button
-                          onClick={() => handleReject(associate.id!, associate)}
+                          onClick={() => setShowRejectModal({ id: associate.id!, name: associate.name, associate })}
                           className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                         >
                           <X className="h-4 w-4" />
@@ -416,26 +440,29 @@ const AssociatesManagerPage = () => {
                         </button>
                       </>
                     )}
+
                     {associate.status === 'approved' && (
                       <button
-                        onClick={() => handleReject(associate.id!, associate)}
+                        onClick={() => setShowRejectModal({ id: associate.id!, name: associate.name, associate })}
                         className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                       >
                         <X className="h-4 w-4" />
                         Remover
                       </button>
                     )}
+
                     {associate.status === 'rejected' && (
                       <button
-                        onClick={() => handleApprove(associate.id!, associate)}
+                        onClick={() => setShowApproveModal({ id: associate.id!, name: associate.name, associate })}
                         className="flex items-center justify-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                       >
                         <Check className="h-4 w-4" />
                         Aprovar
                       </button>
                     )}
+
                     <button
-                      onClick={() => handleDelete(associate.id!, associate.logo)}
+                      onClick={() => setShowDeleteModal({ id: associate.id!, name: associate.name, logo: associate.logo })}
                       className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -448,6 +475,220 @@ const AssociatesManagerPage = () => {
           </div>
         )}
       </div>
+
+      {showApproveModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowApproveModal(null)}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-4">
+                    <CheckCircle className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Aprovar Associado</h3>
+                  <p className="text-slate-600 mb-6">
+                    Tem certeza que deseja aprovar <strong>{showApproveModal.name}</strong>?
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowApproveModal(null)}
+                      className="flex-1 px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-semibold hover:bg-slate-300 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleApproveConfirmed}
+                      className="flex-1 px-4 py-2 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700 transition-all"
+                    >
+                      Confirmar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showRejectModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => {
+              setShowRejectModal(null);
+              setRejectionReason('');
+            }}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8">
+                  <div className="mx-auto w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-4">
+                    <AlertCircle className="h-8 w-8 text-red-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2 text-center">Rejeitar Associado</h3>
+                  <p className="text-slate-600 mb-4 text-center">
+                    Informe o motivo da rejeição de <strong>{showRejectModal.name}</strong>:
+                  </p>
+                  <textarea
+                    value={rejectionReason}
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    placeholder="Digite o motivo da rejeição..."
+                    rows={4}
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none mb-6"
+                  />
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => {
+                        setShowRejectModal(null);
+                        setRejectionReason('');
+                      }}
+                      className="flex-1 px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-semibold hover:bg-slate-300 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleRejectConfirmed}
+                      className="flex-1 px-4 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-all"
+                    >
+                      Rejeitar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showDeleteModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowDeleteModal(null)}
+          />
+          <div className="fixed inset-0 z-[60] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
+                    <Trash2 className="h-8 w-8 text-slate-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Deletar Associado</h3>
+                  <p className="text-slate-600 mb-6">
+                    Tem certeza que deseja deletar <strong>{showDeleteModal.name}</strong>?<br />
+                    <span className="text-sm text-red-600">Esta ação não pode ser desfeita.</span>
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowDeleteModal(null)}
+                      className="flex-1 px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-semibold hover:bg-slate-300 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleDeleteConfirmed}
+                      className="flex-1 px-4 py-2 rounded-xl bg-slate-600 text-white font-semibold hover:bg-slate-700 transition-all"
+                    >
+                      Deletar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showSuccessModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowSuccessModal(null)}
+          />
+          <div className="fixed inset-0 z-[70] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className={`mx-auto w-20 h-20 rounded-2xl flex items-center justify-center mb-6 ${
+                    showSuccessModal.type === 'approve' ? 'bg-emerald-100' :
+                    showSuccessModal.type === 'reject' ? 'bg-orange-100' :
+                    'bg-slate-100'
+                  }`}>
+                    {showSuccessModal.type === 'approve' && <CheckCircle className="h-10 w-10 text-emerald-600" />}
+                    {showSuccessModal.type === 'reject' && <XCircle className="h-10 w-10 text-orange-600" />}
+                    {showSuccessModal.type === 'delete' && <Trash2 className="h-10 w-10 text-slate-600" />}
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                    {showSuccessModal.type === 'approve' && 'Aprovado!'}
+                    {showSuccessModal.type === 'reject' && 'Rejeitado!'}
+                    {showSuccessModal.type === 'delete' && 'Deletado!'}
+                  </h3>
+                  <p className="text-slate-600 mb-8">{showSuccessModal.message}</p>
+                  <button
+                    onClick={() => setShowSuccessModal(null)}
+                    className={`px-8 py-3 rounded-xl text-white font-semibold transition-all ${
+                      showSuccessModal.type === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' :
+                      showSuccessModal.type === 'reject' ? 'bg-orange-600 hover:bg-orange-700' :
+                      'bg-slate-600 hover:bg-slate-700'
+                    }`}
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showErrorModal && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowErrorModal(null)}
+          />
+          <div className="fixed inset-0 z-[70] overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                <div className="p-8 text-center">
+                  <div className="mx-auto w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                    <AlertCircle className="h-10 w-10 text-red-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{showErrorModal.title}</h3>
+                  <p className="text-slate-600 mb-8">{showErrorModal.message}</p>
+                  <button
+                    onClick={() => setShowErrorModal(null)}
+                    className="px-8 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-all"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <style>{`
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .animate-scale-in {
+          animation: scale-in 0.2s ease-out;
+        }
+      `}</style>
     </main>
   );
 };

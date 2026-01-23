@@ -15,20 +15,18 @@ const Home = () => {
       </section>
 
 
-      <section data-header="default">
+
+      <section id="quem-somos" data-header="default">
         <Institutional />
       </section>
 
-
-      <section data-header="default">
+      <section id="o-que-fazemos" data-header="default">
         <Board />
       </section>
-
 
       <section data-header="default">
         <Events />
       </section>
-
 
       <section data-header="default">
         <Associates />
