@@ -1,9 +1,6 @@
 {
-  "title": "Campina Grande no mapa dos grandes eventos",
-  "subtitle": "Promovemos e captamos eventos que fortalecem o turismo de negócios e impulsionam a economia local.",
-  "buttons": {
-    "event": "Quero trazer meu evento",
-    "associate": "Quero ser associado"
-  },
-  "imageAlt": "Eventos em Campina Grande"
+  "tagline": "Turismo • Cultura • Experiências",
+  "mainTitle": "Descubra Campina Grande além do São João",
+  "description": "Explore pontos turísticos, cultura, lazer e experiências únicas da Rainha da Borborema.",
+  "ctaButton": "Conheça Campina Grande"
 }

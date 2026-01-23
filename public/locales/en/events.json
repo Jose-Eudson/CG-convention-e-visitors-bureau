@@ -1,5 +1,7 @@
 {
   "title": "Events",
+  "loading": "Loading events...",
+  "emptyFeatured": "No featured events at the moment.",
   
   "featured": {
     "title": "Featured Events",

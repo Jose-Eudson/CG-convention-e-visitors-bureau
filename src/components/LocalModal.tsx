@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { FaInstagram, FaFacebook, FaPhoneAlt } from "react-icons/fa";
 
 interface LocalModalProps {
@@ -24,6 +25,8 @@ const getEmbedUrl = (mapsUrl: string) => {
 };
 
 const LocalModal = ({ local, onClose }: LocalModalProps) => {
+  const { t } = useTranslation('conheca');
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -53,14 +56,14 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
             </h2>
             <p className="mt-1 text-gray-600">{local.resumo}</p>
             <span className="inline-block mt-2 text-xs font-semibold uppercase text-gray-500">
-              {local.categoria}
+              {t(`categories.${local.categoria}`)}
             </span>
             <p className="mt-4 text-gray-700">{local.descricao}</p>
 
             <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
                 <h4 className="text-sm font-semibold text-gray-700 mb-1">
-                  Endereço
+                  {t('modal.address')}
                 </h4>
                 <p className="text-gray-600 text-sm">{local.endereco}</p>
               </div>
@@ -68,7 +71,7 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
               {(local.instagram || local.facebook || local.telefone) && (
                 <div>
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                    Contato
+                    {t('modal.contact')}
                   </h4>
                   <div className="flex flex-wrap gap-4">
                     {local.instagram && (
@@ -79,7 +82,7 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
                         className="flex items-center gap-2 text-pink-600 hover:underline"
                       >
                         <FaInstagram />
-                        <span>Instagram</span>
+                        <span>{t('modal.instagram')}</span>
                       </a>
                     )}
                     {local.facebook && (
@@ -90,7 +93,7 @@ const LocalModal = ({ local, onClose }: LocalModalProps) => {
                         className="flex items-center gap-2 text-blue-600 hover:underline"
                       >
                         <FaFacebook />
-                        <span>Facebook</span>
+                        <span>{t('modal.facebook')}</span>
                       </a>
                     )}
                     {local.telefone && (

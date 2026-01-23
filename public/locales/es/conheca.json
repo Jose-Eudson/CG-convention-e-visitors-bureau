@@ -1,0 +1,26 @@
+{
+  "title": "Conozca Campina Grande",
+  "subtitle": "Explore los mejores puntos turísticos, cultura e historia de la Reina de Borborema.",
+  "backToHome": "Volver al Inicio",
+  "searchPlaceholder": "Buscar lugares, museos, parques...",
+  "noResults": "Ningún lugar encontrado",
+  "noResultsHint": "Intenta buscar por otro término o cambia la categoría.",
+  "categories": {
+    "Todas": "Todos",
+    "turismo": "Turismo",
+    "transporte": "Transporte",
+    "cultura": "Cultura",
+    "lazer": "Ocio",
+    "gastronomia": "Gastronomía",
+    "religioso": "Religioso",
+    "compras": "Compras",
+    "acomodação": "Alojamiento",
+    "estrutura para eventos": "Estructura para Eventos"
+  },
+  "modal": {
+    "address": "Dirección",
+    "contact": "Contacto",
+    "instagram": "Instagram",
+    "facebook": "Facebook"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "whoweare": {
+    "title": "Quiénes somos",
+    "description": {
+      "part1": "El Convention & Visitors Bureau de Campina Grande surgió en 2003 con la misión de impulsar el turismo y los eventos en la ciudad. Somos una asociación civil sin fines de lucro que reúne entidades del sector turístico en torno a un objetivo común: fortalecer Campina Grande como destino de referencia, reconocido por su cultura, hospitalidad y tecnología.",
+      "lead": "Actuamos como enlace entre los sectores público y privado, articulando alianzas estratégicas, captando eventos y promoviendo experiencias que transforman la ciudad. Creemos en el turismo como agente de desarrollo social y trabajamos para potenciar las posibilidades locales.",
+      "part2": "Nuestro compromiso es ampliar la visibilidad de la región, apoyar iniciativas que generen impacto positivo y consolidar a Campina Grande como referencia nacional en turismo y eventos."
+    }
+  },
+  "whatwedo": {
+    "title": "Qué hacemos",
+    "captacao": {
+      "title": "Captación de eventos",
+      "description": "Atraemos grandes eventos para Campina Grande."
+    },
+    "monitoramento": {
+      "title": "Monitoreo",
+      "description": "Monitoreamos la agenda y oportunidades del sector."
+    },
+    "intermediacao": {
+      "title": "Intermediación",
+      "description": "Conectamos organizadores y proveedores locales."
+    },
+    "promocao": {
+      "title": "Promoción",
+      "description": "Divulgamos Campina Grande como destino de eventos."
+    },
+    "apoio": {
+      "title": "Apoyo institucional",
+      "description": "Facilitamos el diálogo con el poder público."
+    },
+    "consultoria": {
+      "title": "Consultoría",
+      "description": "Orientamos sobre infraestructura y servicios de la ciudad."
+    },
+    "qualificacao": {
+      "title": "Calificación",
+      "description": "Capacitamos profesionales del turismo local."
+    },
+    "observatorio": {
+      "title": "Observatorio",
+      "description": "Analizamos datos y tendencias del turismo."
+    },
+    "articulacao": {
+      "title": "Articulación",
+      "description": "Promovemos alianzas estratégicas para el sector."
+    }
+  }
+}

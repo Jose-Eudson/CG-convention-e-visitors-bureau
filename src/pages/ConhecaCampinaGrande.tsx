@@ -1,12 +1,12 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FiArrowLeft, FiSearch, FiMapPin } from "react-icons/fi";
 import LocalModal from "../components/LocalModal";
 
 const locaisUrl = "/assets/data/locais.json";
 
-const capitalize = (text: string) =>
-    text.charAt(0).toUpperCase() + text.slice(1);
+
 
 interface LocalTuristico {
     id: number;
@@ -20,6 +20,7 @@ interface LocalTuristico {
 }
 
 const ConhecaCampinaGrande = () => {
+    const { t } = useTranslation('conheca');
     const [search, setSearch] = useState("");
     const [categoriaAtiva, setCategoriaAtiva] = useState("Todas");
     const [localSelecionado, setLocalSelecionado] = useState<LocalTuristico | null>(null);
@@ -77,16 +78,16 @@ const ConhecaCampinaGrande = () => {
                         className="self-start inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50 hover:text-emerald-600 transition-all active:scale-95"
                     >
                         <FiArrowLeft size={18} />
-                        Voltar ao Início
+                        {t('backToHome')}
                     </Link>
                 </div>
 
                 <div className="mb-10 text-center md:text-left">
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight mb-3">
-                        Conheça Campina Grande
+                        {t('title')}
                     </h1>
                     <p className="text-slate-600 text-lg max-w-2xl">
-                        Explore os melhores pontos turísticos, cultura e história da Rainha da Borborema.
+                        {t('subtitle')}
                     </p>
                 </div>
 
@@ -95,7 +96,7 @@ const ConhecaCampinaGrande = () => {
                         <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg" />
                         <input
                             type="text"
-                            placeholder="Buscar locais, museus, parques..."
+                            placeholder={t('searchPlaceholder')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-full rounded-xl border-0 bg-slate-50 py-3 pl-11 pr-4 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 transition sm:text-sm sm:leading-6"
@@ -115,7 +116,7 @@ const ConhecaCampinaGrande = () => {
                                         : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"}
                                 `}
                             >
-                                {capitalize(categoria)}
+                                {t(`categories.${categoria}`)}
                             </button>
                         ))}
                     </div>
@@ -124,8 +125,8 @@ const ConhecaCampinaGrande = () => {
                 {locaisFiltrados.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
                         <FiSearch className="mx-auto h-12 w-12 text-slate-300 mb-4" />
-                        <h3 className="text-lg font-medium text-slate-900">Nenhum local encontrado</h3>
-                        <p className="text-slate-500">Tente buscar por outro termo ou mude a categoria.</p>
+                        <h3 className="text-lg font-medium text-slate-900">{t('noResults')}</h3>
+                        <p className="text-slate-500">{t('noResultsHint')}</p>
                     </div>
                 ) : (
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -145,7 +146,7 @@ const ConhecaCampinaGrande = () => {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-40 transition-opacity z-20" />
                                     <span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-emerald-700 backdrop-blur-sm shadow-sm z-30">
-                                        {local.categoria}
+                                        {t(`categories.${local.categoria}`)}
                                     </span>
                                 </div>
 

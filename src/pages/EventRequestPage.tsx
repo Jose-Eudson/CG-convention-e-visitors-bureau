@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { createEventRequest } from '../services/eventRequestService';
 import { sendAdminNotification, sendConfirmationEmail } from '../services/emailServiceAPI';
 import { Upload, Link as LinkIcon, ArrowLeft, Send, CheckCircle, AlertCircle } from 'lucide-react';
@@ -9,6 +10,7 @@ import type { EventRequest } from '../types/EventRequest';
 
 const EventRequestPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('form');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -55,8 +57,8 @@ const EventRequestPage = () => {
       console.error('Erro ao fazer upload da imagem:', error);
       setUploadingImage(false);
       setShowErrorModal({
-        title: 'Erro no Upload',
-        message: 'Erro ao fazer upload da imagem. Tente novamente.'
+        title: t('eventRequest.uploadError'),
+        message: t('eventRequest.uploadErrorMessage')
       });
       return null;
     }
@@ -67,16 +69,16 @@ const EventRequestPage = () => {
     if (file) {
       if (!file.type.startsWith('image/')) {
         setShowErrorModal({
-          title: 'Arquivo Inválido',
-          message: 'Por favor, selecione apenas arquivos de imagem.'
+          title: t('eventRequest.invalidFile'),
+          message: t('eventRequest.invalidFileMessage')
         });
         return;
       }
       
       if (file.size > 10 * 1024 * 1024) {
         setShowErrorModal({
-          title: 'Arquivo Muito Grande',
-          message: 'A imagem deve ter no máximo 10MB.'
+          title: t('eventRequest.fileTooLarge'),
+          message: t('eventRequest.fileTooLargeMessage')
         });
         return;
       }
@@ -154,15 +156,15 @@ const EventRequestPage = () => {
         setShowSuccessModal(true);
       } else {
         setShowErrorModal({
-          title: 'Erro ao Enviar',
-          message: 'Erro ao enviar solicitação. Tente novamente.'
+          title: t('eventRequest.submitError'),
+          message: t('eventRequest.submitErrorMessage')
         });
       }
     } catch (error) {
       console.error('Erro:', error);
       setShowErrorModal({
-        title: 'Erro Inesperado',
-        message: `Erro ao enviar solicitação: ${(error as Error).message}`
+        title: t('eventRequest.unexpectedError'),
+        message: t('eventRequest.unexpectedErrorMessage', { message: (error as Error).message })
       });
     } finally {
       setSubmitting(false);
@@ -191,25 +193,25 @@ const EventRequestPage = () => {
           className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 transition-colors px-2 py-1 rounded-md"
         >
           <ArrowLeft className="h-4 w-4" />
-          Voltar para o site
+          {t('eventRequest.backToSite')}
         </button>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Solicitar Cadastro de Evento</h1>
+          <h1 className="text-3xl font-bold text-slate-900">{t('eventRequest.title')}</h1>
           <p className="text-slate-600 mt-2">
-            Preencha o formulário abaixo para solicitar a inclusão do seu evento no nosso calendário. Sua solicitação será analisada por nossa equipe.
+            {t('eventRequest.subtitle')}
           </p>
         </div>
 
         <div className="rounded-xl bg-white p-8 shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="border-b pb-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">📋 Suas Informações</h2>
+              <h2 className="text-xl font-bold text-slate-900 mb-4">{t('eventRequest.yourInfo')}</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Seu Nome
+                    {t('eventRequest.yourName')}
                   </label>
                   <input
                     type="text"
@@ -222,7 +224,7 @@ const EventRequestPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Email
+                    {t('eventRequest.email')}
                   </label>
                   <input
                     type="email"
@@ -235,26 +237,26 @@ const EventRequestPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Telefone (opcional)
+                    {t('eventRequest.phoneOptional')}
                   </label>
                   <input
                     type="tel"
                     value={formData.submittedBy.phone}
                     onChange={(e) => setFormData({ ...formData, submittedBy: { ...formData.submittedBy, phone: e.target.value } })}
-                    placeholder="(83) 99999-9999"
+                    placeholder={t('eventRequest.phonePlaceholder')}
                     className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Organização (opcional)
+                    {t('eventRequest.organizationOptional')}
                   </label>
                   <input
                     type="text"
                     value={formData.submittedBy.organization}
                     onChange={(e) => setFormData({ ...formData, submittedBy: { ...formData.submittedBy, organization: e.target.value } })}
-                    placeholder="Nome da empresa/instituição"
+                    placeholder={t('eventRequest.organizationPlaceholder')}
                     className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
                 </div>
@@ -262,12 +264,12 @@ const EventRequestPage = () => {
             </div>
 
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-4">🎉 Informações do Evento</h2>
+              <h2 className="text-xl font-bold text-slate-900 mb-4">{t('eventRequest.eventInfo')}</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Título do Evento
+                    {t('eventRequest.eventTitle')}
                   </label>
                   <input
                     type="text"
@@ -280,7 +282,7 @@ const EventRequestPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Local
+                    {t('eventRequest.location')}
                   </label>
                   <input
                     type="text"
@@ -293,7 +295,7 @@ const EventRequestPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Data Início
+                    {t('eventRequest.startDate')}
                   </label>
                   <input
                     type="date"
@@ -306,7 +308,7 @@ const EventRequestPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Data Fim (opcional)
+                    {t('eventRequest.endDateOptional')}
                   </label>
                   <input
                     type="date"
@@ -318,7 +320,7 @@ const EventRequestPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Categoria
+                    {t('eventRequest.category')}
                   </label>
                   <select
                     required
@@ -326,26 +328,26 @@ const EventRequestPage = () => {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value as EventRequest['category'] })}
                     className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   >
-                    <option value="conference">Conferência</option>
-                    <option value="workshop">Workshop</option>
-                    <option value="seminar">Seminário</option>
-                    <option value="exhibition">Feira/Exposição</option>
-                    <option value="networking">Networking</option>
-                    <option value="cultural">Cultural</option>
-                    <option value="sports">Esportivo</option>
-                    <option value="other">Outros</option>
+                    <option value="conference">{t('eventRequest.categories.conference')}</option>
+                    <option value="workshop">{t('eventRequest.categories.workshop')}</option>
+                    <option value="seminar">{t('eventRequest.categories.seminar')}</option>
+                    <option value="exhibition">{t('eventRequest.categories.exhibition')}</option>
+                    <option value="networking">{t('eventRequest.categories.networking')}</option>
+                    <option value="cultural">{t('eventRequest.categories.cultural')}</option>
+                    <option value="sports">{t('eventRequest.categories.sports')}</option>
+                    <option value="other">{t('eventRequest.categories.other')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Link para Inscrições (opcional)
+                    {t('eventRequest.registrationLinkOptional')}
                   </label>
                   <input
                     type="url"
                     value={formData.externalLink}
                     onChange={(e) => setFormData({ ...formData, externalLink: e.target.value })}
-                    placeholder="https://inscricoes.exemplo.com"
+                    placeholder={t('eventRequest.registrationLinkPlaceholder')}
                     className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
                 </div>
@@ -353,21 +355,21 @@ const EventRequestPage = () => {
 
               <div className="mt-4">
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Descrição
+                  {t('eventRequest.description')}
                 </label>
                 <textarea
                   required
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={4}
-                  placeholder="Descreva o evento, sua programação, público-alvo, etc."
+                  placeholder={t('eventRequest.descriptionPlaceholder')}
                   className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                 />
               </div>
 
               <div className="mt-4 space-y-4">
                 <label className="block text-sm font-medium text-slate-700">
-                  Imagem do Evento (opcional)
+                  {t('eventRequest.eventImageOptional')}
                 </label>
                 
                 <div className="flex gap-4">
@@ -383,7 +385,7 @@ const EventRequestPage = () => {
                     }`}
                   >
                     <LinkIcon className="h-4 w-4" />
-                    URL da Imagem
+                    {t('eventRequest.imageUrl')}
                   </button>
                   
                   <button
@@ -397,7 +399,7 @@ const EventRequestPage = () => {
                     }`}
                   >
                     <Upload className="h-4 w-4" />
-                    Fazer Upload
+                    {t('eventRequest.uploadImage')}
                   </button>
                 </div>
 
@@ -409,7 +411,7 @@ const EventRequestPage = () => {
                       setFormData({ ...formData, image: e.target.value });
                       setImagePreview(e.target.value);
                     }}
-                    placeholder="https://exemplo.com/imagem.jpg"
+                    placeholder={t('eventRequest.imageUrlPlaceholder')}
                     className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
                 ) : (
@@ -421,14 +423,14 @@ const EventRequestPage = () => {
                       className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                     />
                     <p className="mt-1 text-xs text-slate-500">
-                      Máximo 10MB. Formatos: JPG, PNG, GIF, WebP
+                      {t('eventRequest.uploadHelp')}
                     </p>
                   </div>
                 )}
 
                 {imagePreview && (
                   <div>
-                    <p className="text-sm font-medium text-slate-700 mb-2">Preview:</p>
+                    <p className="text-sm font-medium text-slate-700 mb-2">{t('eventRequest.preview')}</p>
                     <div className="w-full h-48 rounded-lg overflow-hidden border border-slate-300">
                       <img
                         src={imagePreview}
@@ -442,7 +444,7 @@ const EventRequestPage = () => {
                 {uploadingImage && (
                   <div className="flex items-center gap-2 text-indigo-600">
                     <div className="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                    Fazendo upload da imagem...
+                    {t('eventRequest.uploading')}
                   </div>
                 )}
               </div>
@@ -450,7 +452,7 @@ const EventRequestPage = () => {
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                ℹ️ Sua solicitação será analisada por nossa equipe. Você receberá uma resposta por email em até 48 horas úteis.
+                {t('eventRequest.info')}
               </p>
             </div>
 
@@ -463,12 +465,12 @@ const EventRequestPage = () => {
                 {submitting ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Enviando...
+                    {t('eventRequest.submitting')}
                   </>
                 ) : (
                   <>
                     <Send className="h-5 w-5" />
-                    Enviar Solicitação
+                    {t('eventRequest.submit')}
                   </>
                 )}
               </button>
@@ -477,7 +479,7 @@ const EventRequestPage = () => {
                 to="/"
                 className="rounded-lg bg-slate-200 px-6 py-3 text-slate-700 font-semibold hover:bg-slate-300 transition-colors"
               >
-                Cancelar
+                {t('eventRequest.cancel')}
               </Link>
             </div>
           </form>
@@ -497,18 +499,18 @@ const EventRequestPage = () => {
                   <div className="mx-auto w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
                     <CheckCircle className="h-10 w-10 text-emerald-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Solicitação enviada com sucesso!</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{t('eventRequest.successTitle')}</h3>
                   <p className="text-slate-600 mb-2">
-                    Sua solicitação de evento foi recebida e será analisada por nossa equipe.
+                    {t('eventRequest.successMessage')}
                   </p>
                   <p className="text-sm text-slate-500 mb-8">
-                    Você receberá uma resposta por email em até 48 horas úteis.
+                    {t('eventRequest.successNote')}
                   </p>
                   <button
                     onClick={handleCloseModal}
                     className="px-8 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all"
                   >
-                    OK
+                    {t('eventRequest.ok')}
                   </button>
                 </div>
               </div>
@@ -552,7 +554,7 @@ const EventRequestPage = () => {
                     onClick={() => setShowErrorModal(null)}
                     className="px-8 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-all"
                   >
-                    OK
+                    {t('eventRequest.ok')}
                   </button>
                 </div>
               </div>

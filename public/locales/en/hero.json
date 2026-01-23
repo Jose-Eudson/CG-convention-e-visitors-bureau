@@ -1,9 +1,12 @@
 {
+  "tagline": "Tourism • Culture • Experiences",
+  "mainTitle": "Discover Campina Grande beyond São João",
+  "description": "Explore tourist attractions, culture, leisure and unique experiences of the Queen of Borborema.",
+  "ctaButton": "Get to know Campina Grande",
   "title": "Campina Grande on the map of major events",
   "subtitle": "We promote and attract events that strengthen business tourism and boost the local economy.",
   "buttons": {
     "event": "I want to bring my event",
     "associate": "I want to become a member"
-  },
-  "imageAlt": "Events in Campina Grande"
+  }
 }

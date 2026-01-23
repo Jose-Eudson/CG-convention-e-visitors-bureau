@@ -1,9 +1,12 @@
 {
+  "tagline": "Turismo • Cultura • Experiencias",
+  "mainTitle": "Descubra Campina Grande más allá de São João",
+  "description": "Explore puntos turísticos, cultura, ocio y experiencias únicas de la Reina de Borborema.",
+  "ctaButton": "Conozca Campina Grande",
   "title": "Campina Grande en el mapa de los grandes eventos",
-  "subtitle": "Promovemos y atraemos eventos que fortalecen el turismo de negocios y impulsan la economía local.",
+  "subtitle": "Promovemos y captamos eventos que fortalecen el turismo de negocios e impulsan la economía local.",
   "buttons": {
     "event": "Quiero traer mi evento",
-    "associate": "Quiero ser asociado"
-  },
-  "imageAlt": "Eventos en Campina Grande"
+    "associate": "Quiero ser socio"
+  }
 }

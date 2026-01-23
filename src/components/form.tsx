@@ -1,10 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FiArrowLeft, FiCheckCircle } from 'react-icons/fi';
 import { addAssociate, uploadAssociateLogo } from '../services/associatesService';
 import { sendNewAssociateEmail } from '../services/associateEmailService';
 
 const FormularioAssoc: React.FC = () => {
+  const { t } = useTranslation('form');
   const [categoria, setCategoria] = useState('');
   const [isEnviando, setIsEnviando] = useState(false);
   const [logoFile, setLogoFile] = useState<any>(null);
@@ -103,13 +105,13 @@ const FormularioAssoc: React.FC = () => {
           className="flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-6 transition-colors font-medium"
         >
           <FiArrowLeft size={20} />
-          Voltar
+          {t('buttons.back')}
         </button>
 
         <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-8 rounded-t-xl shadow-lg">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Seja um Parceiro</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">{t('title')}</h1>
           <p className="text-orange-100">
-            Preencha os dados abaixo para solicitar sua associação ao Convention Bureau.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -119,12 +121,12 @@ const FormularioAssoc: React.FC = () => {
               <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
                 1
               </div>
-              <h2 className="text-xl font-bold text-slate-800">Identificação Empresarial</h2>
+              <h2 className="text-xl font-bold text-slate-800">{t('sections.businessData')}</h2>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="categoria" className={labelClass}>Categoria de Negócio</label>
+                <label htmlFor="categoria" className={labelClass}>{t('fields.category')}</label>
                 <select
                   id="categoria"
                   name="categoria"
@@ -133,63 +135,63 @@ const FormularioAssoc: React.FC = () => {
                   onChange={(e) => setCategoria(e.target.value)}
                   className={inputClass}
                 >
-                  <option value="">Selecione a categoria:</option>
-                  <option value="Agência de Viagens, Receptivo e Aluguis de Automóveis">Agência de Viagens e Turismo</option>
-                  <option value="Casas de Shows, Espetáculos e Museus">Casa de Eventos</option>
-                  <option value="Guia de Turismo">Serviço de Guiamento Turístico (Guia de Turismo)</option>
-                  <option value="Hospedagem">Hotel (até 70 unidades habitacionais)</option>
-                  <option value="Hospedagem">Hotel (70 a 100 unidades habitacionais)</option>
-                  <option value="Hospedagem">Hotel (acima de 100 unidades habitacionais)</option>
-                  <option value="Institucional">Instituição (Shopping, Empresa, Universidade)</option>
-                  <option value="Hospedagem">Pousada / Hostel</option>
-                  <option value="Alimentação">Estabelecimento Gastronômico (Restaurante)</option>
-                  <option value="outro">Outro</option>
+                  <option value="">{t('fields.selectCategory')}</option>
+                  <option value="Agência de Viagens, Receptivo e Aluguis de Automóveis">{t('categories.agenciaTurismo')}</option>
+                  <option value="Casas de Shows, Espetáculos e Museus">{t('categories.casaEventos')}</option>
+                  <option value="Guia de Turismo">{t('categories.guia')}</option>
+                  <option value="Hospedagem">{t('categories.hotel70')}</option>
+                  <option value="Hospedagem">{t('categories.hotel100')}</option>
+                  <option value="Hospedagem">{t('categories.hotelMais')}</option>
+                  <option value="Institucional">{t('categories.instituicao')}</option>
+                  <option value="Hospedagem">{t('categories.pousada')}</option>
+                  <option value="Alimentação">{t('categories.gastronomico')}</option>
+                  <option value="outro">{t('categories.outro')}</option>
                 </select>
               </div>
 
               {categoria === 'outro' && (
                 <div>
-                  <label htmlFor="categoriaOutro" className={labelClass}>Especifique a Categoria</label>
+                  <label htmlFor="categoriaOutro" className={labelClass}>{t('categories.especifique')}</label>
                   <input type="text" id="categoriaOutro" name="categoriaOutro" className={inputClass} />
                 </div>
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="razaoSocial" className={labelClass}>Razão Social</label>
+                  <label htmlFor="razaoSocial" className={labelClass}>{t('fields.razaoSocial')}</label>
                   <input type="text" id="razaoSocial" name="razaoSocial" required className={inputClass} />
                 </div>
                 <div>
-                  <label htmlFor="nomeFantasia" className={labelClass}>Nome Fantasia</label>
+                  <label htmlFor="nomeFantasia" className={labelClass}>{t('fields.nomeFantasia')}</label>
                   <input type="text" id="nomeFantasia" name="nomeFantasia" required className={inputClass} />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label htmlFor="numeroFuncionarios" className={labelClass}>Número de Funcionários</label>
+                  <label htmlFor="numeroFuncionarios" className={labelClass}>{t('fields.numeroFuncionarios')}</label>
                   <input type="number" id="numeroFuncionarios" name="numeroFuncionarios" className={inputClass} />
                 </div>
                 <div>
-                  <label htmlFor="cnpj" className={labelClass}>CNPJ</label>
+                  <label htmlFor="cnpj" className={labelClass}>{t('fields.cnpj')}</label>
                   <input type="text" id="cnpj" name="cnpj" required className={inputClass} />
                 </div>
                 <div>
-                  <label htmlFor="inscricaoEstadual" className={labelClass}>Inscrição Estadual</label>
+                  <label htmlFor="inscricaoEstadual" className={labelClass}>{t('fields.inscricaoEstadual')}</label>
                   <input type="text" id="inscricaoEstadual" name="inscricaoEstadual" className={inputClass} />
                 </div>
                 <div>
-                  <label htmlFor="inscricaoMunicipal" className={labelClass}>Inscrição Municipal</label>
+                  <label htmlFor="inscricaoMunicipal" className={labelClass}>{t('fields.inscricaoMunicipal')}</label>
                   <input type="text" id="inscricaoMunicipal" name="inscricaoMunicipal" className={inputClass} />
                 </div>
               </div>
               <div>
-                <label htmlFor="instagram" className={labelClass}>Link do Instagram ou Site (opcional)</label>
+                <label htmlFor="instagram" className={labelClass}>{t('fields.instagram')}</label>
                 <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/..." className={inputClass} />
               </div>
 
               <div>
-                <label htmlFor="logo" className={labelClass}>Logo / Foto da Empresa</label>
+                <label htmlFor="logo" className={labelClass}>{t('fields.logo')}</label>
                 <input
                   type="file"
                   id="logo"
@@ -198,7 +200,7 @@ const FormularioAssoc: React.FC = () => {
                   onChange={handleLogoChange}
                   className="w-full p-2.5 border border-slate-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                 />
-                <p className="text-xs text-slate-500 mt-1">Envie a logo que aparecerá na página de associados (PNG, JPG ou SVG)</p>
+                <p className="text-sm text-slate-500 mt-1">{t('fields.logoHelp')}</p>
               </div>
             </div>
           </div>
@@ -208,31 +210,31 @@ const FormularioAssoc: React.FC = () => {
               <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
                 2
               </div>
-              <h2 className="text-xl font-bold text-slate-800">Localização e Contato</h2>
+              <h2 className="text-xl font-bold text-slate-800">{t('sections.locationContact')}</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="bairro" className={labelClass}>Bairro</label>
+                <label htmlFor="bairro" className={labelClass}>{t('fields.bairro')}</label>
                 <input type="text" id="bairro" name="bairro" required className={inputClass} />
               </div>
               <div className="md:col-span-2">
-                <label htmlFor="endereco" className={labelClass}>Endereço Completo</label>
+                <label htmlFor="endereco" className={labelClass}>{t('fields.endereco')}</label>
                 <input type="text" id="endereco" name="endereco" required className={inputClass} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="cep" className={labelClass}>CEP</label>
+                <label htmlFor="cep" className={labelClass}>{t('fields.cep')}</label>
                 <input type="text" id="cep" name="cep" required className={inputClass} />
               </div>
               <div>
-                <label htmlFor="telefone" className={labelClass}>Telefone Fixo/Empresa</label>
+                <label htmlFor="telefone" className={labelClass}>{t('fields.telefone')}</label>
                 <input type="tel" id="telefone" name="telefone" required className={inputClass} />
               </div>
               <div>
-                <label htmlFor="email" className={labelClass}>E-mail Corporativo</label>
+                <label htmlFor="email" className={labelClass}>{t('fields.email')}</label>
                 <input type="email" id="email" name="email" required className={inputClass} />
               </div>
             </div>
@@ -243,28 +245,28 @@ const FormularioAssoc: React.FC = () => {
               <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
                 3
               </div>
-              <h2 className="text-xl font-bold text-slate-800">Dados do Presidente / Responsável</h2>
+              <h2 className="text-xl font-bold text-slate-800">{t('sections.responsible')}</h2>
             </div>
 
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="nomeResponsavel" className={labelClass}>Nome Completo do Responsável</label>
+                  <label htmlFor="nomeResponsavel" className={labelClass}>{t('fields.nomeResponsavel')}</label>
                   <input type="text" id="nomeResponsavel" name="nomeResponsavel" required className={inputClass} />
                 </div>
                 <div>
-                  <label htmlFor="dataAniversarioResponsavel" className={labelClass}>Data de Aniversário</label>
+                  <label htmlFor="dataAniversarioResponsavel" className={labelClass}>{t('fields.dataAniversario')}</label>
                   <input type="date" id="dataAniversarioResponsavel" name="dataAniversarioResponsavel" className={inputClass} />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label htmlFor="telefoneResponsavel" className={labelClass}>Telefone do Responsável</label>
+                  <label htmlFor="telefoneResponsavel" className={labelClass}>{t('fields.telefoneResponsavel')}</label>
                   <input type="tel" id="telefoneResponsavel" name="telefoneResponsavel" className={inputClass} />
                 </div>
                 <div>
-                  <label htmlFor="emailResponsavel" className={labelClass}>E-mail do Responsável</label>
+                  <label htmlFor="emailResponsavel" className={labelClass}>{t('fields.emailResponsavel')}</label>
                   <input type="email" id="emailResponsavel" name="emailResponsavel" className={inputClass} />
                 </div>
               </div>
@@ -279,7 +281,7 @@ const FormularioAssoc: React.FC = () => {
               className="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
             />
             <label htmlFor="termos" className="text-sm text-slate-700">
-              Declaro que as informações acima são verdadeiras e estou ciente de que a admissão está sujeita à aprovação da diretoria.
+              {t('declaration')}
             </label>
           </div>
 
@@ -292,16 +294,16 @@ const FormularioAssoc: React.FC = () => {
               {isEnviando ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Processando...
+                  {t('processing')}
                 </>
-              ) : "ENVIAR PROPOSTA"}
+              ) : t('buttons.submit')}
             </button>
             <button
               type="button"
               onClick={() => { formRef.current?.reset(); setCategoria(''); }}
               className="px-8 py-4 text-slate-500 font-semibold hover:text-slate-800 transition-colors"
             >
-              Limpar Campos
+              {t('buttons.clear')}
             </button>
           </div>
         </form>
@@ -320,9 +322,9 @@ const FormularioAssoc: React.FC = () => {
                   <div className="mx-auto w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
                     <FiCheckCircle className="h-10 w-10 text-emerald-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Solicitação enviada com sucesso!</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{t('success')}</h3>
                   <p className="text-slate-600 mb-8">
-                    Sua solicitação de associação foi recebida. Em breve entraremos em contato!
+                    {t('successMessage')}
                   </p>
                   <button
                     onClick={handleCloseModal}

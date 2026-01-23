@@ -1,0 +1,49 @@
+{
+  "whoweare": {
+    "title": "Who we are",
+    "description": {
+      "part1": "The Campina Grande Convention & Visitors Bureau emerged in 2003 with the mission of promoting tourism and events in the city. We are a non-profit civil association that brings together tourism sector entities around a common goal: strengthen Campina Grande as a reference destination, recognized for its culture, hospitality and technology.",
+      "lead": "We act as a bridge between the public and private sectors, articulating strategic partnerships, attracting events and promoting experiences that transform the city. We believe in tourism as an agent of social development and work to enhance local possibilities.",
+      "part2": "Our commitment is to expand the visibility of the region, support initiatives that generate positive impact and consolidate Campina Grande as a national reference in tourism and events."
+    }
+  },
+  "whatwedo": {
+    "title": "What we do",
+    "captacao": {
+      "title": "Event capture",
+      "description": "We attract major events to Campina Grande."
+    },
+    "monitoramento": {
+      "title": "Monitoring",
+      "description": "We monitor the agenda and sector opportunities."
+    },
+    "intermediacao": {
+      "title": "Intermediation",
+      "description": "We connect organizers and local suppliers."
+    },
+    "promocao": {
+      "title": "Promotion",
+      "description": "We promote Campina Grande as an event destination."
+    },
+    "apoio": {
+      "title": "Institutional support",
+      "description": "We facilitate dialogue with public authorities."
+    },
+    "consultoria": {
+      "title": "Consulting",
+      "description": "We provide guidance on city infrastructure and services."
+    },
+    "qualificacao": {
+      "title": "Qualification",
+      "description": "We train local tourism professionals."
+    },
+    "observatorio": {
+      "title": "Observatory",
+      "description": "We analyze tourism data and trends."
+    },
+    "articulacao": {
+      "title": "Articulation",
+      "description": "We promote strategic partnerships for the sector."
+    }
+  }
+}

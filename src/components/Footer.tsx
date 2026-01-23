@@ -54,7 +54,7 @@ const Footer = () => {
         </div>
 
         <p className="mt-2 text-sm text-slate-400 max-w-sm">
-          Promovendo o turismo, eventos e desenvolvimento da região.
+          {t("footer:footer.description")}
         </p>
       </div>
 
@@ -62,7 +62,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:ml-auto md:max-w-4xl">
           <div className="text-left">
             <h4 className="text-sm font-semibold text-white mb-3 uppercase tracking-wide">
-              Menu
+              {t("footer:footer.menu")}
             </h4>
             <ul className="space-y-1.5">
               {menuLinks.map((link) => (
@@ -81,7 +81,7 @@ const Footer = () => {
 
           <div className="text-left">
             <h4 className="text-sm font-semibold text-white mb-3 uppercase tracking-wide">
-              Seções
+              {t("footer:footer.sections")}
             </h4>
             <ul className="space-y-1.5">
               {sectionLinks.map((link) => (
@@ -100,7 +100,7 @@ const Footer = () => {
 
           <div className="text-left">
             <h4 className="text-sm font-semibold text-white mb-3 uppercase tracking-wide">
-              Contato
+              {t("footer:footer.contact")}
             </h4>
             <ul className="space-y-1.5 text-sm">
               <li>
@@ -153,8 +153,7 @@ const Footer = () => {
 
         <div className="mt-8 pt-3 border-t border-slate-700 flex items-center justify-center gap-3 text-xs text-slate-400">
           <span>
-            © 2026 Convention Bureau Campina Grande —{" "}
-            {t("footer:rights", { defaultValue: "Todos os direitos reservados" })}
+            {t("footer:footer.copyright")}
           </span>
 
           <a

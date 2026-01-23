@@ -1,0 +1,26 @@
+{
+  "title": "Discover Campina Grande",
+  "subtitle": "Explore the best tourist spots, culture and history of the Queen of Borborema.",
+  "backToHome": "Back to Home",
+  "searchPlaceholder": "Search places, museums, parks...",
+  "noResults": "No places found",
+  "noResultsHint": "Try searching for another term or change the category.",
+  "categories": {
+    "Todas": "All",
+    "turismo": "Tourism",
+    "transporte": "Transport",
+    "cultura": "Culture",
+    "lazer": "Leisure",
+    "gastronomia": "Gastronomy",
+    "religioso": "Religious",
+    "compras": "Shopping",
+    "acomodação": "Accommodation",
+    "estrutura para eventos": "Event Infrastructure"
+  },
+  "modal": {
+    "address": "Address",
+    "contact": "Contact",
+    "instagram": "Instagram",
+    "facebook": "Facebook"
+  }
+}

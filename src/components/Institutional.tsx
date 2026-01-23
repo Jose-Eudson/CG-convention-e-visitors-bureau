@@ -127,7 +127,7 @@ const Institutional = () => {
           >
             <div className="h-full rounded-2xl bg-white shadow-[0_40px_80px_-20px_rgba(0,0,0,0.35)] px-5 sm:px-7 py-10 sm:py-12">
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#1f3d2b] mb-6 sm:mb-8 text-center">
-                O que fazemos
+                {t("whatwedo.title")}
               </h3>
 
               <Slider ref={sliderRef} {...sliderSettings}>
